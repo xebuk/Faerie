@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 public class TokenReader {
     protected static String readToken() throws IOException {
-        return Files.readString(Path.of("../token_dir/token.txt")).trim();
+        Path tokenFilePath = Path.of("../token_dir/token.txt");
+        return Files.readString(tokenFilePath).trim();
     }
 }
