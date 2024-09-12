@@ -4,11 +4,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 
 public class Main {
-    public static void startBot() {
+    private static void startBot() {
         try {
-            String token = TokenReader.readToken();
             TelegramBotsLongPollingApplication application = new TelegramBotsLongPollingApplication();
-            application.registerBot(token, new Bot());
+            application.registerBot(TokenReader.readToken(), new Bot());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TelegramApiException e) {
