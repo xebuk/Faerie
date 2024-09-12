@@ -17,13 +17,37 @@
     <dependencies>
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots-longpolling</artifactId>
+            <artifactId>telegrambots-abilities</artifactId>
             <version>7.10.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-client</artifactId>
+            <version>7.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-extensions</artifactId>
+            <version>7.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-longpolling</artifactId>
+            <version>7.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-meta</artifactId>
+            <version>7.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-webhook</artifactId>
             <version>7.10.0</version>
         </dependency>
     </dependencies>
@@ -33,5 +57,10 @@
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
+
+        <repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
     </repositories>
 </project>
