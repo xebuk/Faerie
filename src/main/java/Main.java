@@ -7,9 +7,7 @@ public class Main {
     private static void startBot() {
         try {
             TelegramBotsLongPollingApplication application = new TelegramBotsLongPollingApplication();
-            Bot botyara = new Bot();
-            application.registerBot(TokenReader.readToken(), botyara);
-            botyara = null;
+            application.registerBot(TokenReader.readToken(), new Bot());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TelegramApiException e) {
