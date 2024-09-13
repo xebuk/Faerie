@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.io.IOException;
 
 public class Bot implements LongPollingSingleThreadUpdateConsumer {
-    private TelegramClient telegramClient = new OkHttpTelegramClient(TokenReader.readToken());
+    private final TelegramClient telegramClient = new OkHttpTelegramClient(TokenReader.readToken());
 
     public Bot() throws IOException {}
 
@@ -24,13 +24,8 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
             System.out.println("Received \"" + msg + "\" from " + chatId);
             System.out.println("Sent \"" + reversedMsg + "\" to " + chatId);
 
-            chatId = null;
-            msg = null;
-            reversedMsg = null;
-
             try {
                 telegramClient.execute(sendMessage);
-                sendMessage = null;
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
