@@ -7,4 +7,9 @@ public class TokenReader {
         Path tokenFilePath = Path.of("../token_dir/token.txt");
         return Files.readString(tokenFilePath).trim();
     }
+
+    protected static int readCreatorId() throws IOException {
+        Path creatorID_FilePath = Path.of("../token_dir/creatorID.txt");
+        return Integer.parseInt(Files.readString(creatorID_FilePath).trim());
+    }
 }
