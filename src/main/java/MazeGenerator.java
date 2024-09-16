@@ -9,24 +9,26 @@ public class MazeGenerator {
 
     private final int width, height;
     private final int roomMinSize, roomMaxSize;
+    private final int roomCount;
     private final int[][] maze;
     private final List<Room> rooms = new ArrayList<Room>();
     private final Random random = new Random();
 
-    public MazeGenerator(int width, int height, int roomMinSize, int roomMaxSize) {
+    public MazeGenerator(int width, int height, int roomMinSize, int roomMaxSize, int roomCount) {
         this.width = width;
         this.height = height;
         this.roomMinSize = roomMinSize;
         this.roomMaxSize = roomMaxSize;
+        this.roomCount = roomCount;
         maze = new int[width][height];
-        generateMaze();
     }
 
-    private void generateMaze() {
+    public void generateMaze() {
         fillWalls();
-        // generateRooms();
-        // generateCorridors();
+        generateRooms(roomCount);
+        connectRooms();
     }
+
 
     private void fillWalls() {
         for (int i = 0; i < width; i++) {
@@ -36,7 +38,7 @@ public class MazeGenerator {
         }
     }
 
-    public void generateRooms(int roomCount) {
+    private void generateRooms(int roomCount) {
         int attempts = 0;
         while (rooms.size() < roomCount && attempts < MAX_ROOM_CREATION_ATTEMPTS) {
             int roomWidth = random.nextInt(roomMaxSize - roomMinSize + 1) + roomMinSize;
@@ -77,7 +79,7 @@ public class MazeGenerator {
         }
     }
 
-    public void connectRooms() {
+    private void connectRooms() {
         Set<Room> connectedRooms = new HashSet<Room>();
         connectedRooms.add(rooms.getFirst());
 
@@ -207,9 +209,8 @@ public class MazeGenerator {
     }
 
     public static void main(String[] args) {
-        MazeGenerator mazeGenerator = new MazeGenerator(50, 50, 3, 7);
-        mazeGenerator.generateRooms(30);
-        mazeGenerator.connectRooms();
+        MazeGenerator mazeGenerator = new MazeGenerator(50, 50, 3, 7, 30);
+        mazeGenerator.generateMaze();
         mazeGenerator.printMaze();
     }
 }
