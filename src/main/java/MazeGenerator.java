@@ -49,8 +49,9 @@ public class MazeGenerator {
             if (canPlaceRoom(newRoom)) {
                 placeRoom(newRoom);
                 rooms.add(newRoom);
+            } else {
+                attempts++;
             }
-            attempts++;
         }
 
         // DEBUG
@@ -105,16 +106,6 @@ public class MazeGenerator {
                 connectedRooms.add(closestRoomB);
             }
         }
-
-        /*for (int i = 0; i < rooms.size() - 1; i++) {
-            Room roomA = rooms.get(i);
-            Room roomB = rooms.get(i + 1);
-
-            int[] exitA = getRandomEdgePoint(roomA);
-            int[] exitB = getRandomEdgePoint(roomB);
-
-            generateCorridor(exitA[0], exitA[1], exitB[0], exitB[1]);
-        }*/
     }
 
     private int calculateDistance(Room roomA, Room roomB) {
@@ -159,17 +150,17 @@ public class MazeGenerator {
         // (or their inverted variants, depends on coords)
         int coinFlip = random.nextInt(2);
         if (coinFlip == 0) {
-            digLine(x1, y1, middleX, y1);
-            digLine(middleX, y1, middleX, y2);
-            digLine(middleX, y2, x2, y2);
+            generateLine(x1, y1, middleX, y1);
+            generateLine(middleX, y1, middleX, y2);
+            generateLine(middleX, y2, x2, y2);
         } else {
-            digLine(x1, y1, x1, middleY);
-            digLine(x1, middleY, x2, middleY);
-            digLine(x2, middleY, x2, y2);
+            generateLine(x1, y1, x1, middleY);
+            generateLine(x1, middleY, x2, middleY);
+            generateLine(x2, middleY, x2, y2);
         }
     }
 
-    private void digLine(int x1, int y1, int x2, int y2) {
+    private void generateLine(int x1, int y1, int x2, int y2) {
         while (x1 != x2) {
             maze[y1][x1] = EMPTY;
             if (x1 < x2) {
