@@ -10,7 +10,6 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 
 public class AbilBot extends AbilityBot {
     boolean reverse = false;
-    private final OkHttpTelegramClient telegramClient = new OkHttpTelegramClient(TokenReader.readToken());
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(TokenReader.readToken()), "Faerie");
