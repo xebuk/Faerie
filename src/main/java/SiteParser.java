@@ -9,8 +9,8 @@ import java.io.IOException;
 public class SiteParser {
     private static String url = "https://dnd.su/";
 
-    public static void SpellsItemsBestiaryGrabber(String section) {
-        String article = System.console().readLine();
+    public static String SpellsItemsBestiaryGrabber(String section, String id) {
+        String article = id;
         Connection link = Jsoup.connect(url + section + "/" + article);
         Document page;
         try {
@@ -25,17 +25,23 @@ public class SiteParser {
         Elements li = body.select("li:not(.subsection.desc)");
         Elements liDescBody = body.select("li.subsection.desc").select("p");
 
+        StringBuilder result = new StringBuilder(name.text() + "\n");
+
         System.out.println(name.text());
         for (Element i: li) {
             System.out.println(i.text());
+            result.append(i.text()).append("\n");
         }
+        result.append("\n");
         System.out.println();
         for (Element i : liDescBody) {
             System.out.println(i.text() + "\n");
+            result.append(i.text()).append("\n").append("\n");
         }
+        return result.toString();
     }
 
     public static void main(String[] args) {
-        SiteParser.SpellsItemsBestiaryGrabber("spells");
+        SiteParser.SpellsItemsBestiaryGrabber("spells", System.console().readLine());
     }
 }

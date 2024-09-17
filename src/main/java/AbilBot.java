@@ -9,8 +9,6 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 
 public class AbilBot extends AbilityBot {
-    boolean reverse = false;
-
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(TokenReader.readToken()), "Faerie");
         super.onRegister();
@@ -40,6 +38,19 @@ public class AbilBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(hello)
                 .post(bye)
+                .build();
+    }
+
+    public Ability requestArticle() {
+        Consumer<MessageContext> search = ctx -> silent.send(SiteParser.SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
+
+        return Ability.builder()
+                .name("search")
+                .info("searches article on DnD.su")
+                .input(2)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(search)
                 .build();
     }
 }
