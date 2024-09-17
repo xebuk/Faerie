@@ -2,22 +2,16 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.nodes.TextNode;
-import org.jsoup.parser.HtmlTreeBuilder;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
 public class SiteParser {
-    private static String url = "https://dnd.su/bestiary/";
-    private HtmlTreeBuilder treeBuilder = new HtmlTreeBuilder();
-    private Parser parser = new Parser(treeBuilder);
+    private static String url = "https://dnd.su/";
 
-    public static void main(String[] args) {
-        String beast = System.console().readLine();
-        Connection link = Jsoup.connect(url + beast);
+    public static void SpellsItemsBestiaryGrabber(String section) {
+        String article = System.console().readLine();
+        Connection link = Jsoup.connect(url + section + "/" + article);
         Document page;
         try {
             page = link.get();
@@ -25,7 +19,23 @@ public class SiteParser {
             throw new RuntimeException(e);
         }
 
-        System.out.println(page.select("h2.card-title[itemprop=name]"));
-        page.select("div.card__body.new-article").forEach(System.out::println);
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements body = page.select("ul.params.card__article-body");
+
+        Elements li = body.select("li:not(.subsection.desc)");
+        Elements liDescBody = body.select("li.subsection.desc").select("p");
+
+        System.out.println(name.text());
+        for (Element i: li) {
+            System.out.println(i.text());
+        }
+        System.out.println();
+        for (Element i : liDescBody) {
+            System.out.println(i.text() + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        SiteParser.SpellsItemsBestiaryGrabber("spells");
     }
 }
