@@ -42,16 +42,4 @@ public class AbilBot extends AbilityBot {
                 .post(bye)
                 .build();
     }
-
-    public Ability revMessage() {
-        Consumer<MessageContext> reversal = ctx -> {reverse = !reverse;};
-        return Ability.builder()
-                .name("reverse")
-                .info("reverses all messages!")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(reversal)
-                .build();
-    }
 }
