@@ -5,10 +5,18 @@ import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import static java.lang.Integer.parseInt;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 
 public class AbilBot extends AbilityBot {
+    public String helpMessage = """
+            /help - выводит список команд
+            /search [раздел (spells/items/bestiary)] [название] - выводит искомую статью
+            /roll [кол-во костей] [кол-во сторон] - выводит значение костей
+            """;
+
+
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(TokenReader.readToken()), "Faerie");
         super.onRegister();
@@ -23,6 +31,19 @@ public class AbilBot extends AbilityBot {
             id = 0;
         }
         return id;
+    }
+
+    public Ability showHelp() {
+        Consumer<MessageContext> helpHand = ctx -> silent.send(helpMessage, ctx.chatId());
+
+        return Ability.builder()
+                .name("help")
+                .info("shows all commands")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(helpHand)
+                .build();
     }
 
     public Ability sayHelloWorld() {
@@ -44,13 +65,28 @@ public class AbilBot extends AbilityBot {
     public Ability requestArticle() {
         Consumer<MessageContext> search = ctx -> silent.send(SiteParser.SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
 
-        return Ability.builder()
+        return Ability
+                .builder()
                 .name("search")
                 .info("searches article on DnD.su")
                 .input(2)
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(search)
+                .build();
+    }
+
+    public Ability diceRoll() {
+        Consumer<MessageContext> roll = ctx -> silent.send(new Dice(parseInt(ctx.firstArg()), parseInt(ctx.secondArg())).diceRoller().toString(), ctx.chatId());
+
+        return Ability
+                .builder()
+                .name("roll")
+                .info("rolls a dice")
+                .input(2)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(roll)
                 .build();
     }
 }
