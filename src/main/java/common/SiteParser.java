@@ -8,18 +8,19 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
+import static common.Constants.URL;
+
 public class SiteParser {
-    private static String url = "https://dnd.su/";
 
     public static String SpellsItemsBestiaryGrabber(String section, String id) {
         String article;
         try {
-            article = TokenReader.searchArticleId(section, id);
+            article = DataReader.searchArticleId(section, id);
         } catch (IOException e) {
             article = id;
         }
 
-        Connection link = Jsoup.connect(url + section + "/" + article);
+        Connection link = Jsoup.connect(URL + section + "/" + article);
         Document page;
         try {
             page = link.get();
@@ -49,7 +50,7 @@ public class SiteParser {
             result.append(i.text()).append("\n").append("\n");
         }
 
-        result.append("Информация взята с ").append(url).append(section + "/" + article);
+        result.append("Информация взята с ").append(URL).append(section + "/" + article);
         return result.toString();
     }
 
@@ -59,22 +60,22 @@ public class SiteParser {
         //ArrayList<String> data = new ArrayList<>();
         //data.add(" ");
 
-        for (int i = 1; i < 401; i++) {
+        for (int i = 1; i < 401; i++) { // 401 - временное число, вскоре заменю на 1601
             Elements name = null;
-            boolean fourofour = false;
+            boolean pageNotFound = false;
             do {
-                link = Jsoup.connect(url + section + "/" + i);
+                link = Jsoup.connect(URL + section + "/" + i);
                 try {
                     page = link.get();
                 } catch (IOException e) {
-                    fourofour = true;
+                    pageNotFound = true;
                     break;
                 }
 
                 name = page.select("h2.card-title[itemprop=name]");
             } while (name.text().isEmpty());
 
-            if (fourofour) {
+            if (pageNotFound) {
                 continue;
             }
 

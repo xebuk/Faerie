@@ -3,7 +3,7 @@ package botexecution;
 import common.Constants;
 import common.Dice;
 import common.SiteParser;
-import common.TokenReader;
+import common.DataReader;
 
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -20,7 +20,7 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 public class AbilBot extends AbilityBot {
 
     public AbilBot() throws IOException {
-        super(new OkHttpTelegramClient(TokenReader.readToken()), "Faerie");
+        super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
         super.onRegister();
     }
 
@@ -28,7 +28,7 @@ public class AbilBot extends AbilityBot {
     public long creatorId() {
         long id;
         try {
-            id = TokenReader.readCreatorId();
+            id = DataReader.readCreatorId();
         } catch (IOException e) {
             id = 0;
         }
@@ -36,14 +36,14 @@ public class AbilBot extends AbilityBot {
     }
 
     public void search(String chatId) {
-        SendMessage search = new SendMessage(chatId, Constants.searchMessage);
+        SendMessage search = new SendMessage(chatId, Constants.SEARCH_MESSAGE);
         search.setReplyMarkup(KeyboardFactory.searchEngine());
         silent.execute(search);
     }
 
     public Ability showHelp() {
         Consumer<MessageContext> helpHand = ctx ->
-                silent.send(Constants.helpMessage, ctx.chatId());
+                silent.send(Constants.HELP_MESSAGE, ctx.chatId());
 
         return Ability.builder()
                 .name("help")

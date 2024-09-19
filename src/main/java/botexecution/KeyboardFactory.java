@@ -13,11 +13,11 @@ public class KeyboardFactory {
         InlineKeyboardRow inlineKeyboardRow = new InlineKeyboardRow();
 
         inlineKeyboardRow.add(new InlineKeyboardButton("spells"));
-        inlineKeyboardRow.get(0).setCallbackData(Constants.spells);
+        inlineKeyboardRow.get(0).setCallbackData(Constants.SPELLS);
         inlineKeyboardRow.add(new InlineKeyboardButton("items"));
-        inlineKeyboardRow.get(1).setCallbackData(Constants.items);
+        inlineKeyboardRow.get(1).setCallbackData(Constants.ITEMS);
         inlineKeyboardRow.add(new InlineKeyboardButton("bestiary"));
-        inlineKeyboardRow.get(2).setCallbackData(Constants.bestiary);
+        inlineKeyboardRow.get(2).setCallbackData(Constants.BESTIARY);
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
         inlineKeyboardRows.add(inlineKeyboardRow);

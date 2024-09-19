@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-public class TokenReader {
+public class DataReader {
     public static String readToken() throws IOException {
         Path tokenFilePath = Path.of("../token_dir/token.txt");
         return Files.readString(tokenFilePath).trim();
@@ -19,11 +19,11 @@ public class TokenReader {
     }
 
     public static String searchArticleId(String section, String name) throws IOException {
-        Path articleID_FilePath = Path.of("../token_dir/" + section + ".txt");
+        Path articleIdFilePath = Path.of("../token_dir/" + section + ".txt");
         List<String> lines;
 
-        for (int i = 0; i < 300; i++) {
-            lines = Files.readAllLines(articleID_FilePath);
+        for (int i = 0; i < 300; i++) { // после обновления списка поменять на 1600
+            lines = Files.readAllLines(articleIdFilePath);
             String[] sep;
             for (String articleId: lines) {
                 sep = articleId.trim().split("~ ");
