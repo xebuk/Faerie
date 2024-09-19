@@ -8,7 +8,7 @@ public interface Constants {
             /roll [кол-во костей] [кол-во сторон] - выводит значение костей
             """;
     String SPELLS = "Fireball!";
-    String ITEMS = "Deсk of many things!";
+    String ITEMS = "Deck of many things!";
     String BESTIARY = "Tarrasque!";
     String SEARCH_MESSAGE = "What would you like to search?";
 }
