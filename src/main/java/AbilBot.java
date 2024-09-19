@@ -1,6 +1,8 @@
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -10,12 +12,6 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 
 public class AbilBot extends AbilityBot {
-    public String helpMessage = """
-            /help - выводит список команд
-            /search [раздел (spells/items/bestiary)] [название] - выводит искомую статью
-            /roll [кол-во костей] [кол-во сторон] - выводит значение костей
-            """;
-
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(TokenReader.readToken()), "Faerie");
@@ -33,8 +29,15 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
+    public void search(String chatId) {
+        SendMessage search = new SendMessage(chatId, Constants.searchMessage);
+        search.setReplyMarkup(KeyboardFactory.searchEngine());
+        silent.execute(search);
+    }
+
     public Ability showHelp() {
-        Consumer<MessageContext> helpHand = ctx -> silent.send(helpMessage, ctx.chatId());
+        Consumer<MessageContext> helpHand = ctx ->
+                silent.send(Constants.helpMessage, ctx.chatId());
 
         return Ability.builder()
                 .name("help")
@@ -47,8 +50,10 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability sayHelloWorld() {
-        Consumer<MessageContext> hello = ctx -> silent.send("Hello, world!", ctx.chatId());
-        Consumer<MessageContext> bye = ctx -> silent.send("Bye, world~", ctx.chatId());
+        Consumer<MessageContext> hello = ctx ->
+                silent.send("Hello, world!", ctx.chatId());
+        Consumer<MessageContext> bye = ctx ->
+                silent.send("Bye, world~", ctx.chatId());
 
         return Ability
                 .builder()
@@ -63,7 +68,9 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability requestArticle() {
-        Consumer<MessageContext> search = ctx -> silent.send(SiteParser.SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
+        Consumer<MessageContext> search = ctx ->
+                silent.send(SiteParser
+                        .SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
 
         return Ability
                 .builder()
@@ -77,7 +84,9 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability diceRoll() {
-        Consumer<MessageContext> roll = ctx -> silent.send(new Dice(parseInt(ctx.firstArg()), parseInt(ctx.secondArg())).diceRoller().toString(), ctx.chatId());
+        Consumer<MessageContext> roll = ctx ->
+                silent.send(new Dice(parseInt(ctx.firstArg()), parseInt(ctx.secondArg()))
+                        .diceRoller().toString(), ctx.chatId());
 
         return Ability
                 .builder()
