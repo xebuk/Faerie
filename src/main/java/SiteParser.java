@@ -39,12 +39,15 @@ public class SiteParser {
             //System.out.println(i.text());
             result.append(i.text()).append("\n");
         }
+
         result.append("\n");
         //System.out.println();
+
         for (Element i : liDescBody) {
             //System.out.println(i.text() + "\n");
             result.append(i.text()).append("\n").append("\n");
         }
+
         result.append("Информация взята с ").append(url).append(section + "/" + article);
         return result.toString();
     }
@@ -54,6 +57,7 @@ public class SiteParser {
         Document page = null;
         //ArrayList<String> data = new ArrayList<>();
         //data.add(" ");
+
         for (int i = 1; i < 401; i++) {
             Elements name = null;
             boolean fourofour = false;
