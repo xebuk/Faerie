@@ -1,3 +1,5 @@
+package common;
+
 public interface Constants {
     String helpMessage = """
             /help - выводит список команд

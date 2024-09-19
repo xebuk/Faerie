@@ -1,3 +1,6 @@
+package botexecution;
+
+import common.TokenReader;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
