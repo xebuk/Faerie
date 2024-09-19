@@ -1,3 +1,7 @@
+package botexecution;
+
+import common.DataReader;
+
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,7 +12,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.io.IOException;
 
 public class Bot implements LongPollingSingleThreadUpdateConsumer {
-    private final TelegramClient telegramClient = new OkHttpTelegramClient(TokenReader.readToken());
+    private final TelegramClient telegramClient = new OkHttpTelegramClient(DataReader.readToken());
 
     public Bot() throws IOException {}
 
