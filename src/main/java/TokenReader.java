@@ -11,14 +11,15 @@ public class TokenReader {
         return Files.readString(tokenFilePath).trim();
     }
 
-    protected static int readCreatorId() throws IOException {
+    public static int readCreatorId() throws IOException {
         Path creatorID_FilePath = Path.of("../token_dir/creatorID.txt");
         return parseInt(Files.readString(creatorID_FilePath).trim());
     }
 
-    protected static String searchArticleId(String section, String name) throws IOException {
+    public static String searchArticleId(String section, String name) throws IOException {
         Path articleID_FilePath = Path.of("../token_dir/" + section + ".txt");
         List<String> lines;
+
         for (int i = 0; i < 300; i++) {
             lines = Files.readAllLines(articleID_FilePath);
             String[] sep;
