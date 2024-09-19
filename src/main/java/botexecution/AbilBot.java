@@ -8,7 +8,9 @@ import common.DataReader;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -35,10 +37,14 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
-    public void search(String chatId) {
-        SendMessage search = new SendMessage(chatId, Constants.SEARCH_MESSAGE);
+    public void search(MessageContext ctx) {
+        SendMessage search = new SendMessage(ctx.chatId().toString(), Constants.SEARCH_MESSAGE);
         search.setReplyMarkup(KeyboardFactory.searchEngine());
         silent.execute(search);
+        if (ctx.update().hasCallbackQuery()) {
+            CallbackQuery callbackQuery = ctx.update().getCallbackQuery();
+            System.out.println(callbackQuery.getData());
+        }
     }
 
     public Ability showHelp() {
@@ -74,15 +80,14 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability requestArticle() {
-        Consumer<MessageContext> search = ctx ->
-                silent.send(SiteParser
-                        .SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
+        //Consumer<MessageContext> search = ctx -> silent.send(SiteParser.SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
+        Consumer<MessageContext> search = this::search;
 
         return Ability
                 .builder()
                 .name("search")
                 .info("searches article on DnD.su")
-                .input(2)
+                .input(0)
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(search)
