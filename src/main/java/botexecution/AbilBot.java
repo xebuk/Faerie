@@ -1,6 +1,10 @@
 package botexecution;
 
 import common.Constants;
+import common.Dice;
+import common.SiteParser;
+import common.TokenReader;
+
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
