@@ -3,7 +3,7 @@ package game;
 import java.util.*;
 
 public class MazeGenerator {
-    enum Tiles {
+    public enum Tiles {
         EMPTY,
         WALL,
         ROOM
@@ -11,20 +11,21 @@ public class MazeGenerator {
 
     private final static int MAX_ROOM_CREATION_ATTEMPTS = 10000;
 
-    private final int width, height;
+    private final int mazeWidth, mazeHeight;
     private final int roomMinSize, roomMaxSize;
     private final int roomCount;
+
     private final Tiles[][] maze;
     private final List<Room> rooms = new ArrayList<Room>();
     private final Random random = new Random();
 
-    public MazeGenerator(int width, int height, int roomMinSize, int roomMaxSize, int roomCount) {
-        this.width = width;
-        this.height = height;
+    public MazeGenerator(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
+        this.mazeWidth = mazeWidth;
+        this.mazeHeight = mazeHeight;
         this.roomMinSize = roomMinSize;
         this.roomMaxSize = roomMaxSize;
         this.roomCount = roomCount;
-        maze = new Tiles[width][height];
+        maze = new Tiles[mazeWidth][mazeHeight];
     }
 
     public void generateMaze() {
@@ -35,8 +36,8 @@ public class MazeGenerator {
 
 
     private void fillWalls() {
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < mazeWidth; i++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 maze[i][j] = Tiles.WALL;
             }
         }
@@ -47,8 +48,10 @@ public class MazeGenerator {
         while (rooms.size() < roomCount && attempts < MAX_ROOM_CREATION_ATTEMPTS) {
             int roomWidth = random.nextInt(roomMaxSize - roomMinSize + 1) + roomMinSize;
             int roomHeight = random.nextInt(roomMaxSize - roomMinSize + 1) + roomMinSize;
-            int x = random.nextInt(width - roomWidth - 2) + 1;
-            int y = random.nextInt(height - roomHeight - 2) + 1;
+            int xRange = mazeWidth - roomWidth - 2;
+            int yRange = mazeHeight - roomHeight - 2;
+            int x = (xRange > 0 ? random.nextInt(xRange) : 0) + 1;
+            int y = (yRange > 0 ? random.nextInt(yRange) : 0) + 1;
 
             Room newRoom = new Room(x, y, roomWidth, roomHeight);
 
@@ -185,9 +188,17 @@ public class MazeGenerator {
         }
     }
 
+    public int[] getRandomRoomCenter() {
+        Room randomRoom = rooms.get(random.nextInt(rooms.size()));
+        int x = randomRoom.x + randomRoom.width / 2;
+        int y = randomRoom.y + randomRoom.height / 2;
+
+        return new int[] {x, y};
+    }
+
     public void printMaze() {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (int i = 0; i < mazeHeight; i++) {
+            for (int j = 0; j < mazeWidth; j++) {
                 System.out.print(
                         switch (maze[i][j]) {
                             case EMPTY -> "   ";
@@ -215,6 +226,10 @@ public class MazeGenerator {
                    this.y <= other.y + other.height + 1 &&
                    this.y + this.height + 1 >= other.y;
         }
+    }
+
+    public Tiles[][] getMaze() {
+        return maze;
     }
 
     public static void main(String[] args) {
