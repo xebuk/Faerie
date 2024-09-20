@@ -19,7 +19,7 @@ public class DataReader {
     }
 
     public static String searchArticleId(String section, String name) throws IOException {
-        Path articleIdFilePath = Path.of("../token_dir/" + section + ".txt");
+        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
         List<String> lines;
 
         for (int i = 0; i < 300; i++) { // после обновления списка поменять на 1600
