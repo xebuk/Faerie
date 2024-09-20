@@ -11,15 +11,21 @@ import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.lang.Integer.parseInt;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
+import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
 public class AbilBot extends AbilityBot {
+    public String sectionId = "";
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -108,5 +114,37 @@ public class AbilBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(roll)
                 .build();
+    }
+
+    @Override
+    public void consume(Update update) {
+        super.consume(update);
+
+        if (update.hasCallbackQuery()) {
+            CallbackQuery query = update.getCallbackQuery();
+            String responseQuery = query.getData();
+
+            if (Objects.equals(responseQuery, Constants.SPELLS)) {
+                silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
+                sectionId = "spells";
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ITEMS)) {
+                silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
+                sectionId = "items";
+            }
+
+            else if (Objects.equals(responseQuery, Constants.BESTIARY)) {
+                silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
+                sectionId = "bestiary";
+            }
+        }
+
+        if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
+            if (!sectionId.isEmpty()) {
+                silent.send(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), getChatId(update));
+                sectionId = "";
+            }
+        }
     }
 }
