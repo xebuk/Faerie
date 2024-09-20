@@ -17,6 +17,10 @@ public interface Constants {
     String SEARCH_MESSAGE_SPELLS = "Type the name of a spell.";
     String SEARCH_MESSAGE_ITEMS = "Type the name of a item.";
     String SEARCH_MESSAGE_BESTIARY = "Type the name of a beast.";
+    String SEARCH_MESSAGE_RACES = "Type the name of a race.";
+    String SEARCH_MESSAGE_CLASSES = "Type the name of a class.";
+    String SEARCH_MESSAGE_FEATS = "Type the name of a feat.";
+    String SEARCH_MESSAGE_BACKGROUNDS = "Type the name of a background.";
 
     String ROLL_MESSAGE = "What kind of a dice do you want to roll?";
     String ROLL_MESSAGE_QUANTITY = "How many?";
@@ -44,4 +48,8 @@ public interface Constants {
     String SPELLS = "Fireball!";
     String ITEMS = "Deck of many things!";
     String BESTIARY = "Tarrasque!";
+    String RACES = "Elf!";
+    String CLASSES = "Artificer!";
+    String FEATS = "Sentinel!";
+    String BACKGROUNDS = "Criminal!";
 }
