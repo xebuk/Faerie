@@ -15,12 +15,27 @@ public class Drawer {
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
     private static final double ASPECT_RATIO = (double) CANVAS_WIDTH / CANVAS_HEIGHT;
 
+//    private static final double NEAR_PLANE = 0.1;      // Clipping plane
+
     private double cameraX, cameraY, cameraZ;
+    private double[][] depthBuffer;
 
     public Drawer(double cameraX, double cameraY, double cameraZ) {
         this.cameraX = cameraX;
         this.cameraY = cameraY;
         this.cameraZ = cameraZ;
+        this.depthBuffer = new double[CANVAS_WIDTH][CANVAS_HEIGHT];
+
+        resetDepthBuffer();
+    }
+
+    private void resetDepthBuffer() {
+        // Fill depth buffer with "very far away" coords
+        for (int i = 0; i < CANVAS_WIDTH; i++) {
+            for (int j = 0; j < CANVAS_HEIGHT; j++) {
+                depthBuffer[i][j] = Double.MAX_VALUE;
+            }
+        }
     }
 
     private int[] projectVertex(double x, double y, double z) {
@@ -42,26 +57,19 @@ public class Drawer {
 
         for (int i = 0; i < 4; i++) {
             double[] vertex = face.getVertices()[i];
-            var tmp = projectVertex(vertex[0], vertex[1], vertex[2]);
-            projectedVertices[0][i] = tmp[0];
-            projectedVertices[1][i] = tmp[1];
+            int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2]);
+
+            projectedVertices[0][i] = pixelCoords[0];
+            projectedVertices[1][i] = pixelCoords[1];
         }
 
         return projectedVertices;
     }
 
-    public void drawCube(Graphics2D g2d, Cube cube) {
-        for (Face face : cube.getFaces()) {
-            updateFaceColor(face);
-            int[][] projectedCoords = projectFace(face);
-            g2d.setColor(face.getCurrentColor());
-            g2d.fillPolygon(projectedCoords[0], projectedCoords[1], 4);
-        }
-    }
-
     private void updateFaceColor(Face face) {
-        double distance = faceDistanceToCamera(face);
-        double intensity = 10.0 / (1.0 + distance);
+        double distance = face.distanceToCamera(cameraX, cameraY, cameraZ);
+        // TODO: Find optimal values and make them constants
+        double intensity = 7.0 / (1.0 + distance);
 
         int red = (int) (face.getBaseColor().getRed() * intensity);
         int green = (int) (face.getBaseColor().getGreen() * intensity);
@@ -70,9 +78,61 @@ public class Drawer {
         face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
     }
 
-    private double faceDistanceToCamera(Face face) {
-        double[] center = face.calculateCenter();
-        return Math.sqrt(Math.pow(center[0] - cameraX, 2) + Math.pow(center[1] - cameraY, 2) + Math.pow(center[2] - cameraZ, 2));
+    private void drawFaceWithDepthBuffer(Graphics2D g2d, Face face, int[][] projectedCoords) {
+
+        double[] zValues = new double[4];
+        for (int i = 0; i < 4; i++) {
+            double[] vertex = face.getVertices()[i];
+            zValues[i] = vertex[2];
+        }
+
+        Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
+        Rectangle bounds = facePolygon.getBounds();
+
+        for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+            for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+                boolean isInsideCanvas = (x >= 0 && x < CANVAS_WIDTH && y >= 0 && y < CANVAS_HEIGHT);
+                if (isInsideCanvas && facePolygon.contains(x, y)) {
+                    double interpolatedZ = interpolateZ(zValues);
+                    if (interpolatedZ < depthBuffer[x][y]) {
+                        depthBuffer[x][y] = interpolatedZ;      // Update depth buffer
+                        g2d.setColor(face.getCurrentColor());
+                        g2d.drawLine(x, y, x, y);     // Draw point
+                    }
+                }
+            }
+        }
+    }
+
+    private double interpolateZ(double[] zValues) {
+        // Simple bilinear interpolation
+        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;
+    }
+
+    public void drawCube(Graphics2D g2d, Cube cube) {
+        for (Face face : cube.getFaces()) {
+            if (face.isVisible(cameraX, cameraY, cameraZ)) {
+                updateFaceColor(face);
+                g2d.setColor(face.getCurrentColor());
+
+                int[][] projectedCoords = projectFace(face);
+                drawFaceWithDepthBuffer(g2d, face, projectedCoords);
+            }
+        }
+    }
+
+    public void drawScene(Graphics2D g2d, Cube[] cubes) {
+        resetDepthBuffer();
+        for (Cube cube : cubes) {
+            drawCube(g2d, cube);
+        }
+    }
+
+    private void fillBackground(Graphics2D g2d, Color color) {
+        int[] xBackground = {0, CANVAS_WIDTH, CANVAS_WIDTH, 0};
+        int[] yBackground = {0, 0, CANVAS_HEIGHT, CANVAS_HEIGHT};
+        g2d.setColor(color);
+        g2d.fillPolygon(xBackground, yBackground, xBackground.length);
     }
 
     public void moveCamera(double dx, double dy, double dz) {
@@ -116,28 +176,20 @@ public class Drawer {
         // Any useful functionality will be added in the next updates.
         Drawer drawer = new Drawer(0, 0,-10);
 
-        // * TESTING
         Random random = new Random();
         int cubeCountTest = 10;
         Cube[] cubes = new Cube[cubeCountTest];
         for (int i = 0; i < cubeCountTest; i++) {
-            cubes[i] = new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, random.nextDouble(2));
+            cubes[i] = new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, 1);
         }
 
         try {
             BufferedImage image = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = image.createGraphics();
 
-            // BG
-            int[] xBackground = {0, CANVAS_WIDTH, CANVAS_WIDTH, 0};
-            int[] yBackground = {0, 0, CANVAS_HEIGHT, CANVAS_HEIGHT};
-            g2d.setColor(Color.WHITE);
-            g2d.fillPolygon(xBackground, yBackground, xBackground.length);
+            drawer.fillBackground(g2d, Color.BLACK);
 
-            // * TESTING
-            for (int i = 0; i < cubeCountTest; i++) {
-                drawer.drawCube(g2d, cubes[i]);
-            }
+            drawer.drawScene(g2d, cubes);
 
             g2d.dispose();
 
