@@ -1,15 +1,13 @@
 package botexecution;
 
-import common.Constants;
-import common.Dice;
-import common.SiteParser;
-import common.DataReader;
+import common.*;
 
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Dice;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
@@ -24,7 +22,6 @@ import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getCha
 
 public class AbilBot extends AbilityBot {
     public String sectionId = "";
-    public int diceId = 0;
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -52,6 +49,12 @@ public class AbilBot extends AbilityBot {
         SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
         roll.setReplyMarkup(KeyboardFactory.rollVariants());
         silent.execute(roll);
+    }
+
+    public void rollAdvantage(Update update) {
+        SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
+        rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantage());
+        silent.execute(rollAdv);
     }
 
     public void articleMessaging(ArrayList<String> article, Update update) {
@@ -158,18 +161,35 @@ public class AbilBot extends AbilityBot {
             }
 
             else if (Objects.equals(responseQuery, Constants.ROLL_D20)) {
-                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
-                diceId = 20;
+                silent.send(DiceNew.D20(), getChatId(update));
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_2D20)) {
+                rollAdvantage(update);
             }
 
             else if (Objects.equals(responseQuery, Constants.ROLL_D8)) {
-                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
-                diceId = 8;
+                silent.send(DiceNew.D8(), getChatId(update));
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_D6)) {
+                silent.send(DiceNew.D6(), getChatId(update));
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_4D6)) {
+                silent.send(DiceNew.D6_four_times(), getChatId(update));
             }
 
             else if (Objects.equals(responseQuery, Constants.ROLL_D4)) {
-                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
-                diceId = 4;
+                silent.send(DiceNew.D4(), getChatId(update));
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ADVANTAGE)) {
+                silent.send(DiceNew.D20_two_times(true), getChatId(update));
+            }
+
+            else if (Objects.equals(responseQuery, Constants.DISADVANTAGE)) {
+                silent.send(DiceNew.D20_two_times(false), getChatId(update));
             }
         }
 
@@ -177,11 +197,6 @@ public class AbilBot extends AbilityBot {
             if (!sectionId.isEmpty()) {
                 articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), update);
                 sectionId = "";
-            }
-
-            else if (diceId != 0) {
-                silent.send(new Dice(parseInt(update.getMessage().getText()), diceId).diceRoller().toString(), getChatId(update));
-                diceId = 0;
             }
         }
     }
