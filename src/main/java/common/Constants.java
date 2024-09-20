@@ -39,4 +39,6 @@ public interface Constants {
     String SPELLS = "Fireball!";
     String ITEMS = "Deck of many things!";
     String BESTIARY = "Tarrasque!";
+
+    String IMAGE_OUTPUT_PATH = ".";
 }
