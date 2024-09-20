@@ -2,7 +2,7 @@ package game;
 
 import java.awt.Color;
 
-class Cube {
+public class Cube {
     // Signs of radius (+/-) in game.Face generation
     private static final int[][][] offsets = {
             {{-1,  1, -1}, { 1,  1, -1}, { 1, -1, -1}, {-1, -1, -1}},       // FRONT
