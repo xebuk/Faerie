@@ -3,16 +3,18 @@ package game;
 import java.util.*;
 
 public class MazeGenerator {
-    private final static int EMPTY = 0;
-    private final static int WALL = 1;
-    private final static int ROOM = 2;
+    enum Tiles {
+        EMPTY,
+        WALL,
+        ROOM
+    }
 
     private final static int MAX_ROOM_CREATION_ATTEMPTS = 10000;
 
     private final int width, height;
     private final int roomMinSize, roomMaxSize;
     private final int roomCount;
-    private final int[][] maze;
+    private final Tiles[][] maze;
     private final List<Room> rooms = new ArrayList<Room>();
     private final Random random = new Random();
 
@@ -22,7 +24,7 @@ public class MazeGenerator {
         this.roomMinSize = roomMinSize;
         this.roomMaxSize = roomMaxSize;
         this.roomCount = roomCount;
-        maze = new int[width][height];
+        maze = new Tiles[width][height];
     }
 
     public void generateMaze() {
@@ -35,7 +37,7 @@ public class MazeGenerator {
     private void fillWalls() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                maze[i][j] = WALL;
+                maze[i][j] = Tiles.WALL;
             }
         }
     }
@@ -76,7 +78,7 @@ public class MazeGenerator {
     private void placeRoom(Room room) {
         for (int i = room.y; i < room.y + room.height; i++) {
             for (int j = room.x; j < room.x + room.width; j++) {
-                maze[i][j] = ROOM;
+                maze[i][j] = Tiles.ROOM;
             }
         }
     }
@@ -166,7 +168,7 @@ public class MazeGenerator {
 
     private void generateLine(int x1, int y1, int x2, int y2) {
         while (x1 != x2) {
-            maze[y1][x1] = EMPTY;
+            maze[y1][x1] = Tiles.EMPTY;
             if (x1 < x2) {
                 x1++;
             } else {
@@ -174,7 +176,7 @@ public class MazeGenerator {
             }
         }
         while (y1 != y2) {
-            maze[y1][x1] = EMPTY;
+            maze[y1][x1] = Tiles.EMPTY;
             if (y1 < y2) {
                 y1++;
             } else {
@@ -186,7 +188,12 @@ public class MazeGenerator {
     public void printMaze() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                System.out.print(maze[i][j] == WALL ? "###" : maze[i][j] == ROOM ? "..." : "   ");
+                System.out.print(
+                        switch (maze[i][j]) {
+                            case EMPTY -> "   ";
+                            case WALL -> "###";
+                            case ROOM -> "...";
+                        });
             }
             System.out.println();
         }

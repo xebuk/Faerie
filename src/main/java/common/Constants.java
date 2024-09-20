@@ -31,6 +31,6 @@ public interface Constants {
     String DICE_COMMAND = "User requested a dice roll.";
 
     String SPELLS = "Fireball!";
-    String ITEMS = "Deсk of many things!";
+    String ITEMS = "Deck of many things!";
     String BESTIARY = "Tarrasque!";
 }
