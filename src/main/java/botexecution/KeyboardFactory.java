@@ -25,5 +25,17 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup setOfCommands() {
+        InlineKeyboardRow inlineKeyboardRow = new InlineKeyboardRow();
 
+        inlineKeyboardRow.add(new InlineKeyboardButton("Search"));
+        inlineKeyboardRow.get(0).setCallbackData(Constants.SEARCH_COMMAND);
+        inlineKeyboardRow.add(new InlineKeyboardButton("Dice"));
+        inlineKeyboardRow.get(1).setCallbackData(Constants.DICE_COMMAND);
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyboardRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
 }
