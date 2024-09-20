@@ -8,13 +8,10 @@ import common.DataReader;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -26,6 +23,7 @@ import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getCha
 
 public class AbilBot extends AbilityBot {
     public String sectionId = "";
+    public int diceId = 0;
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -47,10 +45,12 @@ public class AbilBot extends AbilityBot {
         SendMessage search = new SendMessage(ctx.chatId().toString(), Constants.SEARCH_MESSAGE);
         search.setReplyMarkup(KeyboardFactory.searchEngine());
         silent.execute(search);
-        if (ctx.update().hasCallbackQuery()) {
-            CallbackQuery callbackQuery = ctx.update().getCallbackQuery();
-            System.out.println(callbackQuery.getData());
-        }
+    }
+
+    public void roll(MessageContext ctx) {
+        SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
+        roll.setReplyMarkup(KeyboardFactory.rollVariants());
+        silent.execute(roll);
     }
 
     public Ability showHelp() {
@@ -101,9 +101,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability diceRoll() {
-        Consumer<MessageContext> roll = ctx ->
-                silent.send(new Dice(parseInt(ctx.firstArg()), parseInt(ctx.secondArg()))
-                        .diceRoller().toString(), ctx.chatId());
+        Consumer<MessageContext> roll = this::roll;
 
         return Ability
                 .builder()
@@ -138,12 +136,32 @@ public class AbilBot extends AbilityBot {
                 silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
                 sectionId = "bestiary";
             }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_D20)) {
+                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
+                diceId = 20;
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_D8)) {
+                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
+                diceId = 8;
+            }
+
+            else if (Objects.equals(responseQuery, Constants.ROLL_D4)) {
+                silent.send(Constants.ROLL_MESSAGE_QUANTITY, getChatId(update));
+                diceId = 4;
+            }
         }
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
             if (!sectionId.isEmpty()) {
                 silent.send(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), getChatId(update));
                 sectionId = "";
+            }
+
+            if (diceId != 0) {
+                silent.send(new Dice(parseInt(update.getMessage().getText()), diceId).diceRoller().toString(), getChatId(update));
+                diceId = 0;
             }
         }
     }
