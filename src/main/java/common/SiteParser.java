@@ -7,12 +7,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static common.Constants.URL;
 
 public class SiteParser {
 
-    public static String SpellsItemsBestiaryGrabber(String section, String id) {
+    public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) {
         String article;
         try {
             article = DataReader.searchArticleId(section, id);
@@ -34,24 +35,26 @@ public class SiteParser {
         Elements li = body.select("li:not(.subsection.desc)");
         Elements liDescBody = body.select("li.subsection.desc").select("p");
 
-        StringBuilder result = new StringBuilder(name.text() + "\n");
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text() + "\n");
 
         //System.out.println(name.text());
         for (Element i: li) {
             //System.out.println(i.text());
-            result.append(i.text()).append("\n");
+            result.add(i.text() + "\n");
         }
 
-        result.append("\n");
+        result.add("\n");
         //System.out.println();
 
         for (Element i : liDescBody) {
             //System.out.println(i.text() + "\n");
-            result.append(i.text()).append("\n").append("\n");
+            result.add(i.text() + "\n");
+            result.add("\n");
         }
 
-        result.append("Информация взята с ").append(URL).append(section + "/" + article);
-        return result.toString();
+        result.add("Информация взята с " + URL + section + "/" + article);
+        return result;
     }
 
     public static void DictWriter(String section) {

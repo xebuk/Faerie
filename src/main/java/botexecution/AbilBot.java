@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -51,6 +52,25 @@ public class AbilBot extends AbilityBot {
         SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
         roll.setReplyMarkup(KeyboardFactory.rollVariants());
         silent.execute(roll);
+    }
+
+    public void articleMessaging(ArrayList<String> article, Update update) {
+        StringBuilder partOfArticle = new StringBuilder();
+        int lengthOfMessage = 0;
+
+        for (String paragraph: article) {
+            if (lengthOfMessage + paragraph.length() <= 4095) {
+                partOfArticle.append(paragraph);
+                lengthOfMessage = lengthOfMessage + paragraph.length();
+            }
+            else {
+                silent.send(partOfArticle.toString(), getChatId(update));
+                partOfArticle.setLength(0);
+                lengthOfMessage = paragraph.length();
+                partOfArticle.append(paragraph);
+            }
+        }
+        silent.send(partOfArticle.toString(), getChatId(update));
     }
 
     public Ability showHelp() {
@@ -155,11 +175,11 @@ public class AbilBot extends AbilityBot {
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
             if (!sectionId.isEmpty()) {
-                silent.send(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), getChatId(update));
+                articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), update);
                 sectionId = "";
             }
 
-            if (diceId != 0) {
+            else if (diceId != 0) {
                 silent.send(new Dice(parseInt(update.getMessage().getText()), diceId).diceRoller().toString(), getChatId(update));
                 diceId = 0;
             }
