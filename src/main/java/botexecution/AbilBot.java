@@ -127,7 +127,6 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability requestArticle() {
-        //Consumer<MessageContext> search = ctx -> silent.send(SiteParser.SpellsItemsBestiaryGrabber(ctx.firstArg(), ctx.secondArg()), ctx.chatId());
         Consumer<MessageContext> search = this::search;
 
         return Ability
