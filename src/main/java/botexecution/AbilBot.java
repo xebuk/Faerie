@@ -107,7 +107,7 @@ public class AbilBot extends AbilityBot {
                 .builder()
                 .name("roll")
                 .info("rolls a dice")
-                .input(2)
+                .input(0)
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(roll)
