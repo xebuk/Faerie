@@ -5,8 +5,13 @@ public interface Constants {
 
     String HELP_MESSAGE = """
             /help - выводит список команд
-            /search [раздел (spells/items/bestiary)] [название] - выводит искомую статью
-            /roll [кол-во костей] [кол-во сторон] - выводит значение костей
+            /hello - "Привет, мир!"
+            /search - выводит меню поиска статьи
+            /roll - выводит меню броска костей
+            """;
+    String START_MESSAGE = """
+            Привет! Меня зовут Faerie!
+            Для вывода описания команд нажмите или наберите /help
             """;
     String SEARCH_MESSAGE = "What would you like to search?";
     String SEARCH_MESSAGE_SPELLS = "Type the name of a spell.";

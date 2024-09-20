@@ -3,8 +3,11 @@ package botexecution;
 import common.Constants;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 
@@ -65,17 +68,19 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
-    public static InlineKeyboardMarkup setOfCommands() {
-        InlineKeyboardRow inlineKeyboardRow = new InlineKeyboardRow();
+    public static ReplyKeyboardMarkup setOfCommands() {
+        KeyboardRow keyRow1 = new KeyboardRow();
+        keyRow1.add(new KeyboardButton("/search"));
+        keyRow1.add(new KeyboardButton("/roll"));
 
-        inlineKeyboardRow.add(new InlineKeyboardButton("Search"));
-        inlineKeyboardRow.get(0).setCallbackData(Constants.SEARCH_COMMAND);
-        inlineKeyboardRow.add(new InlineKeyboardButton("Dice"));
-        inlineKeyboardRow.get(1).setCallbackData(Constants.DICE_COMMAND);
+        KeyboardRow keyRow2 = new KeyboardRow();
+        keyRow2.add(new KeyboardButton("/hello"));
+        keyRow2.add(new KeyboardButton("/help"));
 
-        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
-        inlineKeyboardRows.add(inlineKeyboardRow);
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
 
-        return new InlineKeyboardMarkup(inlineKeyboardRows);
+        return new ReplyKeyboardMarkup(keyRowList);
     }
 }

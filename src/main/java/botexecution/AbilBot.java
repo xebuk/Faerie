@@ -7,7 +7,6 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Dice;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static java.lang.Integer.parseInt;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
@@ -37,6 +35,12 @@ public class AbilBot extends AbilityBot {
             id = 0;
         }
         return id;
+    }
+
+    public void generateKeyboard(MessageContext ctx) {
+        SendMessage gen = new SendMessage(ctx.chatId().toString(), Constants.START_MESSAGE);
+        gen.setReplyMarkup(KeyboardFactory.setOfCommands());
+        silent.execute(gen);
     }
 
     public void search(MessageContext ctx) {
@@ -74,6 +78,20 @@ public class AbilBot extends AbilityBot {
             }
         }
         silent.send(partOfArticle.toString(), getChatId(update));
+    }
+
+    public Ability startOut() {
+        Consumer<MessageContext> start = this::generateKeyboard;
+
+        return Ability
+                .builder()
+                .name("start")
+                .info("starts up the bot")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(start)
+                .build();
     }
 
     public Ability showHelp() {
