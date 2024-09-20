@@ -15,13 +15,19 @@ public interface Constants {
 
     String ROLL_MESSAGE = "What kind of a dice do you want to roll?";
     String ROLL_MESSAGE_QUANTITY = "How many?";
+    String ROLL_MESSAGE_ADVANTAGE = "Do you have advantage?";
 
-    String ROLL_D100 = "Heck, a 100!";
+    String ADVANTAGE = "Yes)";
+    String DISADVANTAGE = "No(";
+
+    String ROLL_D100 = "Heck, a 100...";
     String ROLL_D20 = "Nat 20!";
+    String ROLL_2D20 = "Hm...";
     String ROLL_D12 = "12!";
-    String ROLL_D10 = "10...";
+    String ROLL_D10 = "10!";
     String ROLL_D8 = "8!";
     String ROLL_D6 = "6!";
+    String ROLL_4D6 = "More stats!";
     String ROLL_D5 = "5!";
     String ROLL_D4 = "4!";
     String ROLL_D3 = "3!";
