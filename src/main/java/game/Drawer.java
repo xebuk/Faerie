@@ -123,13 +123,7 @@ public class Drawer {
         face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
     }
 
-    private void drawFaceWithDepthBuffer(Graphics2D g2d, Face face, int[][] projectedCoords) {
-        double[] zValues = new double[4];
-        for (int i = 0; i < 4; i++) {
-            double[] vertex = face.getVertices()[i];
-            zValues[i] = vertex[2];
-        }
-
+    private void drawFaceWithDepthBuffer(Face face, int[][] projectedCoords, double[] zValues) {
         Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
         Rectangle bounds = facePolygon.getBounds();
 
