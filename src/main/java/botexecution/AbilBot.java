@@ -169,70 +169,60 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            if (Objects.equals(responseQuery, Constants.SPELLS)) {
-                silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
-                sectionId = "spells";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ITEMS)) {
-                silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
-                sectionId = "items";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.BESTIARY)) {
-                silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
-                sectionId = "bestiary";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.RACES)) {
-                silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
-                sectionId = "race";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.CLASSES)) {
-                sendList(update);
-            }
-
-            else if (Objects.equals(responseQuery, Constants.FEATS)) {
-                silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
-                sectionId = "feats";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.BACKGROUNDS)) {
-                silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
-                sectionId = "backgrounds";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D20)) {
-                silent.send(DiceNew.D20(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_2D20)) {
-                rollAdvantage(update);
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D8)) {
-                silent.send(DiceNew.D8(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D6)) {
-                silent.send(DiceNew.D6(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_4D6)) {
-                silent.send(DiceNew.D6_four_times(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D4)) {
-                silent.send(DiceNew.D4(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ADVANTAGE)) {
-                silent.send(DiceNew.D20_two_times(true), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.DISADVANTAGE)) {
-                silent.send(DiceNew.D20_two_times(false), getChatId(update));
+            switch (responseQuery) {
+                case Constants.SPELLS:
+                    silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
+                    sectionId = "spells";
+                    break;
+                case Constants.ITEMS:
+                    silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
+                    sectionId = "items";
+                    break;
+                case Constants.BESTIARY:
+                    silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
+                    sectionId = "bestiary";
+                    break;
+                case Constants.RACES:
+                    silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
+                    sectionId = "race";
+                    break;
+                case Constants.CLASSES:
+                    sendList(update);
+                    break;
+                case Constants.FEATS:
+                    silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
+                    sectionId = "feats";
+                    break;
+                case Constants.BACKGROUNDS:
+                    silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
+                    sectionId = "backgrounds";
+                    break;
+                case Constants.ROLL_D20:
+                    silent.send(DiceNew.D20(), getChatId(update));
+                    break;
+                case Constants.ROLL_2D20:
+                    rollAdvantage(update);
+                    break;
+                case Constants.ROLL_D8:
+                    silent.send(DiceNew.D8(), getChatId(update));
+                    break;
+                case Constants.ROLL_D6:
+                    silent.send(DiceNew.D6(), getChatId(update));
+                    break;
+                case Constants.ROLL_4D6:
+                    silent.send(DiceNew.D6_four_times(), getChatId(update));
+                    break;
+                case Constants.ROLL_D4:
+                    silent.send(DiceNew.D4(), getChatId(update));
+                    break;
+                case Constants.ADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(true), getChatId(update));
+                    break;
+                case Constants.DISADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(false), getChatId(update));
+                    break;
+                default:
+                    break;
             }
         }
 
