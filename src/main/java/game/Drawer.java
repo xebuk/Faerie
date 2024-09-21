@@ -123,7 +123,13 @@ public class Drawer {
         face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
     }
 
-    private void drawFaceWithDepthBuffer(Face face, int[][] projectedCoords, double[] zValues) {
+    private void drawFaceWithDepthBuffer(Graphics2D g2d, Face face, int[][] projectedCoords) {
+        double[] zValues = new double[4];
+        for (int i = 0; i < 4; i++) {
+            double[] vertex = face.getVertices()[i];
+            zValues[i] = vertex[2];
+        }
+
         Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
         Rectangle bounds = facePolygon.getBounds();
 
@@ -143,7 +149,8 @@ public class Drawer {
     }
 
     private double interpolateZ(double[] zValues) {
-        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;       // Simple bilinear interpolation
+        // Simple bilinear interpolation
+        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;
     }
 
     public void drawCube(Graphics2D g2d, Cube cube) {
