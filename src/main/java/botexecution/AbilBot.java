@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static common.Constants.URL;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
@@ -35,6 +36,12 @@ public class AbilBot extends AbilityBot {
             id = 0;
         }
         return id;
+    }
+
+    public void sendList(Update update) {
+        SendMessage list = new SendMessage(getChatId(update).toString(), Constants.CLASSES_LIST);
+        list.setParseMode("HTML");
+        silent.execute(list);
     }
 
     public void generateKeyboard(MessageContext ctx) {
@@ -177,6 +184,25 @@ public class AbilBot extends AbilityBot {
                 sectionId = "bestiary";
             }
 
+            else if (Objects.equals(responseQuery, Constants.RACES)) {
+                silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
+                sectionId = "race";
+            }
+
+            else if (Objects.equals(responseQuery, Constants.CLASSES)) {
+                sendList(update);
+            }
+
+            else if (Objects.equals(responseQuery, Constants.FEATS)) {
+                silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
+                sectionId = "feats";
+            }
+
+            else if (Objects.equals(responseQuery, Constants.BACKGROUNDS)) {
+                silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
+                sectionId = "backgrounds";
+            }
+
             else if (Objects.equals(responseQuery, Constants.ROLL_D20)) {
                 silent.send(DiceNew.D20(), getChatId(update));
             }
@@ -212,7 +238,22 @@ public class AbilBot extends AbilityBot {
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
             if (!sectionId.isEmpty()) {
-                articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), update);
+                if (sectionId.equals("spells") || sectionId.equals("items") || sectionId.equals("bestiary")) {
+                    articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), update);
+                }
+
+                else if (sectionId.equals("race")) {
+                    articleMessaging(SiteParser.RacesGrabber(update.getMessage().getText()), update);
+                }
+
+                else if (sectionId.equals("feats")) {
+                    articleMessaging(SiteParser.FeatsGrabber(update.getMessage().getText()), update);
+                }
+
+                else if (sectionId.equals("backgrounds")) {
+                    articleMessaging(SiteParser.BackgroundsGrabber(update.getMessage().getText()), update);
+                }
+
                 sectionId = "";
             }
         }

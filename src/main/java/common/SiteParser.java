@@ -48,9 +48,8 @@ public class SiteParser {
         //System.out.println();
 
         for (Element i : liDescBody) {
-            //System.out.println(i.text() + "\n");
-            result.add(i.text() + "\n");
-            result.add("\n");
+            //System.out.println(i.text() + "\n" + "\n");
+            result.add(i.text() + "\n" + "\n");
         }
 
         result.add("Информация взята с " + URL + section + "/" + article);
@@ -80,14 +79,14 @@ public class SiteParser {
         Elements p = body.select("p,h3.underlined");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text());
+        result.add(name.text() + "\n");
         result.add(source.text() + "\n");
 
         //System.out.println(name.text());
         //System.out.println(source.text());
         for (Element i: p) {
             //System.out.println(i.text());
-            result.add(i.text() + "\n");
+            result.add(i.text() + "\n" + "\n");
         }
 
         result.add("Информация взята с " + URL + "race" + "/" + article);
@@ -192,10 +191,10 @@ public class SiteParser {
         Elements descBody = body.select("p,h3.smallSectionTitle,div.table-wrapper");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text());
+        result.add(name.text() + "\n");
 
         for (Element i: descBody) {
-            result.add(i.text() + "\n");
+            result.add(i.text() + "\n" + "\n");
         }
         result.add("Информация взята с " + URL + "feats" + "/" + article);
         return result;
@@ -207,10 +206,9 @@ public class SiteParser {
         //ArrayList<String> data = new ArrayList<>();
         //data.add(" ");
 
-        for (int i = 700; i <= 1000; i++) {
+        for (int i = 1; i <= 1000; i++) {
             Elements name = null;
             Elements check1;
-            Elements check2;
             boolean pageNotFound = false;
             do {
                 link = Jsoup.connect(URL + section + "/" + i);
@@ -239,7 +237,41 @@ public class SiteParser {
         //System.out.println(data);
     }
 
+    public static void addressWriter(String section) {
+        Connection link;
+        Document page = null;
+
+        for (int i = 70; i <= 150; i++) {
+            Elements name = null;
+            Elements check1;
+            boolean pageNotFound = false;
+            do {
+                link = Jsoup.connect(URL + section + "/" + i);
+                try {
+                    page = link.get();
+                } catch (IOException e) {
+                    pageNotFound = true;
+                    break;
+                }
+
+                check1 = page.select("div");
+                if (check1.hasClass("private-card") || check1.hasClass("card__group-homebrew")) {
+                    pageNotFound = true;
+                    break;
+                }
+
+                name = page.select("h2.card-title[itemprop=name]");
+            } while (name.text().isEmpty());
+
+            if (pageNotFound) {
+                continue;
+            }
+
+            System.out.println("<a href=\"" + URL + section + "/" + i + "\">" + name.text() + "</a>");
+        }
+    }
+
     public static void main(String[] args) {
-        ClassesGrabber("88");
+        addressWriter("class");
     }
 }
