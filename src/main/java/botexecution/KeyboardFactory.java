@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.util.ArrayList;
 
 public class KeyboardFactory {
-    public static ReplyKeyboard searchEngine() {
+    public static ReplyKeyboard searchBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
         inlineKeyRow1.add(new InlineKeyboardButton("Spells"));
@@ -44,7 +44,7 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyRows);
     }
 
-    public static ReplyKeyboard rollVariants() {
+    public static ReplyKeyboard rollVariantsBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
         inlineKeyRow1.add(new InlineKeyboardButton("d20"));
@@ -70,7 +70,7 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
-    public static ReplyKeyboard rollAdvantage() {
+    public static ReplyKeyboard rollAdvantageBoard() {
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
 
         inlineKeyRow.add(new InlineKeyboardButton("Yes"));
@@ -84,7 +84,7 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
-    public static ReplyKeyboardMarkup setOfCommands() {
+    public static ReplyKeyboardMarkup setOfCommandsBoard() {
         KeyboardRow keyRow1 = new KeyboardRow();
         keyRow1.add(new KeyboardButton("/search"));
         keyRow1.add(new KeyboardButton("/roll"));
