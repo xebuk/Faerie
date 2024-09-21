@@ -74,7 +74,7 @@ public class Drawer {
         return new double[] {tempX, tempY, tempZ};
     }
 
-    private int[] projectVertex(double x, double y, double z) {
+    private int[] projectVertex(double x, double y, double z, double[] depth) {
         double localX = x - cameraX;
         double localY = y - cameraY;
         double localZ = z - cameraZ;
@@ -83,6 +83,8 @@ public class Drawer {
         localX = rotatedCoords[0];
         localY = rotatedCoords[1];
         localZ = rotatedCoords[2];
+
+        depth[0] = localZ;      // Store z for depth buffer. Passing as double[1] array to return value by reference
 
         double projX = (localX / localZ) * FOCAL_LENGTH / ASPECT_RATIO;
         double projY = (localY / localZ) * FOCAL_LENGTH;
@@ -93,15 +95,17 @@ public class Drawer {
         return new int[] {pixelX, pixelY};
     }
 
-    private int[][] projectFace(Face face) {
+    private int[][] projectFace(Face face, double[] depthValues) {
         int[][] projectedVertices = new int[2][4];
 
         for (int i = 0; i < 4; i++) {
             double[] vertex = face.getVertices()[i];
-            int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2]);
+            double[] depth = new double[1];
+            int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2], depth);
 
-            projectedVertices[0][i] = pixelCoords[0];
-            projectedVertices[1][i] = pixelCoords[1];
+            projectedVertices[0][i] = pixelCoords[0];       // x
+            projectedVertices[1][i] = pixelCoords[1];       // y
+            depthValues[i] = depth[0];      // Same as in projectVertex() pass-by-reference trick
         }
 
         return projectedVertices;
@@ -119,13 +123,7 @@ public class Drawer {
         face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
     }
 
-    private void drawFaceWithDepthBuffer(Graphics2D g2d, Face face, int[][] projectedCoords) {
-        double[] zValues = new double[4];
-        for (int i = 0; i < 4; i++) {
-            double[] vertex = face.getVertices()[i];
-            zValues[i] = vertex[2];
-        }
-
+    private void drawFaceWithDepthBuffer(Face face, int[][] projectedCoords, double[] zValues) {
         Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
         Rectangle bounds = facePolygon.getBounds();
 
@@ -145,8 +143,7 @@ public class Drawer {
     }
 
     private double interpolateZ(double[] zValues) {
-        // Simple bilinear interpolation
-        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;
+        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;       // Simple bilinear interpolation
     }
 
     public void drawCube(Graphics2D g2d, Cube cube) {
@@ -155,8 +152,10 @@ public class Drawer {
                 updateFaceColor(face);
                 g2d.setColor(face.getCurrentColor());
 
-                int[][] projectedCoords = projectFace(face);
-                drawFaceWithDepthBuffer(g2d, face, projectedCoords);
+                double[] depthValues = new double[4];
+                int[][] projectedCoords = projectFace(face, depthValues);
+
+                drawFaceWithDepthBuffer(face, projectedCoords, depthValues);
             }
         }
     }
