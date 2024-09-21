@@ -159,8 +159,8 @@ public class SiteParser {
         Elements liDescBody = body.select("li.subsection.desc").select("p");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text());
-        result.add(liDescBody.text());
+        result.add(name.text() + "\n");
+        result.add(liDescBody.text() + "\n");
 
         for (Element i : li) {
             //System.out.println(i.text());
