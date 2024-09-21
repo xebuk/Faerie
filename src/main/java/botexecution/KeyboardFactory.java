@@ -63,9 +63,14 @@ public class KeyboardFactory {
         inlineKeyRow2.add(new InlineKeyboardButton("Stats Roll (4d6)"));
         inlineKeyRow2.get(1).setCallbackData(Constants.ROLL_4D6);
 
+        InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
+        inlineKeyRow3.add(new InlineKeyboardButton("Custom Dice"));
+        inlineKeyRow3.get(0).setCallbackData(Constants.CUSTOM_DICE);
+
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
         inlineKeyboardRows.add(inlineKeyRow1);
         inlineKeyboardRows.add(inlineKeyRow2);
+        inlineKeyboardRows.add(inlineKeyRow3);
 
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
