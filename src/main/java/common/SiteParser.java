@@ -94,6 +94,48 @@ public class SiteParser {
         return result;
     }
 
+    public static ArrayList<String> ClassesGrabber(String id) {
+        String article;
+        try {
+            article = DataReader.searchArticleId("class", id);
+        } catch (IOException e) {
+            article = id;
+        }
+
+        Connection link = Jsoup.connect(URL + "class" + "/" + article);
+        Document page;
+        try {
+            page = link.get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements source = page.select("ul.params.card__article-body");
+
+        Elements body = page.select("div.desc.card__article-body[itemprop=articleBody]");
+        Elements startInfo = body.select("div[style]").select("div.spoiler_head_body");
+        Elements info = body.select("div:not(style),h4,h3,h2,p");
+
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text());
+        result.add(source.text() + "\n");
+
+        System.out.println(name.text());
+        System.out.println(source.text());
+        for (Element i: startInfo) {
+            System.out.println(i.text() + "\n");
+            result.add(i.text() + "\n");
+        }
+
+        for (Element i: info) {
+            System.out.println(i.text() + "\n");
+            result.add(i.text() + "\n");
+        }
+        result.add("Информация взята с " + URL + "class" + "/" + article);
+        return result;
+    }
+
     public static ArrayList<String> FeatsGrabber(String id) {
         String article;
         try {
@@ -195,5 +237,9 @@ public class SiteParser {
             System.out.println(i + "~ " + name.text());
         }
         //System.out.println(data);
+    }
+
+    public static void main(String[] args) {
+        ClassesGrabber("88");
     }
 }
