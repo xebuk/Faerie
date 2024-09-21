@@ -247,6 +247,12 @@ public class AbilBot extends AbilityBot {
                 case Constants.ROLL_2D20:
                     rollAdvantage(update);
                     break;
+                case Constants.ADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(true), getChatId(update));
+                    break;
+                case Constants.DISADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(false), getChatId(update));
+                    break;
                 case Constants.ROLL_D8:
                     silent.send(DiceNew.D8(), getChatId(update));
                     break;
@@ -258,12 +264,6 @@ public class AbilBot extends AbilityBot {
                     break;
                 case Constants.ROLL_D4:
                     silent.send(DiceNew.D4(), getChatId(update));
-                    break;
-                case Constants.ADVANTAGE:
-                    silent.send(DiceNew.D20_two_times(true), getChatId(update));
-                    break;
-                case Constants.DISADVANTAGE:
-                    silent.send(DiceNew.D20_two_times(false), getChatId(update));
                     break;
                 default:
                     break;
