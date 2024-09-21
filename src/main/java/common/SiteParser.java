@@ -93,6 +93,8 @@ public class SiteParser {
         return result;
     }
 
+    // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
+    // В будущем, если получится сделать какие-то короткие выдержки, то использую
     public static ArrayList<String> ClassesGrabber(String id) {
         String article;
         try {
