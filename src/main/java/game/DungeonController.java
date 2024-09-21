@@ -60,6 +60,7 @@ public class DungeonController {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String command = scanner.next();
+            int[] direction = switch (command.charAt(0)) {
                 case 'w' -> new int[] { 0,  0,  1};
                 case 's' -> new int[] { 0,  0, -1};
                 case 'a' -> new int[] {-1,  0,  0};
@@ -68,6 +69,10 @@ public class DungeonController {
                 case 'e' -> new int[] { 0, -1,  0};
                 default  -> new int[] { 0,  0,  0};
             };
+            double step = Double.parseDouble(command.substring(1));
+            double dx = direction[0] * step;
+            double dy = direction[1] * step;
+            double dz = direction[2] * step;
             dungeonController.drawer.moveCamera(dx, dy, dz);
 
             dungeonController.drawer.startDrawing();
