@@ -97,6 +97,9 @@ public class KeyboardFactory {
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
 
-        return new ReplyKeyboardMarkup(keyRowList);
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
     }
 }
