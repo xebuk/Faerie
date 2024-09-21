@@ -14,12 +14,15 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static java.lang.System.exit;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
 public class AbilBot extends AbilityBot {
     public String sectionId = "";
+    public boolean searchSuccess = false;
+    public String title = "";
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -37,27 +40,75 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
+    public boolean searchEngine(String section, String entry, Update update) {
+        ArrayList<String> matches;
+        boolean gotId = false;
+        try {
+            matches = DataReader.searchArticleIds(section, entry);
+        } catch (IOException e) {
+            matches = new ArrayList<>();
+            matches.add("1");
+        }
+
+        if (matches.size() == 1 && Objects.equals(matches.get(0), "1")) {
+            ArrayList<String> article;
+            switch (section) {
+                case "spells", "items", "bestiary":
+                    article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                    break;
+                case "races":
+                    article = SiteParser.RacesGrabber(matches.get(0));
+                    break;
+                case "feats":
+                    article = SiteParser.FeatsGrabber(matches.get(0));
+                    break;
+                case "backgrounds":
+                    article = SiteParser.BackgroundsGrabber(matches.get(0));
+                    break;
+                default:
+                    return false;
+            }
+
+            articleMessaging(article, update);
+            return false;
+        }
+
+        else {
+            String searchPage = SiteParser.addressWriter(matches, section);
+            SendMessage page = new SendMessage(getChatId(update).toString(), searchPage);
+            page.setParseMode("HTML");
+            silent.execute(page);
+            return true;
+        }
+    }
+
+    public void sendList(Update update) {
+        SendMessage list = new SendMessage(getChatId(update).toString(), Constants.CLASSES_LIST);
+        list.setParseMode("HTML");
+        silent.execute(list);
+    }
+
     public void generateKeyboard(MessageContext ctx) {
         SendMessage gen = new SendMessage(ctx.chatId().toString(), Constants.START_MESSAGE);
-        gen.setReplyMarkup(KeyboardFactory.setOfCommands());
+        gen.setReplyMarkup(KeyboardFactory.setOfCommandsBoard());
         silent.execute(gen);
     }
 
     public void search(MessageContext ctx) {
         SendMessage search = new SendMessage(ctx.chatId().toString(), Constants.SEARCH_MESSAGE);
-        search.setReplyMarkup(KeyboardFactory.searchEngine());
+        search.setReplyMarkup(KeyboardFactory.searchBoard());
         silent.execute(search);
     }
 
     public void roll(MessageContext ctx) {
         SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
-        roll.setReplyMarkup(KeyboardFactory.rollVariants());
+        roll.setReplyMarkup(KeyboardFactory.rollVariantsBoard());
         silent.execute(roll);
     }
 
     public void rollAdvantage(Update update) {
         SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
-        rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantage());
+        rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
     }
 
@@ -162,58 +213,90 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            if (Objects.equals(responseQuery, Constants.SPELLS)) {
-                silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
-                sectionId = "spells";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ITEMS)) {
-                silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
-                sectionId = "items";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.BESTIARY)) {
-                silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
-                sectionId = "bestiary";
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D20)) {
-                silent.send(DiceNew.D20(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_2D20)) {
-                rollAdvantage(update);
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D8)) {
-                silent.send(DiceNew.D8(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D6)) {
-                silent.send(DiceNew.D6(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_4D6)) {
-                silent.send(DiceNew.D6_four_times(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ROLL_D4)) {
-                silent.send(DiceNew.D4(), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.ADVANTAGE)) {
-                silent.send(DiceNew.D20_two_times(true), getChatId(update));
-            }
-
-            else if (Objects.equals(responseQuery, Constants.DISADVANTAGE)) {
-                silent.send(DiceNew.D20_two_times(false), getChatId(update));
+            switch (responseQuery) {
+                case Constants.SPELLS:
+                    silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
+                    sectionId = "spells";
+                    break;
+                case Constants.ITEMS:
+                    silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
+                    sectionId = "items";
+                    break;
+                case Constants.BESTIARY:
+                    silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
+                    sectionId = "bestiary";
+                    break;
+                case Constants.RACES:
+                    silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
+                    sectionId = "race";
+                    break;
+                case Constants.CLASSES:
+                    sendList(update);
+                    break;
+                case Constants.FEATS:
+                    silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
+                    sectionId = "feats";
+                    break;
+                case Constants.BACKGROUNDS:
+                    silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
+                    sectionId = "backgrounds";
+                    break;
+                case Constants.ROLL_D20:
+                    silent.send(DiceNew.D20(), getChatId(update));
+                    break;
+                case Constants.ROLL_2D20:
+                    rollAdvantage(update);
+                    break;
+                case Constants.ROLL_D8:
+                    silent.send(DiceNew.D8(), getChatId(update));
+                    break;
+                case Constants.ROLL_D6:
+                    silent.send(DiceNew.D6(), getChatId(update));
+                    break;
+                case Constants.ROLL_4D6:
+                    silent.send(DiceNew.D6_four_times(), getChatId(update));
+                    break;
+                case Constants.ROLL_D4:
+                    silent.send(DiceNew.D4(), getChatId(update));
+                    break;
+                case Constants.ADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(true), getChatId(update));
+                    break;
+                case Constants.DISADVANTAGE:
+                    silent.send(DiceNew.D20_two_times(false), getChatId(update));
+                    break;
+                default:
+                    break;
             }
         }
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
-            if (!sectionId.isEmpty()) {
-                articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, update.getMessage().getText()), update);
+            if (searchSuccess) {
+                title = update.getMessage().getText();
+                switch (sectionId) {
+                    case "spells", "items", "bestiary":
+                        articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, title), update);
+                        break;
+                    case "race":
+                        articleMessaging(SiteParser.RacesGrabber(title), update);
+                        break;
+                    case "feats":
+                        articleMessaging(SiteParser.FeatsGrabber(title), update);
+                        break;
+                    case "backgrounds":
+                        articleMessaging(SiteParser.BackgroundsGrabber(title), update);
+                        break;
+                    default:
+                        searchSuccess = false;
+                        break;
+                }
                 sectionId = "";
+                searchSuccess = false;
+                title = "";
+            }
+
+            if (!sectionId.isEmpty()) {
+                searchSuccess = searchEngine(sectionId, update.getMessage().getText(), update);
             }
         }
     }

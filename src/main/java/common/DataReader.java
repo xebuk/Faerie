@@ -3,6 +3,7 @@ package common;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -19,21 +20,37 @@ public class DataReader {
     }
 
     public static String searchArticleId(String section, String name) throws IOException {
-        Path articleIdFilePath = Path.of("../token_dir/" + section + ".txt");
-        List<String> lines;
+        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
+        List<String> lines = Files.readAllLines(articleIdFilePath);;
+        String[] separated;
 
-        for (int i = 0; i < 300; i++) { // после обновления списка поменять на 1600
-            lines = Files.readAllLines(articleIdFilePath);
-            String[] sep;
-            for (String articleId: lines) {
-                sep = articleId.trim().split("~ ");
-                if (sep[1].toLowerCase().contains(name.toLowerCase())) {
-                    //System.out.println(sep[0]);
-                    //System.out.println(sep[1]);
-                    return sep[0];
-                }
+        for (String articleId: lines) {
+            separated = articleId.trim().split("~ ");
+            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
+                //System.out.println(separated[0]);
+                //System.out.println(separated[1]);
+                return separated[0];
             }
         }
+
         return "1";
+    }
+
+    public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
+        ArrayList<String> results = new ArrayList<>();
+
+        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
+        List<String> lines = Files.readAllLines(articleIdFilePath);
+        String[] separated;
+
+        for (String articleId: lines) {
+            separated = articleId.trim().split("~ ");
+            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
+                results.add(separated[0]);
+                results.add(separated[1]);
+            }
+        }
+
+        return results;
     }
 }
