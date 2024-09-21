@@ -23,6 +23,7 @@ public class AbilBot extends AbilityBot {
     public String sectionId = "";
     public boolean searchSuccess = false;
     public String title = "";
+    public boolean rollCustom = false;
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -265,12 +266,22 @@ public class AbilBot extends AbilityBot {
                 case Constants.ROLL_D4:
                     silent.send(DiceNew.D4(), getChatId(update));
                     break;
+                case Constants.CUSTOM_DICE:
+                    silent.send(Constants.CUSTOM_DICE_MESSAGE, getChatId(update));
+                    rollCustom = true;
+                    break;
                 default:
                     break;
             }
         }
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
+            if (rollCustom) {
+                String[] dices = update.getMessage().getText().trim().split("d");
+                silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
+                rollCustom = false;
+            }
+
             if (searchSuccess) {
                 title = update.getMessage().getText();
                 switch (sectionId) {
