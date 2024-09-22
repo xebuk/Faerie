@@ -18,11 +18,13 @@ public class SiteParser {
 
         Connection link = Jsoup.connect(URL + section + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -56,11 +58,13 @@ public class SiteParser {
 
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -90,11 +94,13 @@ public class SiteParser {
 
         Connection link = Jsoup.connect(URL + "class" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -127,11 +133,13 @@ public class SiteParser {
 
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -156,11 +164,13 @@ public class SiteParser {
 
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("div[itemprop=description]");
