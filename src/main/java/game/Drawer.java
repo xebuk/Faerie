@@ -1,11 +1,16 @@
 package game;
 
+import common.Constants;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.List;
 
 public class Drawer {
     private static final int CANVAS_WIDTH = 720;  //1440;
@@ -15,10 +20,12 @@ public class Drawer {
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
     private static final double ASPECT_RATIO = (double) CANVAS_WIDTH / CANVAS_HEIGHT;
 
-//    private static final double NEAR_PLANE = 0.1;      // Clipping plane
-
     private double cameraX, cameraY, cameraZ;
+    private double yaw, pitch;
     private double[][] depthBuffer;
+
+    private Graphics2D g2d;
+    private BufferedImage image;
 
     public Drawer(double cameraX, double cameraY, double cameraZ) {
         this.cameraX = cameraX;
@@ -27,6 +34,21 @@ public class Drawer {
         this.depthBuffer = new double[CANVAS_WIDTH][CANVAS_HEIGHT];
 
         resetDepthBuffer();
+    }
+
+    public void startDrawing() {
+        image = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        g2d = image.createGraphics();
+    }
+
+    public void endDrawing() {
+        g2d.dispose();
+        try {
+            String path = Paths.get(Constants.IMAGE_OUTPUT_PATH, "output.png").toString();
+            ImageIO.write(image, "png", new File(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void resetDepthBuffer() {
@@ -38,10 +60,31 @@ public class Drawer {
         }
     }
 
-    private int[] projectVertex(double x, double y, double z) {
+    private double[] rotateVertex(double x, double y, double z) {
+        double cosYaw = Math.cos(yaw);
+        double sinYaw = Math.sin(yaw);
+        double cosPitch = Math.cos(pitch);
+        double sinPitch = Math.sin(pitch);
+
+        double tempX = cosYaw * x - sinYaw * z;
+        double tempZ = sinYaw * x + cosYaw * z;
+
+        double tempY = cosPitch * y - sinPitch * tempZ;
+        tempZ = sinPitch * y + cosPitch * tempZ;
+        return new double[] {tempX, tempY, tempZ};
+    }
+
+    private int[] projectVertex(double x, double y, double z, double[] depth) {
         double localX = x - cameraX;
         double localY = y - cameraY;
         double localZ = z - cameraZ;
+
+        double[] rotatedCoords = rotateVertex(localX, localY, localZ);
+        localX = rotatedCoords[0];
+        localY = rotatedCoords[1];
+        localZ = rotatedCoords[2];
+
+        depth[0] = localZ;      // Store z for depth buffer. Passing as double[1] array to return value by reference
 
         double projX = (localX / localZ) * FOCAL_LENGTH / ASPECT_RATIO;
         double projY = (localY / localZ) * FOCAL_LENGTH;
@@ -52,15 +95,17 @@ public class Drawer {
         return new int[] {pixelX, pixelY};
     }
 
-    private int[][] projectFace(Face face) {
+    private int[][] projectFace(Face face, double[] depthValues) {
         int[][] projectedVertices = new int[2][4];
 
         for (int i = 0; i < 4; i++) {
             double[] vertex = face.getVertices()[i];
-            int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2]);
+            double[] depth = new double[1];
+            int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2], depth);
 
-            projectedVertices[0][i] = pixelCoords[0];
-            projectedVertices[1][i] = pixelCoords[1];
+            projectedVertices[0][i] = pixelCoords[0];       // x
+            projectedVertices[1][i] = pixelCoords[1];       // y
+            depthValues[i] = depth[0];      // Same as in projectVertex() pass-by-reference trick
         }
 
         return projectedVertices;
@@ -78,14 +123,7 @@ public class Drawer {
         face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
     }
 
-    private void drawFaceWithDepthBuffer(Graphics2D g2d, Face face, int[][] projectedCoords) {
-
-        double[] zValues = new double[4];
-        for (int i = 0; i < 4; i++) {
-            double[] vertex = face.getVertices()[i];
-            zValues[i] = vertex[2];
-        }
-
+    private void drawFaceWithDepthBuffer(Face face, int[][] projectedCoords, double[] zValues) {
         Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
         Rectangle bounds = facePolygon.getBounds();
 
@@ -105,8 +143,7 @@ public class Drawer {
     }
 
     private double interpolateZ(double[] zValues) {
-        // Simple bilinear interpolation
-        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;
+        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;       // Simple bilinear interpolation
     }
 
     public void drawCube(Graphics2D g2d, Cube cube) {
@@ -115,24 +152,34 @@ public class Drawer {
                 updateFaceColor(face);
                 g2d.setColor(face.getCurrentColor());
 
-                int[][] projectedCoords = projectFace(face);
-                drawFaceWithDepthBuffer(g2d, face, projectedCoords);
+                double[] depthValues = new double[4];
+                int[][] projectedCoords = projectFace(face, depthValues);
+
+                drawFaceWithDepthBuffer(face, projectedCoords, depthValues);
             }
         }
     }
 
-    public void drawScene(Graphics2D g2d, Cube[] cubes) {
+    public void drawScene(List<Cube> cubes) {
         resetDepthBuffer();
         for (Cube cube : cubes) {
             drawCube(g2d, cube);
         }
     }
 
-    private void fillBackground(Graphics2D g2d, Color color) {
+    public void fillBackground(Color color) {
         int[] xBackground = {0, CANVAS_WIDTH, CANVAS_WIDTH, 0};
         int[] yBackground = {0, 0, CANVAS_HEIGHT, CANVAS_HEIGHT};
         g2d.setColor(color);
         g2d.fillPolygon(xBackground, yBackground, xBackground.length);
+    }
+
+    public void rotateCamera(double dYaw, double dPitch) {
+        yaw += dYaw;
+        pitch += dPitch;
+
+        // Clamp the pitch to avoid gimbal lock
+        pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
     }
 
     public void moveCamera(double dx, double dy, double dz) {
@@ -178,24 +225,17 @@ public class Drawer {
 
         Random random = new Random();
         int cubeCountTest = 10;
-        Cube[] cubes = new Cube[cubeCountTest];
+        List<Cube> cubes = new ArrayList<>();
         for (int i = 0; i < cubeCountTest; i++) {
-            cubes[i] = new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, 1);
+            cubes.add(new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, 1));
         }
 
-        try {
-            BufferedImage image = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = image.createGraphics();
+        drawer.startDrawing();
 
-            drawer.fillBackground(g2d, Color.BLACK);
+        drawer.fillBackground(Color.BLACK);
 
-            drawer.drawScene(g2d, cubes);
+        drawer.drawScene(cubes);
 
-            g2d.dispose();
-
-            ImageIO.write(image, "png", new File("output.png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        drawer.endDrawing();
     }
 }
