@@ -20,9 +20,12 @@ public class Drawer {
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
     private static final double ASPECT_RATIO = (double) CANVAS_WIDTH / CANVAS_HEIGHT;
 
+    private static final double NEAR_CLIPPING_PLANE = 0.1;
+    private static final double FAR_CLIPPING_PLANE = 100.0;
+
     private double cameraX, cameraY, cameraZ;
     private double yaw, pitch;
-    private double[][] depthBuffer;
+    private final double[][] depthBuffer;
 
     private Graphics2D g2d;
     private BufferedImage image;
@@ -84,6 +87,10 @@ public class Drawer {
         localY = rotatedCoords[1];
         localZ = rotatedCoords[2];
 
+        if (localZ < NEAR_CLIPPING_PLANE || localZ > FAR_CLIPPING_PLANE) {      // Clip vertex
+            return null;
+        }
+
         depth[0] = localZ;      // Store z for depth buffer. Passing as double[1] array to return value by reference
 
         double projX = (localX / localZ) * FOCAL_LENGTH / ASPECT_RATIO;
@@ -102,6 +109,10 @@ public class Drawer {
             double[] vertex = face.getVertices()[i];
             double[] depth = new double[1];
             int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2], depth);
+
+            if (pixelCoords == null) {      // If one vertex was clipped, clip the whole face
+                return null;
+            }
 
             projectedVertices[0][i] = pixelCoords[0];       // x
             projectedVertices[1][i] = pixelCoords[1];       // y
@@ -155,7 +166,9 @@ public class Drawer {
                 double[] depthValues = new double[4];
                 int[][] projectedCoords = projectFace(face, depthValues);
 
-                drawFaceWithDepthBuffer(face, projectedCoords, depthValues);
+                if (projectedCoords != null) {
+                    drawFaceWithDepthBuffer(face, projectedCoords, depthValues);
+                }
             }
         }
     }
