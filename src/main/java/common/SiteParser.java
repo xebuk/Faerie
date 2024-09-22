@@ -14,7 +14,13 @@ import static common.Constants.URL;
 public class SiteParser {
 
     public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId(section, id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + section + "/" + article);
         Document page;
@@ -54,7 +60,13 @@ public class SiteParser {
     }
 
     public static ArrayList<String> RacesGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("race", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
@@ -90,7 +102,13 @@ public class SiteParser {
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
     public static ArrayList<String> ClassesGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("class", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "class" + "/" + article);
         Document page;
@@ -129,7 +147,13 @@ public class SiteParser {
     }
 
     public static ArrayList<String> FeatsGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("feats", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
@@ -160,7 +184,13 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("backgrounds", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;
@@ -266,7 +296,7 @@ public class SiteParser {
             result.append(entries.get(i - 2)).append(" - ").append("<a href=\"").append(URL).append(section).append("/").append(entries.get(i - 2)).append("\">").append(entries.get(i - 1)).append("</a>").append("\n");
         }
 
-        result.append("Send index of an article that you want to get.");
+        result.append("Send an index or a name of an article that you want to get.");
         return result.toString();
     }
 
