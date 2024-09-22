@@ -95,7 +95,7 @@ public class KeyboardFactory {
         keyRow1.add(new KeyboardButton("/roll"));
 
         KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/hello"));
+        keyRow2.add(new KeyboardButton("/mofu"));
         keyRow2.add(new KeyboardButton("/help"));
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();

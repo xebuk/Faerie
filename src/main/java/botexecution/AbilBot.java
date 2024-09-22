@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static java.lang.System.exit;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
@@ -43,7 +42,7 @@ public class AbilBot extends AbilityBot {
 
     public boolean searchEngine(String section, String entry, Update update) {
         ArrayList<String> matches;
-        boolean gotId = false;
+
         try {
             matches = DataReader.searchArticleIds(section, entry);
         } catch (IOException e) {
@@ -182,21 +181,18 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
-    public Ability sayHelloWorld() {
-        Consumer<MessageContext> hello = ctx ->
-                silent.send("Hello, world!", ctx.chatId());
-        Consumer<MessageContext> bye = ctx ->
-                silent.send("Bye, world~", ctx.chatId());
+    public Ability sayMofu() {
+        Consumer<MessageContext> mofu = ctx ->
+                silent.send("Mofu Mofu!", ctx.chatId());
 
         return Ability
                 .builder()
-                .name("hello")
-                .info("says hello world!")
+                .name("mofu")
+                .info("mofu")
                 .input(0)
                 .locality(USER)
                 .privacy(PUBLIC)
-                .action(hello)
-                .post(bye)
+                .action(mofu)
                 .build();
     }
 
