@@ -2,6 +2,7 @@ package common;
 
 public interface Constants {
     String URL = "https://dnd.su/";
+    String CREDITS = "Сделано на коленке @LartsAL и @esb_bbdl за 3 недели";
 
     String HELP_MESSAGE = """
             /help - выводит список команд
@@ -13,20 +14,40 @@ public interface Constants {
             Привет! Меня зовут Faerie!
             Для вывода описания команд нажмите или наберите /help
             """;
-    String SEARCH_MESSAGE = "What would you like to search?";
-    String SEARCH_MESSAGE_SPELLS = "Type the name of a spell.";
-    String SEARCH_MESSAGE_ITEMS = "Type the name of a item.";
-    String SEARCH_MESSAGE_BESTIARY = "Type the name of a beast.";
-    String SEARCH_MESSAGE_RACES = "Type the name of a race.";
-    String SEARCH_MESSAGE_CLASSES = "Type the name of a class.";
-    String SEARCH_MESSAGE_FEATS = "Type the name of a feat.";
-    String SEARCH_MESSAGE_BACKGROUNDS = "Type the name of a background.";
 
-    String ROLL_MESSAGE = "What kind of a dice do you want to roll?";
-    String ROLL_MESSAGE_ADVANTAGE = "Do you have advantage?";
+    String SEARCH_MESSAGE = "Что бы вы хотели найти?";
+    String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
+    String SEARCH_MESSAGE_ITEMS = "Введите название предмета.";
+    String SEARCH_MESSAGE_BESTIARY = "Введите название существа.";
+    String SEARCH_MESSAGE_RACES = "Введите название расы.";
+    String SEARCH_MESSAGE_CLASSES = "Введите название класса.";
+    String SEARCH_MESSAGE_FEATS = "Введите название черты.";
+    String SEARCH_MESSAGE_BACKGROUNDS = "Введите название предыстории.";
 
-    String ADVANTAGE = "Yes)";
-    String DISADVANTAGE = "No(";
+    String SEARCH_MESSAGE_FAIL = "Такой статьи не было найдено. Поиск отменен.";
+    String SEARCH_MESSAGE_INCORRECT = "Название введено неверно. Поиск отменен.";
+    String SEARCH_MESSAGE_IMPOSSIBLE = "Там, где ошибка невозможна, случилась ошибка. Сообщите об этом авторам бота.";
+
+//    String SEARCH_MESSAGE = "What would you like to search?";
+//    String SEARCH_MESSAGE_SPELLS = "Type the name of a spell.";
+//    String SEARCH_MESSAGE_ITEMS = "Type the name of a item.";
+//    String SEARCH_MESSAGE_BESTIARY = "Type the name of a beast.";
+//    String SEARCH_MESSAGE_RACES = "Type the name of a race.";
+//    String SEARCH_MESSAGE_CLASSES = "Type the name of a class.";
+//    String SEARCH_MESSAGE_FEATS = "Type the name of a feat.";
+//    String SEARCH_MESSAGE_BACKGROUNDS = "Type the name of a background.";
+
+    String ROLL_MESSAGE = "Какие кости вы хотите бросить?";
+    String ROLL_MESSAGE_ADVANTAGE = "У вас есть преимущество?";
+
+//    String ROLL_MESSAGE = "What kind of a dice do you want to roll?";
+//    String ROLL_MESSAGE_ADVANTAGE = "Do you have advantage?";
+
+    String ADVANTAGE = "Да)";
+    String DISADVANTAGE = "Нет(";
+
+//    String ADVANTAGE = "Yes)";
+//    String DISADVANTAGE = "No(";
 
     String ROLL_D100 = "Heck, a 100...";
     String ROLL_D20 = "Nat 20!";
@@ -42,7 +63,8 @@ public interface Constants {
     String ROLL_D2 = "2!";
 
     String CUSTOM_DICE = "Uh-oh, big number incoming!";
-    String CUSTOM_DICE_MESSAGE = "Write a number and a dice in pattern: 10d40";
+    String CUSTOM_DICE_MESSAGE = "Введите количество и номер кости в виде: 10d40";
+//    String CUSTOM_DICE_MESSAGE = "Write a number and a dice in pattern: 10d40";
 
     String SEARCH_COMMAND = "User requested an article search.";
     String DICE_COMMAND = "User requested a dice roll.";

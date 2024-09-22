@@ -14,10 +14,12 @@ public class DiceNew {
         luck.append(dice).append("\n");
 
         if (dice == 20) {
-            luck.append("Nat 20!");
+            luck.append("Критический успех!");
+//            luck.append("Nat 20!");
         }
         else if (dice == 1) {
-            luck.append("Nat 1...");
+            luck.append("Критический провал...");
+//            luck.append("Nat 1...");
         }
         return luck.toString();
     }
@@ -31,11 +33,17 @@ public class DiceNew {
         luck.append(dice1).append(" / ").append(dice2).append("\n");
 
         if (adv) {
-            if (dice1 == 20 || dice2 == 20) {
-                luck.append("Nat 20!");
+            if (dice1 == 20 && dice2 == 20) {
+                luck.append("Двойная критический успех!!!");
+//                luck.append("Double Nat 20!!!");
+            }
+            else if (dice1 == 20 || dice2 == 20) {
+                luck.append("Критический успех!");
+//                luck.append("Nat 20!");
             }
             else if (dice1 == 1 && dice2 == 1) {
-                luck.append("Double Nat 1...");
+                luck.append("Двойной критический провал...");
+//                luck.append("Double Nat 1...");
             }
             else {
                 luck.append(Integer.max(dice1, dice2)).append(" - большее из двух");
@@ -43,10 +51,16 @@ public class DiceNew {
         }
         else {
             if (dice1 == 20 && dice2 == 20) {
-                luck.append("Double Nat 20!!!");
+                luck.append("Двойная критический успех!!!");
+//                luck.append("Double Nat 20!!!");
+            }
+            else if (dice1 == 1 && dice2 == 1) {
+                luck.append("Двойной критический провал...");
+//                luck.append("Double Nat 1...");
             }
             else if (dice1 == 1 || dice2 == 1) {
-                luck.append("Nat 1...");
+                luck.append("Критический провал...");
+//                luck.append("Nat 1...");
             }
             else {
                 luck.append(Integer.min(dice1, dice2)).append(" - меньшее из двух");
@@ -64,7 +78,7 @@ public class DiceNew {
         int dice4 = random.nextInt(6) + 1;
 
         luck.append(dice1).append(" / ").append(dice2).append(" / ").append(dice3).append(" / ").append(dice4).append("\n");
-        luck.append("Итоговый стат: ").append(dice1 + dice2 + dice3 + dice4 - Integer.min(Integer.min(dice1, dice2), Integer.min(dice3, dice4)));
+        luck.append("Итоговый стат по костям: ").append(dice1 + dice2 + dice3 + dice4 - Integer.min(Integer.min(dice1, dice2), Integer.min(dice3, dice4)));
 
         return luck.toString();
     }

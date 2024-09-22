@@ -54,16 +54,36 @@ public class AbilBot extends AbilityBot {
             ArrayList<String> article;
             switch (section) {
                 case "spells", "items", "bestiary":
-                    article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                    try {
+                        article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
                     break;
                 case "races":
-                    article = SiteParser.RacesGrabber(matches.get(0));
+                    try {
+                        article = SiteParser.RacesGrabber(matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
                     break;
                 case "feats":
-                    article = SiteParser.FeatsGrabber(matches.get(0));
+                    try {
+                        article = SiteParser.FeatsGrabber(matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
                     break;
                 case "backgrounds":
-                    article = SiteParser.BackgroundsGrabber(matches.get(0));
+                    try {
+                        article = SiteParser.BackgroundsGrabber(matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
                     break;
                 default:
                     return false;
@@ -74,20 +94,45 @@ public class AbilBot extends AbilityBot {
         }
 
         else {
-            if (matches.size() == 2) {
+            if (matches.size() == 0) {
+                silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
+                return false;
+            }
+
+            else if (matches.size() == 2) {
                 ArrayList<String> article;
                 switch (section) {
                     case "spells", "items", "bestiary":
-                        article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                        try {
+                            article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
                         break;
                     case "races":
-                        article = SiteParser.RacesGrabber(matches.get(0));
+                        try {
+                            article = SiteParser.RacesGrabber(matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
                         break;
                     case "feats":
-                        article = SiteParser.FeatsGrabber(matches.get(0));
+                        try {
+                            article = SiteParser.FeatsGrabber(matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
                         break;
                     case "backgrounds":
-                        article = SiteParser.BackgroundsGrabber(matches.get(0));
+                        try {
+                            article = SiteParser.BackgroundsGrabber(matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
                         break;
                     default:
                         return false;
@@ -193,6 +238,20 @@ public class AbilBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(mofu)
+                .build();
+    }
+
+    public Ability showCredits() {
+        Consumer<MessageContext> credits = ctx -> silent.send(Constants.CREDITS, ctx.chatId());
+
+        return Ability
+                .builder()
+                .name("credits")
+                .info("shows authors and coders for this bot")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(credits)
                 .build();
     }
 
@@ -304,16 +363,32 @@ public class AbilBot extends AbilityBot {
                 title = update.getMessage().getText();
                 switch (sectionId) {
                     case "spells", "items", "bestiary":
-                        articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, title), update);
+                        try {
+                            articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
                         break;
                     case "race":
-                        articleMessaging(SiteParser.RacesGrabber(title), update);
+                        try {
+                            articleMessaging(SiteParser.RacesGrabber(title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
                         break;
                     case "feats":
-                        articleMessaging(SiteParser.FeatsGrabber(title), update);
+                        try {
+                            articleMessaging(SiteParser.FeatsGrabber(title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
                         break;
                     case "backgrounds":
-                        articleMessaging(SiteParser.BackgroundsGrabber(title), update);
+                        try {
+                            articleMessaging(SiteParser.BackgroundsGrabber(title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
                         break;
                     default:
                         searchSuccess = false;

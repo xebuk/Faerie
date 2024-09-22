@@ -13,7 +13,7 @@ import static common.Constants.URL;
 
 public class SiteParser {
 
-    public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) {
+    public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) throws IOException {
         String article;
 
         try {
@@ -28,7 +28,7 @@ public class SiteParser {
             try {
                 page = link.get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException();
             }
         } while (!page.hasText());
 
@@ -59,7 +59,7 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> RacesGrabber(String id) {
+    public static ArrayList<String> RacesGrabber(String id) throws IOException {
         String article;
 
         try {
@@ -74,7 +74,7 @@ public class SiteParser {
             try {
                 page = link.get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException();
             }
         } while (!page.hasText());
 
@@ -101,7 +101,7 @@ public class SiteParser {
 
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
-    public static ArrayList<String> ClassesGrabber(String id) {
+    public static ArrayList<String> ClassesGrabber(String id) throws IOException {
         String article;
 
         try {
@@ -116,7 +116,7 @@ public class SiteParser {
             try {
                 page = link.get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException();
             }
         } while (!page.hasText());
 
@@ -146,7 +146,7 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> FeatsGrabber(String id) {
+    public static ArrayList<String> FeatsGrabber(String id) throws IOException {
         String article;
 
         try {
@@ -161,7 +161,7 @@ public class SiteParser {
             try {
                 page = link.get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException();
             }
         } while (!page.hasText());
 
@@ -183,7 +183,7 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> BackgroundsGrabber(String id) {
+    public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
         String article;
 
         try {
@@ -198,7 +198,7 @@ public class SiteParser {
             try {
                 page = link.get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException();
             }
         } while (!page.hasText());
 
@@ -290,13 +290,16 @@ public class SiteParser {
 
     public static String addressWriter(ArrayList<String> entries, String section) {
         StringBuilder result = new StringBuilder();
-        result.append("Results of a search:").append("\n");
+
+        result.append("Результаты поиска:").append("\n");
+//        result.append("Results of a search:").append("\n");
 
         for (int i = 2; i <= entries.size(); i = i + 2) {
             result.append(entries.get(i - 2)).append(" - ").append("<a href=\"").append(URL).append(section).append("/").append(entries.get(i - 2)).append("\">").append(entries.get(i - 1)).append("</a>").append("\n");
         }
 
-        result.append("Send an index or a name of an article that you want to get.");
+        result.append("Введите индекс или имя статьи, которую вы хотите получить.");
+//        result.append("Send an index or a name of an article that you want to get.");
         return result.toString();
     }
 
