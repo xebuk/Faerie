@@ -15,31 +15,35 @@ public class KeyboardFactory {
     public static ReplyKeyboard searchBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
-        inlineKeyRow1.add(new InlineKeyboardButton("Spells"));
+        inlineKeyRow1.add(new InlineKeyboardButton("Заклинания"));
         inlineKeyRow1.get(0).setCallbackData(Constants.SPELLS);
-        inlineKeyRow1.add(new InlineKeyboardButton("Items"));
-        inlineKeyRow1.get(1).setCallbackData(Constants.ITEMS);
-        inlineKeyRow1.add(new InlineKeyboardButton("Bestiary"));
-        inlineKeyRow1.get(2).setCallbackData(Constants.BESTIARY);
 
         InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
 
-        inlineKeyRow2.add(new InlineKeyboardButton("Races"));
-        inlineKeyRow2.get(0).setCallbackData(Constants.RACES);
-        inlineKeyRow2.add(new InlineKeyboardButton("Classes"));
-        inlineKeyRow2.get(1).setCallbackData(Constants.CLASSES);
+        inlineKeyRow2.add(new InlineKeyboardButton("Предметы"));
+        inlineKeyRow2.get(0).setCallbackData(Constants.ITEMS);
+        inlineKeyRow2.add(new InlineKeyboardButton("Бестиарий"));
+        inlineKeyRow2.get(1).setCallbackData(Constants.BESTIARY);
 
         InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
 
-        inlineKeyRow3.add(new InlineKeyboardButton("Feats"));
-        inlineKeyRow3.get(0).setCallbackData(Constants.FEATS);
-        inlineKeyRow3.add(new InlineKeyboardButton("Backgrounds"));
-        inlineKeyRow3.get(1).setCallbackData(Constants.BACKGROUNDS);
+        inlineKeyRow3.add(new InlineKeyboardButton("Расы"));
+        inlineKeyRow3.get(0).setCallbackData(Constants.RACES);
+        inlineKeyRow3.add(new InlineKeyboardButton("Классы"));
+        inlineKeyRow3.get(1).setCallbackData(Constants.CLASSES);
+
+        InlineKeyboardRow inlineKeyRow4 = new InlineKeyboardRow();
+
+        inlineKeyRow4.add(new InlineKeyboardButton("Черты"));
+        inlineKeyRow4.get(0).setCallbackData(Constants.FEATS);
+        inlineKeyRow4.add(new InlineKeyboardButton("Предыстории"));
+        inlineKeyRow4.get(1).setCallbackData(Constants.BACKGROUNDS);
 
         ArrayList<InlineKeyboardRow> inlineKeyRows = new ArrayList<>();
         inlineKeyRows.add(inlineKeyRow1);
         inlineKeyRows.add(inlineKeyRow2);
         inlineKeyRows.add(inlineKeyRow3);
+        inlineKeyRows.add(inlineKeyRow4);
 
         return new InlineKeyboardMarkup(inlineKeyRows);
     }
@@ -60,11 +64,11 @@ public class KeyboardFactory {
 
         inlineKeyRow2.add(new InlineKeyboardButton("d6"));
         inlineKeyRow2.get(0).setCallbackData(Constants.ROLL_D6);
-        inlineKeyRow2.add(new InlineKeyboardButton("Stats Roll (4d6)"));
+        inlineKeyRow2.add(new InlineKeyboardButton("Бросок статов (4d6)"));
         inlineKeyRow2.get(1).setCallbackData(Constants.ROLL_4D6);
 
         InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
-        inlineKeyRow3.add(new InlineKeyboardButton("Custom Dice"));
+        inlineKeyRow3.add(new InlineKeyboardButton("Кастомные кости"));
         inlineKeyRow3.get(0).setCallbackData(Constants.CUSTOM_DICE);
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
@@ -78,9 +82,9 @@ public class KeyboardFactory {
     public static ReplyKeyboard rollAdvantageBoard() {
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
 
-        inlineKeyRow.add(new InlineKeyboardButton("Yes"));
+        inlineKeyRow.add(new InlineKeyboardButton("Да"));
         inlineKeyRow.get(0).setCallbackData(Constants.ADVANTAGE);
-        inlineKeyRow.add(new InlineKeyboardButton("No"));
+        inlineKeyRow.add(new InlineKeyboardButton("Нет"));
         inlineKeyRow.get(1).setCallbackData(Constants.DISADVANTAGE);
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
@@ -98,9 +102,13 @@ public class KeyboardFactory {
         keyRow2.add(new KeyboardButton("/mofu"));
         keyRow2.add(new KeyboardButton("/help"));
 
+        KeyboardRow keyRow3 = new KeyboardRow();
+        keyRow3.add(new KeyboardButton("/credits"));
+
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);
