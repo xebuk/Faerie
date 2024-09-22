@@ -75,6 +75,28 @@ public class AbilBot extends AbilityBot {
         }
 
         else {
+            if (matches.size() == 2) {
+                ArrayList<String> article;
+                switch (section) {
+                    case "spells", "items", "bestiary":
+                        article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                        break;
+                    case "races":
+                        article = SiteParser.RacesGrabber(matches.get(0));
+                        break;
+                    case "feats":
+                        article = SiteParser.FeatsGrabber(matches.get(0));
+                        break;
+                    case "backgrounds":
+                        article = SiteParser.BackgroundsGrabber(matches.get(0));
+                        break;
+                    default:
+                        return false;
+                }
+
+                articleMessaging(article, update);
+                return false;
+            }
             String searchPage = SiteParser.addressWriter(matches, section);
             SendMessage page = new SendMessage(getChatId(update).toString(), searchPage);
             page.setParseMode("HTML");
