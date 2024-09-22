@@ -16,13 +16,13 @@ public class DungeonController {
 
         mazeGenerator = new MazeGenerator(mazeWidth, mazeHeight, roomMinSize, roomMaxSize, roomCount);
         mazeGenerator.generateMaze();
-        //mazeGenerator.printMaze();
+        mazeGenerator.printMaze();
         generateTilesFromMaze(mazeGenerator.getMaze());
 
         int[] cameraXZ = mazeGenerator.getRandomRoomCenter();
-//        drawer = new Drawer(cameraXZ[0], 0.5, cameraXZ[1]);
-        drawer = new Drawer(2, 1.5, -10);
-        //System.out.println("Camera pos: " + cameraXZ[0] + ", " + cameraXZ[1]);
+        drawer = new Drawer(cameraXZ[0], 0.5, cameraXZ[1]);
+//        drawer = new Drawer(2, 1.5, -10);
+        System.out.println("Camera pos: " + cameraXZ[0] + ", " + cameraXZ[1]);
 
         drawer.startDrawing();
         drawer.fillBackground(Color.BLACK);
@@ -55,7 +55,7 @@ public class DungeonController {
     }
 
     public static void main(String[] args) {
-        DungeonController dungeonController = new DungeonController(5, 5, 3, 3, 1);
+        DungeonController dungeonController = new DungeonController(50, 50, 3, 7, 30);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
