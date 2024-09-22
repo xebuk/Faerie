@@ -72,22 +72,5 @@ public interface Constants {
             <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
             """;
 
-    String CLASSES_LIST = """
-            Официальные классы:
-            <a href="https://dnd.su/class/88">Бард [Bard]</a>
-            <a href="https://dnd.su/class/87">Варвар [Barbarian]</a>
-            <a href="https://dnd.su/class/91">Воин [Fighter]</a>
-            <a href="https://dnd.su/class/105">Волшебник [Wizard]</a>
-            <a href="https://dnd.su/class/90">Друид [Druid]</a>
-            <a href="https://dnd.su/class/89">Жрец [Cleric]</a>
-            <a href="https://dnd.su/class/137">Изобретатель [Artificer]</a>
-            <a href="https://dnd.su/class/104">Колдун [Warlock]</a>
-            <a href="https://dnd.su/class/93">Монах [Monk]</a>
-            <a href="https://dnd.su/class/94">Паладин [Paladin]</a>
-            <a href="https://dnd.su/class/99">Плут [Rogue]</a>
-            <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
-            <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
-            """;
-
     String IMAGE_OUTPUT_PATH = ".";
 }
