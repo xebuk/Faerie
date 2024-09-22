@@ -14,24 +14,32 @@ import static common.Constants.URL;
 public class SiteParser {
 
     public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId(section, id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + section + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
 
         Elements li = body.select("li:not(.subsection.desc)");
-        Elements liDescBody = body.select("li.subsection.desc").select("p");
+        Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text() + "\n");
+        result.add(name.text() + "\n" + "\n");
 
         //System.out.println(name.text());
         for (Element i: li) {
@@ -52,15 +60,23 @@ public class SiteParser {
     }
 
     public static ArrayList<String> RacesGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("race", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -86,15 +102,23 @@ public class SiteParser {
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
     public static ArrayList<String> ClassesGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("class", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "class" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -123,15 +147,23 @@ public class SiteParser {
     }
 
     public static ArrayList<String> FeatsGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("feats", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -152,15 +184,23 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) {
-        String article = id;
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("backgrounds", id);
+        } catch (IOException e) {
+            article = id;
+        }
 
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;
-        try {
-            page = link.get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        do {
+            try {
+                page = link.get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("div[itemprop=description]");
@@ -256,7 +296,7 @@ public class SiteParser {
             result.append(entries.get(i - 2)).append(" - ").append("<a href=\"").append(URL).append(section).append("/").append(entries.get(i - 2)).append("\">").append(entries.get(i - 1)).append("</a>").append("\n");
         }
 
-        result.append("Send index of an article that you want to get.");
+        result.append("Send an index or a name of an article that you want to get.");
         return result.toString();
     }
 
