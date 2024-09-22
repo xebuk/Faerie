@@ -1,6 +1,7 @@
 package game.states;
 
 import game.entities.NonPlayerCharacter;
+import game.entities.PlayerCharacter;
 
 public class Battle {
     public PlayerCharacter MC;
