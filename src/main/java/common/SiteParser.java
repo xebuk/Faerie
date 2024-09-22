@@ -36,10 +36,10 @@ public class SiteParser {
         Elements body = page.select("ul.params.card__article-body");
 
         Elements li = body.select("li:not(.subsection.desc)");
-        Elements liDescBody = body.select("li.subsection.desc").select("p");
+        Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text() + "\n");
+        result.add(name.text() + "\n" + "\n");
 
         //System.out.println(name.text());
         for (Element i: li) {
