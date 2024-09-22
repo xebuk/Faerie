@@ -21,7 +21,7 @@ public class Drawer {
     private static final double ASPECT_RATIO = (double) CANVAS_WIDTH / CANVAS_HEIGHT;
 
     private static final double NEAR_CLIPPING_PLANE = 0.1;
-    private static final double FAR_CLIPPING_PLANE = 100.0;
+    private static final double FAR_CLIPPING_PLANE = 25.0;
 
     private double cameraX, cameraY, cameraZ;
     private double yaw, pitch;
