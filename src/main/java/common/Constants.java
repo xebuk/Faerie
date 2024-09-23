@@ -6,9 +6,10 @@ public interface Constants {
 
     String HELP_MESSAGE = """
             /help - выводит список команд
-            /hello - "Привет, мир!"
+            /mofu - "Mofu Mofu!"
             /search - выводит меню поиска статьи
             /roll - выводит меню броска костей
+            /credits - выводит авторов сия бота
             """;
     String START_MESSAGE = """
             Привет! Меня зовут Faerie!
