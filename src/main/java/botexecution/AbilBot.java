@@ -53,9 +53,25 @@ public class AbilBot extends AbilityBot {
         if (matches.size() == 1 && Objects.equals(matches.get(0), "1")) {
             ArrayList<String> article;
             switch (section) {
-                case "spells", "items", "bestiary":
+                case "spells":
                     try {
-                        article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                        article = SiteParser.SpellsGrabber(matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
+                    break;
+                case "items":
+                    try {
+                        article = SiteParser.ItemsGrabber(matches.get(0));
+                    } catch (IOException e) {
+                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        return false;
+                    }
+                    break;
+                case "bestiary":
+                    try {
+                        article = SiteParser.BestiaryGrabber(matches.get(0));
                     } catch (IOException e) {
                         silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
                         return false;
@@ -102,9 +118,25 @@ public class AbilBot extends AbilityBot {
             else if (matches.size() == 2) {
                 ArrayList<String> article;
                 switch (section) {
-                    case "spells", "items", "bestiary":
+                    case "spells":
                         try {
-                            article = SiteParser.SpellsItemsBestiaryGrabber(section, matches.get(0));
+                            article = SiteParser.SpellsGrabber(matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
+                        break;
+                    case "items":
+                        try {
+                            article = SiteParser.ItemsGrabber(matches.get(0));
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+                            return false;
+                        }
+                        break;
+                    case "bestiary":
+                        try {
+                            article = SiteParser.BestiaryGrabber(matches.get(0));
                         } catch (IOException e) {
                             silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
                             return false;
@@ -362,9 +394,23 @@ public class AbilBot extends AbilityBot {
             if (searchSuccess) {
                 title = update.getMessage().getText();
                 switch (sectionId) {
-                    case "spells", "items", "bestiary":
+                    case "spells":
                         try {
-                            articleMessaging(SiteParser.SpellsItemsBestiaryGrabber(sectionId, title), update);
+                            articleMessaging(SiteParser.SpellsGrabber(title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
+                        break;
+                    case "items":
+                        try {
+                            articleMessaging(SiteParser.ItemsGrabber(title), update);
+                        } catch (IOException e) {
+                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                        }
+                        break;
+                    case "bestiary":
+                        try {
+                            articleMessaging(SiteParser.BestiaryGrabber(title), update);
                         } catch (IOException e) {
                             silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
                         }
