@@ -8,21 +8,113 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static common.Constants.URL;
 
 public class SiteParser {
 
-    public static ArrayList<String> SpellsItemsBestiaryGrabber(String section, String id) throws IOException {
+    public static ArrayList<String> SpellsGrabber (String id) throws IOException {
         String article;
 
         try {
-            article = DataReader.searchArticleId(section, id);
+            article = DataReader.searchArticleId("spells", id);
         } catch (IOException e) {
             article = id;
         }
 
-        Connection link = Jsoup.connect(URL + section + "/" + article);
+        Connection link = Jsoup.connect(URL + "spells" + "/" + article);
+        Document page;
+        do {
+            page = link.get();
+        } while (!page.hasText());
+
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements body = page.select("ul.params.card__article-body");
+
+        Elements li = body.select("ul.params.card__article-body > li:not(.subsection.desc)");
+        Elements liDescBodyMain = body.select("li.subsection.desc").select("p");
+        Elements liDescBodyUl = body.select("li.subsection.desc").select("ul").select("li");
+
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text() + "\n" + "\n");
+
+        //System.out.println(name.text());
+        for (Element i: li) {
+            //System.out.println(i.text());
+            result.add(i.text() + "\n");
+        }
+
+        result.add("\n");
+        //System.out.println();
+
+        for (Element i : liDescBodyMain) {
+            //System.out.println(i.text() + "\n" + "\n");
+            result.add(i.text() + "\n" + "\n");
+        }
+
+        for (Element i : liDescBodyUl) {
+            //System.out.println(i.text() + "\n" + "\n");
+            result.add(i.text() + "\n" + "\n");
+        }
+
+        result.add("Информация взята с " + URL + "spells" + "/" + article);
+        return result;
+    }
+
+    public static ArrayList<String> ItemsGrabber(String id) throws IOException {
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("items", id);
+        } catch (IOException e) {
+            article = id;
+        }
+
+        Connection link = Jsoup.connect(URL + "items" + "/" + article);
+        Document page;
+        do {
+            page = link.get();
+        } while (!page.hasText());
+
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements body = page.select("ul.params.card__article-body");
+
+        Elements li = body.select("ul.params.card__article-body > li:not(.subsection.desc)");
+        Elements liDescBody = body.select("li.subsection.desc")
+                .select("h3.subsection-title,p,li,h2.bigSectionTitle.hide-next.hide-next-h2.active,tr");
+
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text() + "\n" + "\n");
+
+        //System.out.println(name.text());
+        for (Element i: li) {
+            //System.out.println(i.text());
+            result.add(i.text() + "\n");
+        }
+
+        result.add("\n");
+        //System.out.println();
+
+        for (Element i : liDescBody) {
+            //System.out.println(i.text() + "\n" + "\n");
+            result.add(i.text() + "\n" + "\n");
+        }
+
+        result.add("Информация взята с " + URL + "items" + "/" + article);
+        return result;
+    }
+
+    public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
+        String article;
+
+        try {
+            article = DataReader.searchArticleId("bestiary", id);
+        } catch (IOException e) {
+            article = id;
+        }
+
+        Connection link = Jsoup.connect(URL + "bestiary" + "/" + article);
         Document page;
         do {
             page = link.get();
@@ -51,7 +143,7 @@ public class SiteParser {
             result.add(i.text() + "\n" + "\n");
         }
 
-        result.add("Информация взята с " + URL + section + "/" + article);
+        result.add("Информация взята с " + URL + "bestiary" + "/" + article);
         return result;
     }
 
@@ -199,16 +291,28 @@ public class SiteParser {
 
     public static void DictWriter(String section) {
         Connection link;
+        Connection.Response response;
         Document page = null;
         //ArrayList<String> data = new ArrayList<>();
         //data.add(" ");
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 4000; i++) {
             Elements name = null;
             Elements check1;
             boolean pageNotFound = false;
             do {
                 link = Jsoup.connect(URL + section + "/" + i);
+                try {
+                    response = Jsoup.connect(URL + section + "/" + i).followRedirects(true).execute();
+                    if (response.url().toString().contains("homebrew") || Objects.equals(response.url().toString(), "https://dnd.su")) {
+                        pageNotFound = true;
+                        break;
+                    }
+                } catch (IOException e) {
+                    pageNotFound = true;
+                    break;
+                }
+
                 try {
                     page = link.get();
                 } catch (IOException e) {
@@ -216,13 +320,12 @@ public class SiteParser {
                     break;
                 }
 
-                check1 = page.select("div");
-                if (check1.hasClass("private-card") || check1.hasClass("card__group-homebrew")) {
+                name = page.select("h2.card-title[itemprop=name]");
+
+                if (name.text().length() > 250) {
                     pageNotFound = true;
                     break;
                 }
-
-                name = page.select("h2.card-title[itemprop=name]");
             } while (name.text().isEmpty());
 
             if (pageNotFound) {
@@ -284,6 +387,6 @@ public class SiteParser {
     }
 
     public static void main(String[] args) {
-        addressWriter("class");
+        DictWriter("bestiary");
     }
 }
