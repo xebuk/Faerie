@@ -4,9 +4,9 @@ import java.util.*;
 
 public class MazeGenerator {
     public enum Tiles {
-        EMPTY,
-        WALL,
-        ROOM
+        NONE,
+        FLOOR,
+        WALL
     }
 
     private final static int MAX_ROOM_CREATION_ATTEMPTS = 10000;
@@ -16,7 +16,7 @@ public class MazeGenerator {
     private final int roomCount;
 
     private final Tiles[][] maze;
-    private final List<Room> rooms = new ArrayList<Room>();
+    private final List<Room> rooms = new ArrayList<>();
     private final Random random = new Random();
 
     public MazeGenerator(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
@@ -32,6 +32,7 @@ public class MazeGenerator {
         fillWalls();
         generateRooms(roomCount);
         connectRooms();
+        removeIsolatedTiles();
     }
 
 
@@ -81,13 +82,13 @@ public class MazeGenerator {
     private void placeRoom(Room room) {
         for (int i = room.y; i < room.y + room.height; i++) {
             for (int j = room.x; j < room.x + room.width; j++) {
-                maze[i][j] = Tiles.ROOM;
+                maze[i][j] = Tiles.FLOOR;
             }
         }
     }
 
     private void connectRooms() {
-        Set<Room> connectedRooms = new HashSet<Room>();
+        Set<Room> connectedRooms = new HashSet<>();
         connectedRooms.add(rooms.getFirst());
 
         while (connectedRooms.size() < rooms.size()) {
@@ -115,6 +116,28 @@ public class MazeGenerator {
                 connectedRooms.add(closestRoomB);
             }
         }
+    }
+
+    private void removeIsolatedTiles() {
+        for (int i = 0; i < maze.length; i++) {
+            for (int j = 0; j < mazeHeight; j++) {
+                if (maze[i][j] == Tiles.WALL) {
+                    if (isWallOrNone(i - 1, j) &&
+                        isWallOrNone(i + 1, j) &&
+                        isWallOrNone(i, j - 1) &&
+                        isWallOrNone(i, j + 1)) {
+                        maze[i][j] = Tiles.NONE;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isWallOrNone(int i, int j) {
+        if (i < 0 || i >= mazeWidth || j < 0 || j >= mazeHeight) {
+            return true;
+        }
+        return maze[i][j] == Tiles.WALL || maze[i][j] == Tiles.NONE;
     }
 
     private int calculateDistance(Room roomA, Room roomB) {
@@ -171,7 +194,7 @@ public class MazeGenerator {
 
     private void generateLine(int x1, int y1, int x2, int y2) {
         while (x1 != x2) {
-            maze[y1][x1] = Tiles.EMPTY;
+            maze[y1][x1] = Tiles.FLOOR;
             if (x1 < x2) {
                 x1++;
             } else {
@@ -179,7 +202,7 @@ public class MazeGenerator {
             }
         }
         while (y1 != y2) {
-            maze[y1][x1] = Tiles.EMPTY;
+            maze[y1][x1] = Tiles.FLOOR;
             if (y1 < y2) {
                 y1++;
             } else {
@@ -201,9 +224,8 @@ public class MazeGenerator {
             for (int j = 0; j < mazeWidth; j++) {
                 System.out.print(
                         switch (maze[i][j]) {
-                            case EMPTY -> "   ";
-                            case WALL -> "###";
-                            case ROOM -> "...";
+                            case FLOOR -> "   ";
+                            case WALL, NONE -> "###";
                         });
             }
             System.out.println();
