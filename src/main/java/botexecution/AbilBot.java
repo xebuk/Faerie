@@ -19,10 +19,10 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
 public class AbilBot extends AbilityBot {
-    public String sectionId = "";
-    public boolean searchSuccess = false;
-    public String title = "";
-    public boolean rollCustom = false;
+    private String sectionId = "";
+    private boolean searchSuccess = false;
+    private String title = "";
+    private boolean rollCustom = false;
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -40,7 +40,7 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
-    public boolean searchEngine(String section, String entry, Update update) {
+    private boolean searchEngine(String section, String entry, Update update) {
         ArrayList<String> matches;
 
         try {
@@ -149,37 +149,37 @@ public class AbilBot extends AbilityBot {
         }
     }
 
-    public void sendList(Update update) {
+    private void sendList(Update update) {
         SendMessage list = new SendMessage(getChatId(update).toString(), Constants.CLASSES_LIST);
         list.setParseMode("HTML");
         silent.execute(list);
     }
 
-    public void generateKeyboard(MessageContext ctx) {
+    private void generateKeyboard(MessageContext ctx) {
         SendMessage gen = new SendMessage(ctx.chatId().toString(), Constants.START_MESSAGE);
         gen.setReplyMarkup(KeyboardFactory.setOfCommandsBoard());
         silent.execute(gen);
     }
 
-    public void search(MessageContext ctx) {
+    private void search(MessageContext ctx) {
         SendMessage search = new SendMessage(ctx.chatId().toString(), Constants.SEARCH_MESSAGE);
         search.setReplyMarkup(KeyboardFactory.searchBoard());
         silent.execute(search);
     }
 
-    public void roll(MessageContext ctx) {
+    private void roll(MessageContext ctx) {
         SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
         roll.setReplyMarkup(KeyboardFactory.rollVariantsBoard());
         silent.execute(roll);
     }
 
-    public void rollAdvantage(Update update) {
+    private void rollAdvantage(Update update) {
         SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
         rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
     }
 
-    public void articleMessaging(ArrayList<String> article, Update update) {
+    private void articleMessaging(ArrayList<String> article, Update update) {
         StringBuilder partOfArticle = new StringBuilder();
         int lengthOfMessage = 0;
 
