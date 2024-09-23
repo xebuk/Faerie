@@ -13,8 +13,8 @@ import java.util.Random;
 import java.util.List;
 
 public class Drawer {
-    private static final int CANVAS_WIDTH = 310;  //720;  //1440;
-    private static final int CANVAS_HEIGHT = 202;  //405;  //810;
+    private static final int CANVAS_WIDTH = 512;  //465;  //310;  //720;  //1440;
+    private static final int CANVAS_HEIGHT = 288;  //304;  //202;  //405;  //810;
 
     private static final double FOV = Math.toRadians(60);
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
@@ -142,7 +142,7 @@ public class Drawer {
             for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
                 boolean isInsideCanvas = (x >= 0 && x < CANVAS_WIDTH && y >= 0 && y < CANVAS_HEIGHT);
                 if (isInsideCanvas && facePolygon.contains(x, y)) {
-                    double interpolatedZ = interpolateZ(zValues);
+                    double interpolatedZ = interpolateZ(x, y, projectedCoords, zValues);
                     if (interpolatedZ < depthBuffer[x][y]) {
                         depthBuffer[x][y] = interpolatedZ;      // Update depth buffer
 
@@ -161,12 +161,32 @@ public class Drawer {
         }
     }
 
-    private double interpolateZ(double[] zValues) {
-        return (zValues[0] + zValues[1] + zValues[2] + zValues[3]) / 4.0;       // Simple bilinear interpolation
+    private double interpolateZ(int x, int y, int[][] projectedCoords, double[] zValues) {
+        // Perspective-correct interpolation
+        double[] barycentricCoords = calculateBarycentricCoords(x, y, projectedCoords);
+        double u = barycentricCoords[0];
+        double v = barycentricCoords[1];
+        double w = barycentricCoords[2];
+
+        double zInverseInterpolated = u / zValues[0] + v / zValues[1] + w / zValues[2];
+        return 1.0 / zInverseInterpolated;
     }
 
     private double[] interpolateUV(int x, int y, int[][] projectedCoords, double[] zValues, double[][] textureCoords) {
-        // Calculate barycentric coordinates for (x, y)
+        double[] barycentricCoords = calculateBarycentricCoords(x, y, projectedCoords);
+        double u = barycentricCoords[0];
+        double v = barycentricCoords[1];
+        double w = barycentricCoords[2];
+
+        // Interpolate 1/z and texture coords
+        double zInverseInterpolated = u / zValues[0] + v / zValues[1] + w / zValues[2];
+        double uInterpolated = (u * textureCoords[0][0] / zValues[0] + v * textureCoords[0][1] / zValues[1] + w * textureCoords[0][2] / zValues[2]) / zInverseInterpolated;
+        double vInterpolated = (u * textureCoords[1][0] / zValues[0] + v * textureCoords[1][1] / zValues[1] + w * textureCoords[1][2] / zValues[2]) / zInverseInterpolated;
+
+        return new double[] {uInterpolated, vInterpolated};
+    }
+
+    private double[] calculateBarycentricCoords(int x, int y, int[][] projectedCoords) {
         double[] v0 = {projectedCoords[0][1] - projectedCoords[0][0], projectedCoords[1][1] - projectedCoords[1][0]};
         double[] v1 = {projectedCoords[0][2] - projectedCoords[0][0], projectedCoords[1][2] - projectedCoords[1][0]};
         double[] v2 = {x - projectedCoords[0][0], y - projectedCoords[1][0]};
@@ -182,12 +202,7 @@ public class Drawer {
         double w = (v0v0 * v1v2 - v0v1 * v0v2) / denominator;
         double u = 1.0 - v - w;
 
-        // Interpolate 1/z and texture coords
-        double zInverseInterpolated = u / zValues[0] + v / zValues[1] + w / zValues[2];
-        double uInterpolated = (u * textureCoords[0][0] / zValues[0] + v * textureCoords[0][1] / zValues[1] + w * textureCoords[0][2] / zValues[2]) / zInverseInterpolated;
-        double vInterpolated = (u * textureCoords[1][0] / zValues[0] + v * textureCoords[1][1] / zValues[1] + w * textureCoords[1][2] / zValues[2]) / zInverseInterpolated;
-
-        return new double[] {uInterpolated, vInterpolated};
+        return new double[] {u, v, w};
     }
 
     public void drawCube(Graphics2D g2d, Cube cube) {
