@@ -3,15 +3,18 @@ package game;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Texture {
     private final BufferedImage image;
 
     public Texture(String pathToTexture) {
-        try {
-            image = ImageIO.read(new File(pathToTexture));
+        try (InputStream istream = getClass().getClassLoader().getResourceAsStream(pathToTexture)) {
+            if (istream == null) {
+                throw new RuntimeException("Texture not found: " + pathToTexture);
+            }
+            image = ImageIO.read(istream);
         } catch (IOException e) {
             throw new RuntimeException("Texture loading failed", e);
         }
