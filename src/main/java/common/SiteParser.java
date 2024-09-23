@@ -82,7 +82,7 @@ public class SiteParser {
 
         Elements li = body.select("ul.params.card__article-body > li:not(.subsection.desc)");
         Elements liDescBody = body.select("li.subsection.desc")
-                .select("h3.subsection-title,p,li,h2.bigSectionTitle.hide-next.hide-next-h2.active,tr");
+                .select("h3.subsection-title,p,li,h2.bigSectionTitle.hide-next.hide-next-h2.active,td");
 
         ArrayList<String> result = new ArrayList<>();
         result.add(name.text() + "\n" + "\n");
@@ -277,7 +277,7 @@ public class SiteParser {
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("div[itemprop=description]");
 
-        Elements descBody = body.select("p,h3.smallSectionTitle,div.table-wrapper");
+        Elements descBody = body.select("p,h3.smallSectionTitle,h4.tableTitle,tr");
 
         ArrayList<String> result = new ArrayList<>();
         result.add(name.text() + "\n");
