@@ -35,10 +35,10 @@ public class DungeonController {
             for (int j = 0; j < maze[i].length; j++) {
                 switch (maze[i][j]) {
                     case WALL:
-                        scene.add(new Cube(j, 0.5, i, 0.5, new Texture("test_wall.png")));
+                        scene.add(new Cube(j, 0.5, i, 0.5, new Texture("wall.png")));
                         break;
                     case FLOOR:
-                        scene.add(new Cube(j, -0.5, i, 0.5, new Texture("test_floor.png")));
+                        scene.add(new Cube(j, -0.5, i, 0.5, new Texture("floor.png")));
                         break;
                 }
             }
