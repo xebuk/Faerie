@@ -25,11 +25,7 @@ public class SiteParser {
         Connection link = Jsoup.connect(URL + section + "/" + article);
         Document page;
         do {
-            try {
-                page = link.get();
-            } catch (IOException e) {
-                throw new IOException();
-            }
+            page = link.get();
         } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
@@ -71,11 +67,7 @@ public class SiteParser {
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
         do {
-            try {
-                page = link.get();
-            } catch (IOException e) {
-                throw new IOException();
-            }
+            page = link.get();
         } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
@@ -113,11 +105,7 @@ public class SiteParser {
         Connection link = Jsoup.connect(URL + "class" + "/" + article);
         Document page;
         do {
-            try {
-                page = link.get();
-            } catch (IOException e) {
-                throw new IOException();
-            }
+            page = link.get();
         } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
@@ -158,11 +146,7 @@ public class SiteParser {
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
         do {
-            try {
-                page = link.get();
-            } catch (IOException e) {
-                throw new IOException();
-            }
+            page = link.get();
         } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
@@ -195,11 +179,7 @@ public class SiteParser {
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;
         do {
-            try {
-                page = link.get();
-            } catch (IOException e) {
-                throw new IOException();
-            }
+            page = link.get();
         } while (!page.hasText());
 
         Elements name = page.select("h2.card-title[itemprop=name]");
