@@ -18,7 +18,8 @@ public class Cube {
     private final double x, y, z;
     private final double radius;
 
-    private Color color;
+    private final Color color;
+    private final Texture texture;
 
     public Cube(double x, double y, double z, double radius) {
         this.x = x;
@@ -26,6 +27,7 @@ public class Cube {
         this.z = z;
         this.radius = radius;
         this.color = new Color(255, 150, 0);
+        this.texture = null;
         generateFaces();
     }
 
@@ -35,17 +37,37 @@ public class Cube {
         this.z = z;
         this.radius = radius;
         this.color = color;
+        this.texture = null;
+        generateFaces();
+    }
+
+    public Cube(double x, double y, double z, double radius, Texture texture) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.radius = radius;
+        this.color = new Color(255, 255, 255);
+        this.texture = texture;
         generateFaces();
     }
 
     private void generateFaces() {
         for (int i = 0; i < 6; i++) {
-            faces[i] = new Face(
+            double[][] vertices = {
                     generateFaceVertex(offsets[i][0]),      // TOP LEFT
                     generateFaceVertex(offsets[i][1]),      // TOP RIGHT
                     generateFaceVertex(offsets[i][2]),      // DOWN RIGHT
                     generateFaceVertex(offsets[i][3]),      // DOWN LEFT
-                    color
+            };
+
+            faces[i] = new Face(
+                    vertices,
+                    color,
+                    texture,
+                    new double[][] {
+                            {0, 1, 1, 0},
+                            {0, 0, 1, 1}
+                    }
             );
         }
     }
@@ -60,13 +82,5 @@ public class Cube {
 
     public Face[] getFaces() {
         return faces;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
     }
 }

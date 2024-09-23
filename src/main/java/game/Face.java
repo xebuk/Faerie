@@ -3,17 +3,19 @@ package game;
 import java.awt.*;
 
 class Face {
-    private final double[][] vertices = new double[4][3];     // 4 vertices, each is (x, y, z)
+    private final double[][] vertices;     // 4 vertices, each is (x, y, z)
     private final Color baseColor;
+    private final Texture texture;
+    private final double[][] textureCoords;
+
     private Color currentColor;
 
-    public Face(double[] v1, double[] v2, double[] v3, double[] v4, Color baseColor) {
-        this.vertices[0] = v1;
-        this.vertices[1] = v2;
-        this.vertices[2] = v3;
-        this.vertices[3] = v4;
+    public Face(double[][] vertices, Color baseColor, Texture texture, double[][] textureCoords) {
+        this.vertices = vertices;
         this.baseColor = baseColor;
         this.currentColor = baseColor;
+        this.texture = texture;
+        this.textureCoords = textureCoords;
     }
 
     public double[] calculateCenter() {
@@ -34,7 +36,7 @@ class Face {
         double[] faceCenter = calculateCenter();
         double[] toCamera = vectorToCamera(faceCenter, cameraX, cameraY, cameraZ);
 
-        // Face is visible only if scalar product > 0
+        // Face is visible only if dot product > 0
         double dotProduct = normal[0] * toCamera[0] + normal[1] * toCamera[1] + normal[2] * toCamera[2];
 
         return dotProduct > 0;
@@ -84,5 +86,13 @@ class Face {
 
     public void setCurrentColor(Color currentColor) {
         this.currentColor = currentColor;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public double[][] getTextureCoords() {
+        return textureCoords;
     }
 }
