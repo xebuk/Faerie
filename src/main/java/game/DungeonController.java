@@ -37,8 +37,7 @@ public class DungeonController {
                     case WALL:
                         scene.add(new Cube(j, 0.5, i, 0.5, new Texture("test_wall.png")));
                         break;
-                    case ROOM:
-                    case EMPTY:
+                    case FLOOR:
                         scene.add(new Cube(j, -0.5, i, 0.5, new Texture("test_floor.png")));
                         break;
                 }
