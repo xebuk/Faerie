@@ -1,6 +1,12 @@
 package game.characteristics;
 
 public class Types {
+    public class Zombie {
+
+    }
+    public class Skeleton {
+
+    }
     public class Goblin {
 
     }
@@ -8,6 +14,9 @@ public class Types {
 
     }
     public class Secret {
+
+    }
+    public class Rock {
 
     }
 }
