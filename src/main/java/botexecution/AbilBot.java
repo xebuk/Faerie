@@ -40,6 +40,16 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
+    private boolean reportImpossible(Update update) {
+        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+        return false;
+    }
+
+    private boolean reportIncorrect(Update update) {
+        silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+        return false;
+    }
+
     private boolean searchEngine(String section, String entry, Update update) {
         ArrayList<String> matches;
 
@@ -57,48 +67,42 @@ public class AbilBot extends AbilityBot {
                     try {
                         article = SiteParser.SpellsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 case "items":
                     try {
                         article = SiteParser.ItemsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 case "bestiary":
                     try {
                         article = SiteParser.BestiaryGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 case "races":
                     try {
                         article = SiteParser.RacesGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 case "feats":
                     try {
                         article = SiteParser.FeatsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 case "backgrounds":
                     try {
                         article = SiteParser.BackgroundsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
-                        return false;
+                        return reportImpossible(update);
                     }
                     break;
                 default:
@@ -122,48 +126,42 @@ public class AbilBot extends AbilityBot {
                         try {
                             article = SiteParser.SpellsGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     case "items":
                         try {
                             article = SiteParser.ItemsGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     case "bestiary":
                         try {
                             article = SiteParser.BestiaryGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     case "races":
                         try {
                             article = SiteParser.RacesGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     case "feats":
                         try {
                             article = SiteParser.FeatsGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     case "backgrounds":
                         try {
                             article = SiteParser.BackgroundsGrabber(matches.get(0));
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
-                            return false;
+                            return reportIncorrect(update);
                         }
                         break;
                     default:
@@ -274,7 +272,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showCredits() {
-        Consumer<MessageContext> credits = ctx -> silent.send(Constants.CREDITS, ctx.chatId());
+        Consumer<MessageContext> credits = ctx ->
+                silent.send(Constants.CREDITS, ctx.chatId());
 
         return Ability
                 .builder()
