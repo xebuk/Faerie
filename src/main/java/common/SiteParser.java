@@ -127,12 +127,20 @@ public class SiteParser {
         Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text() + "\n" + "\n");
+
+        for (Element i: name) {
+            result.add(i.text() + "\n");
+        }
 
         //System.out.println(name.text());
         for (Element i: li) {
             //System.out.println(i.text());
-            result.add(i.text() + "\n");
+            if (i.hasClass("size-type-alignment")) {
+                result.add("\n" + i.text() + "\n");
+            }
+            else {
+                result.add(i.text() + "\n");
+            }
         }
 
         result.add("\n");
