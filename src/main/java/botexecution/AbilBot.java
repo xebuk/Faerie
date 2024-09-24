@@ -61,7 +61,7 @@ public class AbilBot extends AbilityBot {
             return reportIncorrect(update);
         }
 
-        if (matches.size() == 0) {
+        if (matches.isEmpty()) {
             silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
             return false;
         } else if (matches.size() == 2) {
