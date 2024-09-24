@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
@@ -23,10 +23,12 @@ public class AbilBot extends AbilityBot {
     private boolean searchSuccess = false;
     private String title = "";
     private boolean rollCustom = false;
+    private HashMap<String, Consumer> allocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
         super.onRegister();
+        allocate();
     }
 
     @Override
@@ -56,53 +58,55 @@ public class AbilBot extends AbilityBot {
         try {
             matches = DataReader.searchArticleIds(section, entry);
         } catch (IOException e) {
-            matches = new ArrayList<>();
-            matches.add("1");
+            return reportIncorrect(update);
         }
 
-        if (matches.size() == 1 && Objects.equals(matches.get(0), "1")) {
+        if (matches.size() == 0) {
+            silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
+            return false;
+        } else if (matches.size() == 2) {
             ArrayList<String> article;
             switch (section) {
                 case "spells":
                     try {
                         article = SiteParser.SpellsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 case "items":
                     try {
                         article = SiteParser.ItemsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 case "bestiary":
                     try {
                         article = SiteParser.BestiaryGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 case "races":
                     try {
                         article = SiteParser.RacesGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 case "feats":
                     try {
                         article = SiteParser.FeatsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 case "backgrounds":
                     try {
                         article = SiteParser.BackgroundsGrabber(matches.get(0));
                     } catch (IOException e) {
-                        return reportImpossible(update);
+                        return reportIncorrect(update);
                     }
                     break;
                 default:
@@ -112,71 +116,11 @@ public class AbilBot extends AbilityBot {
             articleMessaging(article, update);
             return false;
         }
-
-        else {
-            if (matches.size() == 0) {
-                silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
-                return false;
-            }
-
-            else if (matches.size() == 2) {
-                ArrayList<String> article;
-                switch (section) {
-                    case "spells":
-                        try {
-                            article = SiteParser.SpellsGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    case "items":
-                        try {
-                            article = SiteParser.ItemsGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    case "bestiary":
-                        try {
-                            article = SiteParser.BestiaryGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    case "races":
-                        try {
-                            article = SiteParser.RacesGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    case "feats":
-                        try {
-                            article = SiteParser.FeatsGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    case "backgrounds":
-                        try {
-                            article = SiteParser.BackgroundsGrabber(matches.get(0));
-                        } catch (IOException e) {
-                            return reportIncorrect(update);
-                        }
-                        break;
-                    default:
-                        return false;
-                }
-
-                articleMessaging(article, update);
-                return false;
-            }
-            String searchPage = SiteParser.addressWriter(matches, section);
-            SendMessage page = new SendMessage(getChatId(update).toString(), searchPage);
-            page.setParseMode("HTML");
-            silent.execute(page);
-            return true;
-        }
+        String searchPage = SiteParser.addressWriter(matches, section);
+        SendMessage page = new SendMessage(getChatId(update).toString(), searchPage);
+        page.setParseMode("HTML");
+        silent.execute(page);
+        return true;
     }
 
     private void sendList(Update update) {
@@ -226,6 +170,49 @@ public class AbilBot extends AbilityBot {
             }
         }
         silent.send(partOfArticle.toString(), getChatId(update));
+    }
+
+    private void allocate() {
+         Consumer<Update> Spell = update -> {silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
+             sectionId = "spells";};
+         Consumer<Update> Item = update -> {silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
+             sectionId = "items";};
+         Consumer<Update> Bestiary = update -> {silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
+             sectionId = "bestiary";};
+         Consumer<Update> Race = update -> {silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
+             sectionId = "race";};
+         Consumer<Update> Class = this::sendList;
+         Consumer<Update> Feat = update -> {silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
+             sectionId = "feats";};
+         Consumer<Update> Background = update -> {silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
+             sectionId = "backgrounds";};
+         Consumer<Update> RollD20 = update -> silent.send(DiceNew.D20(), getChatId(update));
+         Consumer<Update> Roll2D20 = this::rollAdvantage;
+         Consumer<Update> RollAdvantage = update -> silent.send(DiceNew.D20TwoTimes(true), getChatId(update));
+         Consumer<Update> RollDisadvantage = update -> silent.send(DiceNew.D20TwoTimes(false), getChatId(update));
+         Consumer<Update> RollD8 = update -> silent.send(DiceNew.D8(), getChatId(update));
+         Consumer<Update> RollD6 = update -> silent.send(DiceNew.D6(), getChatId(update));
+         Consumer<Update> Roll4D6 = update -> silent.send(DiceNew.D6FourTimes(), getChatId(update));
+         Consumer<Update> RollD4 = update -> silent.send(DiceNew.D4(), getChatId(update));
+         Consumer<Update> CustomDice = update -> {silent.send(Constants.CUSTOM_DICE_MESSAGE, getChatId(update));
+             rollCustom = true;};
+
+         allocator.put(Constants.SPELLS, Spell);
+         allocator.put(Constants.ITEMS, Item);
+         allocator.put(Constants.BESTIARY, Bestiary);
+         allocator.put(Constants.RACES, Race);
+         allocator.put(Constants.CLASSES, Class);
+         allocator.put(Constants.FEATS, Feat);
+         allocator.put(Constants.BACKGROUNDS, Background);
+         allocator.put(Constants.ROLL_D20, RollD20);
+         allocator.put(Constants.ROLL_2D20, Roll2D20);
+         allocator.put(Constants.ADVANTAGE, RollAdvantage);
+         allocator.put(Constants.DISADVANTAGE, RollDisadvantage);
+         allocator.put(Constants.ROLL_D8, RollD8);
+         allocator.put(Constants.ROLL_D6, RollD6);
+         allocator.put(Constants.ROLL_4D6, Roll4D6);
+         allocator.put(Constants.ROLL_D4, RollD4);
+         allocator.put(Constants.CUSTOM_DICE, CustomDice);
     }
 
     public Ability startOut() {
@@ -322,65 +309,7 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            switch (responseQuery) {
-                case Constants.SPELLS:
-                    silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
-                    sectionId = "spells";
-                    break;
-                case Constants.ITEMS:
-                    silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
-                    sectionId = "items";
-                    break;
-                case Constants.BESTIARY:
-                    silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
-                    sectionId = "bestiary";
-                    break;
-                case Constants.RACES:
-                    silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
-                    sectionId = "race";
-                    break;
-                case Constants.CLASSES:
-                    sendList(update);
-                    break;
-                case Constants.FEATS:
-                    silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
-                    sectionId = "feats";
-                    break;
-                case Constants.BACKGROUNDS:
-                    silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
-                    sectionId = "backgrounds";
-                    break;
-                case Constants.ROLL_D20:
-                    silent.send(DiceNew.D20(), getChatId(update));
-                    break;
-                case Constants.ROLL_2D20:
-                    rollAdvantage(update);
-                    break;
-                case Constants.ADVANTAGE:
-                    silent.send(DiceNew.D20_two_times(true), getChatId(update));
-                    break;
-                case Constants.DISADVANTAGE:
-                    silent.send(DiceNew.D20_two_times(false), getChatId(update));
-                    break;
-                case Constants.ROLL_D8:
-                    silent.send(DiceNew.D8(), getChatId(update));
-                    break;
-                case Constants.ROLL_D6:
-                    silent.send(DiceNew.D6(), getChatId(update));
-                    break;
-                case Constants.ROLL_4D6:
-                    silent.send(DiceNew.D6_four_times(), getChatId(update));
-                    break;
-                case Constants.ROLL_D4:
-                    silent.send(DiceNew.D4(), getChatId(update));
-                    break;
-                case Constants.CUSTOM_DICE:
-                    silent.send(Constants.CUSTOM_DICE_MESSAGE, getChatId(update));
-                    rollCustom = true;
-                    break;
-                default:
-                    break;
-            }
+            allocator.get(responseQuery).accept(update);
         }
 
         if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
@@ -397,46 +326,45 @@ public class AbilBot extends AbilityBot {
                         try {
                             articleMessaging(SiteParser.SpellsGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     case "items":
                         try {
                             articleMessaging(SiteParser.ItemsGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     case "bestiary":
                         try {
                             articleMessaging(SiteParser.BestiaryGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     case "race":
                         try {
                             articleMessaging(SiteParser.RacesGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     case "feats":
                         try {
                             articleMessaging(SiteParser.FeatsGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     case "backgrounds":
                         try {
                             articleMessaging(SiteParser.BackgroundsGrabber(title), update);
                         } catch (IOException e) {
-                            silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+                            reportImpossible(update);
                         }
                         break;
                     default:
-                        searchSuccess = false;
                         break;
                 }
                 sectionId = "";
