@@ -1,6 +1,5 @@
 package common;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class DiceNew {
@@ -24,7 +23,7 @@ public class DiceNew {
         return luck.toString();
     }
 
-    public static String D20_two_times(boolean adv) {
+    public static String D20TwoTimes(boolean adv) {
         StringBuilder luck = new StringBuilder();
 
         int dice1 = random.nextInt(20) + 1;
@@ -69,7 +68,7 @@ public class DiceNew {
         return luck.toString();
     }
 
-    public static String D6_four_times() {
+    public static String D6FourTimes() {
         StringBuilder luck = new StringBuilder();
 
         int dice1 = random.nextInt(6) + 1;
