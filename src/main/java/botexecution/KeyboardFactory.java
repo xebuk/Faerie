@@ -2,7 +2,6 @@ package botexecution;
 
 import common.Constants;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
@@ -12,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.util.ArrayList;
 
 public class KeyboardFactory {
-    public static ReplyKeyboard searchBoard() {
+    public static InlineKeyboardMarkup searchBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
         inlineKeyRow1.add(new InlineKeyboardButton("Заклинания"));
@@ -48,7 +47,7 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyRows);
     }
 
-    public static ReplyKeyboard rollVariantsBoard() {
+    public static InlineKeyboardMarkup rollVariantsBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
         inlineKeyRow1.add(new InlineKeyboardButton("d20"));
@@ -79,7 +78,7 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
-    public static ReplyKeyboard rollAdvantageBoard() {
+    public static InlineKeyboardMarkup rollAdvantageBoard() {
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
 
         inlineKeyRow.add(new InlineKeyboardButton("Да"));
