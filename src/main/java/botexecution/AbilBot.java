@@ -27,7 +27,7 @@ public class AbilBot extends AbilityBot {
 
     private boolean rollCustom = false;
 
-    private HashMap<String, Consumer> allocator = new HashMap<>();
+    private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -74,42 +74,42 @@ public class AbilBot extends AbilityBot {
             switch (section) {
                 case "spells":
                     try {
-                        article = SiteParser.SpellsGrabber(matches.get(0));
+                        article = SiteParser.SpellsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "items":
                     try {
-                        article = SiteParser.ItemsGrabber(matches.get(0));
+                        article = SiteParser.ItemsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "bestiary":
                     try {
-                        article = SiteParser.BestiaryGrabber(matches.get(0));
+                        article = SiteParser.BestiaryGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "races":
                     try {
-                        article = SiteParser.RacesGrabber(matches.get(0));
+                        article = SiteParser.RacesGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "feats":
                     try {
-                        article = SiteParser.FeatsGrabber(matches.get(0));
+                        article = SiteParser.FeatsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "backgrounds":
                     try {
-                        article = SiteParser.BackgroundsGrabber(matches.get(0));
+                        article = SiteParser.BackgroundsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
