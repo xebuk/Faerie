@@ -120,25 +120,33 @@ public class SiteParser {
             page = link.get();
         } while (!page.hasText());
 
-        Elements name = page.select("h2.card-title[itemprop=name]");
-        Elements body = page.select("ul.params.card__article-body");
+        Elements check = page.select("div").select("span");
+        //System.out.println(check.text());
+        Elements html = page.select("*");
+
+        ArrayList<String> result = new ArrayList<>();
+
+        if (check.hasText()) {
+            html = page.select("div.card__group-classic");
+            result.add("Классическая версия:" + "\n" + "\n");
+        }
+
+        Elements name = html.select("h2.card-title[itemprop=name]");
+        Elements body = html.select("ul.params.card__article-body");
 
         Elements li = body.select("li:not(.subsection.desc)");
         Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
-        ArrayList<String> result = new ArrayList<>();
-
-        for (Element i: name) {
+        for (Element i : name) {
             result.add(i.text() + "\n");
         }
 
         //System.out.println(name.text());
-        for (Element i: li) {
+        for (Element i : li) {
             //System.out.println(i.text());
             if (i.hasClass("size-type-alignment")) {
                 result.add("\n" + i.text() + "\n");
-            }
-            else {
+            } else {
                 result.add(i.text() + "\n");
             }
         }
@@ -149,6 +157,42 @@ public class SiteParser {
         for (Element i : liDescBody) {
             //System.out.println(i.text() + "\n" + "\n");
             result.add(i.text() + "\n" + "\n");
+        }
+
+        if (check.hasText()) {
+            result.add("\n");
+
+            html = page.select("div.card__group-multiverse");
+
+            name = html.select("h2.card-title[itemprop=name]");
+            body = html.select("ul.params.card__article-body");
+
+            li = body.select("li:not(.subsection.desc)");
+            liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
+
+            result.add("Версия Мультивселенной:" + "\n" + "\n");
+
+            for (Element i : name) {
+                result.add(i.text() + "\n");
+            }
+
+            //System.out.println(name.text());
+            for (Element i : li) {
+                //System.out.println(i.text());
+                if (i.hasClass("size-type-alignment")) {
+                    result.add("\n" + i.text() + "\n");
+                } else {
+                    result.add(i.text() + "\n");
+                }
+            }
+
+            result.add("\n");
+            //System.out.println();
+
+            for (Element i : liDescBody) {
+                //System.out.println(i.text() + "\n" + "\n");
+                result.add(i.text() + "\n" + "\n");
+            }
         }
 
         result.add("Информация взята с " + URL + "bestiary" + "/" + article);
