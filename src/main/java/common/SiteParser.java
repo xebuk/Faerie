@@ -15,13 +15,7 @@ import static common.Constants.URL;
 public class SiteParser {
 
     public static ArrayList<String> SpellsGrabber (String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("spells", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells" + "/" + article);
         Document page;
@@ -63,13 +57,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> ItemsGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("items", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("items", id);;
 
         Connection link = Jsoup.connect(URL + "items" + "/" + article);
         Document page;
@@ -106,13 +94,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("bestiary", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary" + "/" + article);
         Document page;
@@ -120,25 +102,33 @@ public class SiteParser {
             page = link.get();
         } while (!page.hasText());
 
-        Elements name = page.select("h2.card-title[itemprop=name]");
-        Elements body = page.select("ul.params.card__article-body");
+        Elements check = page.select("div").select("span");
+        //System.out.println(check.text());
+        Elements html = page.select("*");
+
+        ArrayList<String> result = new ArrayList<>();
+
+        if (check.hasText()) {
+            html = page.select("div.card__group-classic");
+            result.add("Классическая версия:" + "\n" + "\n");
+        }
+
+        Elements name = html.select("h2.card-title[itemprop=name]");
+        Elements body = html.select("ul.params.card__article-body");
 
         Elements li = body.select("li:not(.subsection.desc)");
         Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
-        ArrayList<String> result = new ArrayList<>();
-
-        for (Element i: name) {
+        for (Element i : name) {
             result.add(i.text() + "\n");
         }
 
         //System.out.println(name.text());
-        for (Element i: li) {
+        for (Element i : li) {
             //System.out.println(i.text());
             if (i.hasClass("size-type-alignment")) {
                 result.add("\n" + i.text() + "\n");
-            }
-            else {
+            } else {
                 result.add(i.text() + "\n");
             }
         }
@@ -151,18 +141,48 @@ public class SiteParser {
             result.add(i.text() + "\n" + "\n");
         }
 
+        if (check.hasText()) {
+            result.add("\n");
+
+            html = page.select("div.card__group-multiverse");
+
+            name = html.select("h2.card-title[itemprop=name]");
+            body = html.select("ul.params.card__article-body");
+
+            li = body.select("li:not(.subsection.desc)");
+            liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
+
+            result.add("Версия Мультивселенной:" + "\n" + "\n");
+
+            for (Element i : name) {
+                result.add(i.text() + "\n");
+            }
+
+            //System.out.println(name.text());
+            for (Element i : li) {
+                //System.out.println(i.text());
+                if (i.hasClass("size-type-alignment")) {
+                    result.add("\n" + i.text() + "\n");
+                } else {
+                    result.add(i.text() + "\n");
+                }
+            }
+
+            result.add("\n");
+            //System.out.println();
+
+            for (Element i : liDescBody) {
+                //System.out.println(i.text() + "\n" + "\n");
+                result.add(i.text() + "\n" + "\n");
+            }
+        }
+
         result.add("Информация взята с " + URL + "bestiary" + "/" + article);
         return result;
     }
 
     public static ArrayList<String> RacesGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("race", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
@@ -194,13 +214,7 @@ public class SiteParser {
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
     public static ArrayList<String> ClassesGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("class", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("class", id);
 
         Connection link = Jsoup.connect(URL + "class" + "/" + article);
         Document page;
@@ -235,13 +249,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> FeatsGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("feats", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
@@ -268,13 +276,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
-        String article;
-
-        try {
-            article = DataReader.searchArticleId("backgrounds", id);
-        } catch (IOException e) {
-            article = id;
-        }
+        String article = DataReader.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;

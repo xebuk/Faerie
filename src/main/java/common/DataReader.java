@@ -32,7 +32,7 @@ public class DataReader {
                 return separated[0];
             }
         }
-        throw new IOException();
+        return name;
     }
 
     public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {

@@ -13,4 +13,7 @@ public class Jobs {
     public class Rogue {
 
     }
+    public class Ranger {
+
+    }
 }

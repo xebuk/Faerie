@@ -8,6 +8,8 @@ import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,8 +24,10 @@ public class AbilBot extends AbilityBot {
     private String sectionId = "";
     private boolean searchSuccess = false;
     private String title = "";
+
     private boolean rollCustom = false;
-    private HashMap<String, Consumer> allocator = new HashMap<>();
+
+    private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -64,47 +68,48 @@ public class AbilBot extends AbilityBot {
         if (matches.isEmpty()) {
             silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
             return false;
-        } else if (matches.size() == 2) {
+        }
+        else if (matches.size() == 2) {
             ArrayList<String> article;
             switch (section) {
                 case "spells":
                     try {
-                        article = SiteParser.SpellsGrabber(matches.get(0));
+                        article = SiteParser.SpellsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "items":
                     try {
-                        article = SiteParser.ItemsGrabber(matches.get(0));
+                        article = SiteParser.ItemsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "bestiary":
                     try {
-                        article = SiteParser.BestiaryGrabber(matches.get(0));
+                        article = SiteParser.BestiaryGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "races":
                     try {
-                        article = SiteParser.RacesGrabber(matches.get(0));
+                        article = SiteParser.RacesGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "feats":
                     try {
-                        article = SiteParser.FeatsGrabber(matches.get(0));
+                        article = SiteParser.FeatsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
                     break;
                 case "backgrounds":
                     try {
-                        article = SiteParser.BackgroundsGrabber(matches.get(0));
+                        article = SiteParser.BackgroundsGrabber(matches.getFirst());
                     } catch (IOException e) {
                         return reportIncorrect(update);
                     }
@@ -123,28 +128,22 @@ public class AbilBot extends AbilityBot {
         return true;
     }
 
+    private void patternExecuteInline(MessageContext ctx, String message, InlineKeyboardMarkup Function) {
+        SendMessage text = new SendMessage(ctx.chatId().toString(), message);
+        text.setReplyMarkup(Function);
+        silent.execute(text);
+    }
+
+    private void patternExecuteReply(MessageContext ctx, String message, ReplyKeyboardMarkup Function) {
+        SendMessage text = new SendMessage(ctx.chatId().toString(), message);
+        text.setReplyMarkup(Function);
+        silent.execute(text);
+    }
+
     private void sendList(Update update) {
         SendMessage list = new SendMessage(getChatId(update).toString(), Constants.CLASSES_LIST);
         list.setParseMode("HTML");
         silent.execute(list);
-    }
-
-    private void generateKeyboard(MessageContext ctx) {
-        SendMessage gen = new SendMessage(ctx.chatId().toString(), Constants.START_MESSAGE);
-        gen.setReplyMarkup(KeyboardFactory.setOfCommandsBoard());
-        silent.execute(gen);
-    }
-
-    private void search(MessageContext ctx) {
-        SendMessage search = new SendMessage(ctx.chatId().toString(), Constants.SEARCH_MESSAGE);
-        search.setReplyMarkup(KeyboardFactory.searchBoard());
-        silent.execute(search);
-    }
-
-    private void roll(MessageContext ctx) {
-        SendMessage roll = new SendMessage(ctx.chatId().toString(), Constants.ROLL_MESSAGE);
-        roll.setReplyMarkup(KeyboardFactory.rollVariantsBoard());
-        silent.execute(roll);
     }
 
     private void rollAdvantage(Update update) {
@@ -216,7 +215,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability startOut() {
-        Consumer<MessageContext> start = this::generateKeyboard;
+        Consumer<MessageContext> start =
+                ctx -> patternExecuteReply(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
 
         return Ability
                 .builder()
@@ -230,8 +230,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showHelp() {
-        Consumer<MessageContext> helpHand = ctx ->
-                silent.send(Constants.HELP_MESSAGE, ctx.chatId());
+        Consumer<MessageContext> helpHand =
+                ctx -> silent.send(Constants.HELP_MESSAGE, ctx.chatId());
 
         return Ability.builder()
                 .name("help")
@@ -244,8 +244,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability sayMofu() {
-        Consumer<MessageContext> mofu = ctx ->
-                silent.send("Mofu Mofu!", ctx.chatId());
+        Consumer<MessageContext> mofu =
+                ctx -> silent.send("Mofu Mofu!", ctx.chatId());
 
         return Ability
                 .builder()
@@ -259,8 +259,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showCredits() {
-        Consumer<MessageContext> credits = ctx ->
-                silent.send(Constants.CREDITS, ctx.chatId());
+        Consumer<MessageContext> credits =
+                ctx -> silent.send(Constants.CREDITS, ctx.chatId());
 
         return Ability
                 .builder()
@@ -274,7 +274,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability requestArticle() {
-        Consumer<MessageContext> search = this::search;
+        Consumer<MessageContext> search =
+                ctx -> patternExecuteInline(ctx, Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard());
 
         return Ability
                 .builder()
@@ -288,7 +289,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability diceRoll() {
-        Consumer<MessageContext> roll = this::roll;
+        Consumer<MessageContext> roll =
+                ctx -> patternExecuteInline(ctx, Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard());
 
         return Ability
                 .builder()
@@ -312,14 +314,14 @@ public class AbilBot extends AbilityBot {
             allocator.get(responseQuery).accept(update);
         }
 
-        if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
+        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
             if (rollCustom) {
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
                 rollCustom = false;
             }
 
-            if (searchSuccess) {
+            else if (searchSuccess) {
                 title = update.getMessage().getText();
                 switch (sectionId) {
                     case "spells":
@@ -372,7 +374,7 @@ public class AbilBot extends AbilityBot {
                 title = "";
             }
 
-            if (!sectionId.isEmpty()) {
+            else if (!sectionId.isEmpty()) {
                 searchSuccess = searchEngine(sectionId, update.getMessage().getText(), update);
             }
         }
