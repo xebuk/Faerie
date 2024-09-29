@@ -59,6 +59,10 @@ public class DataReader {
 
     private static File frame = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
 
+    public static File getFrame() {
+        return frame;
+    }
+
     public static boolean fileChecker() {
         File frameCheck = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
         if (frame.lastModified() != frameCheck.lastModified()) {
@@ -66,11 +70,5 @@ public class DataReader {
             return true;
         }
         return false;
-    }
-
-    public static SendPhoto photoSend(String chatId) {
-        InputFile photo = new InputFile(frame);
-        SendPhoto pic = new SendPhoto(chatId, photo);
-        return pic;
     }
 }
