@@ -1,5 +1,9 @@
 package common;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,5 +55,22 @@ public class DataReader {
         }
 
         return results;
+    }
+
+    private static File frame = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
+
+    public static boolean fileChecker() {
+        File frameCheck = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
+        if (frame.lastModified() != frameCheck.lastModified()) {
+            frame = frameCheck;
+            return true;
+        }
+        return false;
+    }
+
+    public static SendPhoto photoSend(String chatId) {
+        InputFile photo = new InputFile(frame);
+        SendPhoto pic = new SendPhoto(chatId, photo);
+        return pic;
     }
 }
