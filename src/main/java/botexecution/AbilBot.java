@@ -8,6 +8,7 @@ import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -155,9 +156,10 @@ public class AbilBot extends AbilityBot {
     }
 
     private void sendPic(MessageContext ctx) {
-        SendPhoto picture = DataReader.photoSend(ctx.chatId().toString());
+        InputFile photo = new InputFile(DataReader.getFrame());
+        SendPhoto pic = new SendPhoto(ctx.chatId().toString(), photo);
         try {
-            telegramClient.execute(picture);
+            telegramClient.execute(pic);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
