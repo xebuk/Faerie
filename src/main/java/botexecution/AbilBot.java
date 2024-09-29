@@ -5,12 +5,18 @@ import common.*;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.DefaultBotCommand;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +32,8 @@ public class AbilBot extends AbilityBot {
     private String title = "";
 
     private boolean rollCustom = false;
+
+    private boolean photoOnDemand = false;
 
     private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
 
@@ -150,6 +158,15 @@ public class AbilBot extends AbilityBot {
         SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
         rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
+    }
+
+    private void sendPic(MessageContext ctx) {
+        SendPhoto picture = DataReader.photoSend(ctx.chatId().toString());
+        try {
+            telegramClient.execute(picture);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     private void articleMessaging(ArrayList<String> article, Update update) {
@@ -300,6 +317,20 @@ public class AbilBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(roll)
+                .build();
+    }
+
+    public Ability sendPhotoOnDemand() {
+        Consumer<MessageContext> pic = this::sendPic;
+
+        return Ability
+                .builder()
+                .name("photoondemand")
+                .info("sends a photo")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(pic)
                 .build();
     }
 
