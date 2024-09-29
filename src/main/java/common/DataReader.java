@@ -1,8 +1,5 @@
 package common;
 
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +60,7 @@ public class DataReader {
         return frame;
     }
 
-    public static boolean fileChecker() {
+    public static boolean updatePicture() {
         File frameCheck = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
         if (frame.lastModified() != frameCheck.lastModified()) {
             frame = frameCheck;
