@@ -48,7 +48,9 @@ public class Drawer {
         g2d.dispose();
         try {
             String path = Paths.get(Constants.IMAGE_OUTPUT_PATH, "output.png").toString();
+            String pathDebug = Paths.get(".", "output.png").toString();
             ImageIO.write(image, "png", new File(path));
+            ImageIO.write(image, "png", new File(pathDebug));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
