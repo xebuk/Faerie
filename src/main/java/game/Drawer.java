@@ -30,6 +30,8 @@ public class Drawer {
     private Graphics2D g2d;
     private BufferedImage image;
 
+    private static final boolean DEBUG_SAVE = true;
+
     public Drawer(double cameraX, double cameraY, double cameraZ) {
         this.cameraX = cameraX;
         this.cameraY = cameraY;
@@ -49,6 +51,11 @@ public class Drawer {
         try {
             String path = Paths.get(Constants.IMAGE_OUTPUT_PATH, "output.png").toString();
             ImageIO.write(image, "png", new File(path));
+
+            if (DEBUG_SAVE) {
+                String pathDebug = Paths.get(".", "output.png").toString();
+                ImageIO.write(image, "png", new File(pathDebug));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

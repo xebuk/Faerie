@@ -1,5 +1,6 @@
 package common;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,5 +52,20 @@ public class DataReader {
         }
 
         return results;
+    }
+
+    private static File frame = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
+
+    public static File getFrame() {
+        return frame;
+    }
+
+    public static boolean updatePicture() {
+        File frameCheck = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");
+        if (frame.lastModified() != frameCheck.lastModified()) {
+            frame = frameCheck;
+            return true;
+        }
+        return false;
     }
 }

@@ -95,5 +95,5 @@ public interface Constants {
             <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
             """;
 
-    String IMAGE_OUTPUT_PATH = ".";
+    String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
 }

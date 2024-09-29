@@ -6,10 +6,13 @@ import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -150,6 +153,16 @@ public class AbilBot extends AbilityBot {
         SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
         rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
+    }
+
+    private void sendPic(MessageContext ctx) {
+        InputFile photo = new InputFile(DataReader.getFrame());
+        SendPhoto pic = new SendPhoto(ctx.chatId().toString(), photo);
+        try {
+            telegramClient.execute(pic);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     private void articleMessaging(ArrayList<String> article, Update update) {
@@ -300,6 +313,20 @@ public class AbilBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(roll)
+                .build();
+    }
+
+    public Ability sendPhotoOnDemand() {
+        Consumer<MessageContext> pic = this::sendPic;
+
+        return Ability
+                .builder()
+                .name("photoondemand")
+                .info("sends a photo")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(pic)
                 .build();
     }
 
