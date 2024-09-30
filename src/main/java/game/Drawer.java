@@ -23,9 +23,16 @@ public class Drawer {
     private static final double NEAR_CLIPPING_PLANE = 0.1;
     private static final double FAR_CLIPPING_PLANE = 25.0;
 
+    private static final double LIGHT_ATTENUATION_FACTOR = 0;
+
     private double cameraX, cameraY, cameraZ;
     private double yaw, pitch;
     private final double[][] depthBuffer;
+
+    // TODO: Create base class/interface GameObject with getVertices() and etc. methods,
+    //       replace -> List<GameObject>
+    private List<Cube> sceneObjects;
+    private List<LightSource> lights;
 
     private Graphics2D g2d;
     private BufferedImage image;
@@ -41,9 +48,13 @@ public class Drawer {
         resetDepthBuffer();
     }
 
-    public void startDrawing() {
+    public void startDrawing(Color backgroundColor, List<Cube> sceneObjects, List<LightSource> lights) {
         image = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         g2d = image.createGraphics();
+
+        fillBackground(backgroundColor);
+        this.sceneObjects = sceneObjects;
+        this.lights = lights;
     }
 
     public void endDrawing() {
@@ -109,15 +120,15 @@ public class Drawer {
         return new int[] {pixelX, pixelY};
     }
 
-    private int[][] projectFace(Face face, double[] depthValues) {
-        int[][] projectedVertices = new int[2][4];
+    private int[][] projectTriangle(Triangle triangle, double[] depthValues) {
+        int[][] projectedVertices = new int[2][3];
 
-        for (int i = 0; i < 4; i++) {
-            double[] vertex = face.getVertices()[i];
+        for (int i = 0; i < 3; i++) {
+            double[] vertex = triangle.getVertices()[i];
             double[] depth = new double[1];
             int[] pixelCoords = projectVertex(vertex[0], vertex[1], vertex[2], depth);
 
-            if (pixelCoords == null) {      // If one vertex was clipped, clip the whole face
+            if (pixelCoords == null) {      // If one vertex was clipped, clip the whole triangle
                 return null;
             }
 
@@ -129,36 +140,25 @@ public class Drawer {
         return projectedVertices;
     }
 
-    private void updateFaceColor(Face face) {
-        double distance = face.distanceToCamera(cameraX, cameraY, cameraZ);
-        // TODO: Find optimal values and make them constants
-        double intensity = 7.0 / (1.0 + distance);
-
-        int red = (int) (face.getBaseColor().getRed() * intensity);
-        int green = (int) (face.getBaseColor().getGreen() * intensity);
-        int blue = (int) (face.getBaseColor().getBlue() * intensity);
-
-        face.setCurrentColor(new Color(Math.clamp(red, 0, 255), Math.clamp(green, 0, 255), Math.clamp(blue, 0, 255)));
-    }
-
-    private void drawFaceWithDepthBuffer(Face face, int[][] projectedCoords, double[] zValues) {
-        Polygon facePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 4);
-        Rectangle bounds = facePolygon.getBounds();
+    private void drawTriangleWithDepthBuffer(Triangle triangle, int[][] projectedCoords, double[] zValues) {
+        Polygon trianglePolygon = new Polygon(projectedCoords[0], projectedCoords[1], 3);
+        Rectangle bounds = trianglePolygon.getBounds();
 
         for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
             for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
                 boolean isInsideCanvas = (x >= 0 && x < CANVAS_WIDTH && y >= 0 && y < CANVAS_HEIGHT);
-                if (isInsideCanvas && facePolygon.contains(x, y)) {
+                if (isInsideCanvas && trianglePolygon.contains(x, y)) {
                     double interpolatedZ = interpolateZ(x, y, projectedCoords, zValues);
                     if (interpolatedZ < depthBuffer[x][y]) {
                         depthBuffer[x][y] = interpolatedZ;      // Update depth buffer
 
-                        Texture faceTexture = face.getTexture();
-                        if (faceTexture == null) {
-                            g2d.setColor(face.getCurrentColor());
+                        Texture triangleTexture = triangle.getTexture();
+                        if (triangleTexture == null) {
+                            throw new RuntimeException("triangleTexture == null");
+//                            g2d.setColor(triangle.getCurrentColor());
                         } else {
-                            double[] interpolatedUV = interpolateUV(x, y, projectedCoords, zValues, face.getTextureCoords());
-                            g2d.setColor(faceTexture.getColorAt(interpolatedUV[0], interpolatedUV[1]));
+                            double[] interpolatedUV = interpolateUV(x, y, projectedCoords, zValues, triangle.getTextureCoords());
+                            g2d.setColor(triangleTexture.getColorAt(interpolatedUV[0], interpolatedUV[1]));
                         }
 
                         g2d.drawLine(x, y, x, y);     // Draw point
@@ -213,24 +213,21 @@ public class Drawer {
     }
 
     public void drawCube(Graphics2D g2d, Cube cube) {
-        for (Face face : cube.getFaces()) {
-            if (face.isVisible(cameraX, cameraY, cameraZ)) {
-                updateFaceColor(face);
-                g2d.setColor(face.getCurrentColor());
-
+        for (Triangle triangle : cube.getTriangles()) {
+            if (triangle.isVisible(cameraX, cameraY, cameraZ)) {
                 double[] depthValues = new double[4];
-                int[][] projectedCoords = projectFace(face, depthValues);
+                int[][] projectedCoords = projectTriangle(triangle, depthValues);
 
                 if (projectedCoords != null) {
-                    drawFaceWithDepthBuffer(face, projectedCoords, depthValues);
+                    drawTriangleWithDepthBuffer(triangle, projectedCoords, depthValues);
                 }
             }
         }
     }
 
-    public void drawScene(List<Cube> cubes) {
+    public void drawScene() {
         resetDepthBuffer();
-        for (Cube cube : cubes) {
+        for (Cube cube : sceneObjects) {
             drawCube(g2d, cube);
         }
     }
@@ -298,11 +295,9 @@ public class Drawer {
             cubes.add(new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, 1));
         }
 
-        drawer.startDrawing();
+        drawer.startDrawing(Color.BLACK, cubes, null);
 
-        drawer.fillBackground(Color.BLACK);
-
-        drawer.drawScene(cubes);
+        drawer.drawScene();
 
         drawer.endDrawing();
     }
