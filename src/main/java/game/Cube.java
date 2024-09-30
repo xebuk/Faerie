@@ -13,7 +13,6 @@ public class Cube {
             {{-1, -1, -1}, { 1, -1, -1}, { 1, -1,  1}, {-1, -1,  1}}        // DOWN
     };
 
-//    private final Face[] faces = new Face[6];
     private final Triangle[] triangles = new Triangle[12];
 
     private final double x, y, z;
@@ -29,7 +28,6 @@ public class Cube {
         this.radius = radius;
         this.color = new Color(255, 150, 0);
         this.texture = null;
-//        generateFaces();
         generateTriangles();
     }
 
@@ -40,7 +38,6 @@ public class Cube {
         this.radius = radius;
         this.color = color;
         this.texture = null;
-//        generateFaces();
         generateTriangles();
     }
 
@@ -51,30 +48,8 @@ public class Cube {
         this.radius = radius;
         this.color = new Color(255, 255, 255);
         this.texture = texture;
-//        generateFaces();
         generateTriangles();
     }
-
-    /*private void generateFaces() {
-        for (int i = 0; i < 6; i++) {
-            double[][] vertices = {
-                    generateVertex(offsets[i][0]),      // TOP LEFT
-                    generateVertex(offsets[i][1]),      // TOP RIGHT
-                    generateVertex(offsets[i][2]),      // DOWN RIGHT
-                    generateVertex(offsets[i][3]),      // DOWN LEFT
-            };
-
-            faces[i] = new Face(
-                    vertices,
-                    color,
-                    texture,
-                    new double[][] {
-                            {0, 1, 1, 0},
-                            {0, 0, 1, 1}
-                    }
-            );
-        }
-    }*/
 
     private void generateTriangles() {
         for (int i = 0; i < 6; i++) {
@@ -117,10 +92,6 @@ public class Cube {
                 z + offset[2] * radius
         };
     }
-
-    /*public Face[] getFaces() {
-        return faces;
-    }*/
 
     public Triangle[] getTriangles() {
         return triangles;
