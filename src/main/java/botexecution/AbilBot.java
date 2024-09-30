@@ -10,8 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
@@ -131,13 +130,7 @@ public class AbilBot extends AbilityBot {
         return true;
     }
 
-    private void patternExecuteInline(MessageContext ctx, String message, InlineKeyboardMarkup Function) {
-        SendMessage text = new SendMessage(ctx.chatId().toString(), message);
-        text.setReplyMarkup(Function);
-        silent.execute(text);
-    }
-
-    private void patternExecuteReply(MessageContext ctx, String message, ReplyKeyboardMarkup Function) {
+    private void patternExecute(MessageContext ctx, String message, ReplyKeyboard Function) {
         SendMessage text = new SendMessage(ctx.chatId().toString(), message);
         text.setReplyMarkup(Function);
         silent.execute(text);
@@ -229,7 +222,7 @@ public class AbilBot extends AbilityBot {
 
     public Ability startOut() {
         Consumer<MessageContext> start =
-                ctx -> patternExecuteReply(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
+                ctx -> patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
 
         return Ability
                 .builder()
@@ -288,7 +281,7 @@ public class AbilBot extends AbilityBot {
 
     public Ability requestArticle() {
         Consumer<MessageContext> search =
-                ctx -> patternExecuteInline(ctx, Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard());
+                ctx -> patternExecute(ctx, Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard());
 
         return Ability
                 .builder()
@@ -303,7 +296,7 @@ public class AbilBot extends AbilityBot {
 
     public Ability diceRoll() {
         Consumer<MessageContext> roll =
-                ctx -> patternExecuteInline(ctx, Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard());
+                ctx -> patternExecute(ctx, Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard());
 
         return Ability
                 .builder()
