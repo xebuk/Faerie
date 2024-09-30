@@ -8,11 +8,12 @@ import java.util.Scanner;
 public class DungeonController {
     private final MazeGenerator mazeGenerator;
     private final Drawer drawer;
-    private List<Cube> scene;
+    private List<Cube> sceneObjects;
+    private List<LightSource> lights;
 
     // Called when user do smth like /startgame and creates unique controller for each user and each game session
     public DungeonController(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
-        scene = new ArrayList<>();
+        sceneObjects = new ArrayList<>();
 
         mazeGenerator = new MazeGenerator(mazeWidth, mazeHeight, roomMinSize, roomMaxSize, roomCount);
         mazeGenerator.generateMaze();
@@ -24,9 +25,8 @@ public class DungeonController {
 //        drawer = new Drawer(2, 1.5, -10);
         System.out.println("Camera pos: " + cameraXZ[0] + ", " + cameraXZ[1]);
 
-        drawer.startDrawing();
-        drawer.fillBackground(Color.BLACK);
-        drawer.drawScene(scene);
+        drawer.startDrawing(Color.BLACK, sceneObjects, lights);
+        drawer.drawScene();
         drawer.endDrawing();
     }
 
@@ -35,10 +35,10 @@ public class DungeonController {
             for (int j = 0; j < maze[i].length; j++) {
                 switch (maze[i][j]) {
                     case WALL:
-                        scene.add(new Cube(j, 0.5, i, 0.5, new Texture("wall_revamped.png")));
+                        sceneObjects.add(new Cube(j, 0.5, i, 0.5, new Texture("wall_revamped.png")));
                         break;
                     case FLOOR:
-                        scene.add(new Cube(j, -0.5, i, 0.5, new Texture("floor.png")));
+                        sceneObjects.add(new Cube(j, -0.5, i, 0.5, new Texture("floor.png")));
                         break;
                 }
             }
@@ -92,9 +92,8 @@ public class DungeonController {
             int dz = direction[2] * value;
             dungeonController.drawer.moveCamera(dx, dy, dz);
 
-            dungeonController.drawer.startDrawing();
-            dungeonController.drawer.fillBackground(Color.BLACK);
-            dungeonController.drawer.drawScene(dungeonController.scene);
+            dungeonController.drawer.startDrawing(Color.BLACK, dungeonController.sceneObjects, dungeonController.lights);
+            dungeonController.drawer.drawScene();
             dungeonController.drawer.endDrawing();
         }
     }
