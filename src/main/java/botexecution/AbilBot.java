@@ -191,6 +191,7 @@ public class AbilBot extends AbilityBot {
              sectionId = "feats";};
          Consumer<Update> Background = update -> {silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
              sectionId = "backgrounds";};
+
          Consumer<Update> RollD20 = update -> silent.send(DiceNew.D20(), getChatId(update));
          Consumer<Update> Roll2D20 = this::rollAdvantage;
          Consumer<Update> RollAdvantage = update -> silent.send(DiceNew.D20TwoTimes(true), getChatId(update));
@@ -335,7 +336,14 @@ public class AbilBot extends AbilityBot {
         }
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
+            UserDataHandler.createChatFile(update);
+
             if (rollCustom) {
+                try {
+                    UserDataHandler.saveDicePresets(update);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
                 rollCustom = false;
