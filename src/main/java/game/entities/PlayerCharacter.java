@@ -3,10 +3,12 @@ package game.entities;
 import game.characteristics.Jobs;
 import game.characteristics.Races;
 
-public class PlayerCharacter {
+import java.io.Serializable;
+
+public class PlayerCharacter implements Serializable {
     public String name;
-    public Jobs job;
-    public Races race;
+    public String job;
+    public String race;
 
     public int health;
     public int armorClass;
@@ -18,4 +20,10 @@ public class PlayerCharacter {
     public int intelligence;
     public int wisdom;
     public int charisma;
+
+    public PlayerCharacter(String name, String job, String race) {
+        this.name = name;
+        this.job = job;
+        this.race = race;
+    }
 }
