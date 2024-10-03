@@ -1,5 +1,6 @@
 package common;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class DiceNew {
@@ -82,6 +83,20 @@ public class DiceNew {
         return luck.toString();
     }
 
+    public static String D6FourTimes(ArrayList<Integer> dices) {
+        StringBuilder luck = new StringBuilder();
+
+        int dice1 = dices.get(0);
+        int dice2 = dices.get(1);
+        int dice3 = dices.get(2);
+        int dice4 = dices.get(3);
+
+        luck.append(dice1).append(" / ").append(dice2).append(" / ").append(dice3).append(" / ").append(dice4).append("\n");
+        luck.append("Итоговый стат по костям: ").append(dice1 + dice2 + dice3 + dice4 - Integer.min(Integer.min(dice1, dice2), Integer.min(dice3, dice4)));
+
+        return luck.toString();
+    }
+
     public static String D8() {
         int dice = random.nextInt(8) + 1;
         return String.valueOf(dice);
@@ -122,5 +137,18 @@ public class DiceNew {
         diceTable.append("Критических провалов: ").append(critFailures).append("\n");
 
         return diceTable.toString();
+    }
+
+    public static ArrayList<Integer> D6FourTimesCreation() {
+        ArrayList<Integer> luck = new ArrayList<>();
+
+        luck.add(random.nextInt(6) + 1);
+        luck.add(random.nextInt(6) + 1);
+        luck.add(random.nextInt(6) + 1);
+        luck.add(random.nextInt(6) + 1);
+        luck.add(luck.get(0) + luck.get(1) + luck.get(2) + luck.get(3)
+                - Integer.min(Integer.min(luck.get(0), luck.get(1)), Integer.min(luck.get(2), luck.get(3))));
+
+        return luck;
     }
 }
