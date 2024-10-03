@@ -2,20 +2,25 @@ package botexecution;
 
 import common.*;
 
+import game.entities.PlayerCharacter;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
@@ -29,7 +34,15 @@ public class AbilBot extends AbilityBot {
 
     private boolean rollCustom = false;
 
+    private boolean creationOfPc = false;
+    private HashSet<String> statProgress = new HashSet<>();
+    private PlayerCharacter pc;
+    private ArrayList<Integer> luck;
+
     private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
+    private final HashMap<String, String> jobAllocator = new HashMap<>();
+    private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocator = new HashMap<>();
+    private final HashMap<String, String> buttonAllocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -219,6 +232,34 @@ public class AbilBot extends AbilityBot {
          allocator.put(Constants.ROLL_4D6, Roll4D6);
          allocator.put(Constants.ROLL_D4, RollD4);
          allocator.put(Constants.CUSTOM_DICE, CustomDice);
+
+         jobAllocator.put(Constants.CREATION_MENU_FIGHTER, "Воин");
+         jobAllocator.put(Constants.CREATION_MENU_CLERIC, "Клерик");
+         jobAllocator.put(Constants.CREATION_MENU_MAGE, "Маг");
+         jobAllocator.put(Constants.CREATION_MENU_ROGUE, "Плут");
+         jobAllocator.put(Constants.CREATION_MENU_RANGER, "Следопыт");
+
+         BiConsumer<PlayerCharacter, Integer> strengthMod = PlayerCharacter::setStrength;
+         BiConsumer<PlayerCharacter, Integer> dexterityMod = PlayerCharacter::setDexterity;
+         BiConsumer<PlayerCharacter, Integer> constitutionMod = PlayerCharacter::setConstitution;
+         BiConsumer<PlayerCharacter, Integer> intelligenceMod = PlayerCharacter::setIntelligence;
+         BiConsumer<PlayerCharacter, Integer> wisdomMod = PlayerCharacter::setWisdom;
+         BiConsumer<PlayerCharacter, Integer> charismaMod = PlayerCharacter::setCharisma;
+
+         statAllocator.put(Constants.CREATION_MENU_STRENGTH, strengthMod);
+         statAllocator.put(Constants.CREATION_MENU_DEXTERITY, dexterityMod);
+         statAllocator.put(Constants.CREATION_MENU_CONSTITUTION, constitutionMod);
+         statAllocator.put(Constants.CREATION_MENU_INTELLIGENCE, intelligenceMod);
+         statAllocator.put(Constants.CREATION_MENU_WISDOM, wisdomMod);
+         statAllocator.put(Constants.CREATION_MENU_CHARISMA, charismaMod);
+
+         buttonAllocator.put(Constants.CREATION_MENU_STRENGTH, "Сила");
+         buttonAllocator.put(Constants.CREATION_MENU_DEXTERITY, "Ловкость");
+         buttonAllocator.put(Constants.CREATION_MENU_CONSTITUTION, "Выносливость");
+         buttonAllocator.put(Constants.CREATION_MENU_INTELLIGENCE, "Интеллект");
+         buttonAllocator.put(Constants.CREATION_MENU_WISDOM, "Мудрость");
+         buttonAllocator.put(Constants.CREATION_MENU_CHARISMA, "Харизма");
+
     }
 
     public Ability startOut() {
@@ -310,6 +351,22 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability createPc() {
+        Consumer<MessageContext> createNewPc =
+                ctx -> {patternExecute(ctx, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard());
+        creationOfPc = true;};
+
+        return Ability
+                .builder()
+                .name("createacharacter")
+                .info("creates a pc")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(createNewPc)
+                .build();
+    }
+
     public Ability sendPhotoOnDemand() {
         Consumer<MessageContext> pic = this::sendPic;
 
@@ -328,7 +385,47 @@ public class AbilBot extends AbilityBot {
     public void consume(Update update) {
         super.consume(update);
 
-        if (update.hasCallbackQuery()) {
+        if (creationOfPc && update.hasCallbackQuery()) {
+            if (statProgress.isEmpty()) {
+                statProgress = new HashSet<>();
+                pc = new PlayerCharacter();
+
+                pc.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
+                silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
+
+                luck = DiceNew.D6FourTimesCreation();
+
+                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(luck));
+                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(statProgress));
+                silent.execute(stats);
+
+                statProgress.add(update.getCallbackQuery().getData());
+            }
+            else {
+                statProgress.add(update.getCallbackQuery().getData());
+
+                luck = DiceNew.D6FourTimesCreation();
+
+                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(luck));
+                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(statProgress));
+                silent.execute(stats);
+
+                if (!statProgress.isEmpty()) {
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(pc, luck.get(4));
+                }
+
+                if (statProgress.size() == 7) {
+                    silent.send(Constants.CREATION_MENU_HEALTH + "\n"
+                            + Constants.CREATION_MENU_ARMOR + "\n"
+                            + Constants.CREATION_MENU_ATTACK, getChatId(update));
+                    ClassSaver.save(pc);
+                    pc = null;
+                    statProgress.clear();
+                }
+            }
+        }
+
+        else if (update.hasCallbackQuery()) {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
