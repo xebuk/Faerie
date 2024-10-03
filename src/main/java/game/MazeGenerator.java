@@ -16,8 +16,8 @@ public class MazeGenerator {
     private final int roomCount;
 
     private final Tiles[][] maze;
-    private final List<Room> rooms = new ArrayList<>();
-    private final Random random = new Random();
+    private final List<Room> rooms;
+    private final Random random;
 
     public MazeGenerator(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
         this.mazeWidth = mazeWidth;
@@ -26,6 +26,8 @@ public class MazeGenerator {
         this.roomMaxSize = roomMaxSize;
         this.roomCount = roomCount;
         maze = new Tiles[mazeWidth][mazeHeight];
+        rooms = new ArrayList<>();
+        random = new Random();
     }
 
     public void generateMaze() {
@@ -232,7 +234,7 @@ public class MazeGenerator {
         }
     }
 
-    private static class Room {
+    public static class Room {
         int x, y, width, height;
 
         Room(int x, int y, int width, int height) {
@@ -248,10 +250,18 @@ public class MazeGenerator {
                    this.y <= other.y + other.height + 1 &&
                    this.y + this.height + 1 >= other.y;
         }
+
+        public int[] getCenter() {
+            return new int[] {this.x + this.width / 2, this.y + this.height / 2};
+        }
     }
 
     public Tiles[][] getMaze() {
         return maze;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
     }
 
     public static void main(String[] args) {
