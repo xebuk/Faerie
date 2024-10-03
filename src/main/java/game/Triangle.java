@@ -1,16 +1,22 @@
 package game;
 
-import java.awt.*;
+import tools.Tools;
 
 public class Triangle {
     private final double[][] vertices;      // 3 vertices, each is (x, y, z)
     private final Texture texture;
     private final double[][] textureCoords;
 
+    private double[] cashedNormal;
+    private double[] cashedCenter;
+
     public Triangle(double[][] vertices, Texture texture, double[][] textureCoords) {
         this.vertices = vertices;
         this.texture = texture;
         this.textureCoords = textureCoords;
+
+        this.cashedNormal = null;
+        this.cashedCenter = null;
     }
 
     public boolean isVisible(double cameraX, double cameraY, double cameraZ) {
@@ -36,11 +42,13 @@ public class Triangle {
                 vertices[2][2] - vertices[0][2]
         };
 
-        return new double[] {
+        double[] normal = new double[] {
                 v0[1] * v1[2] - v0[2] * v1[1],
                 v0[2] * v1[0] - v0[0] * v1[2],
                 v0[0] * v1[1] - v0[1] * v1[0]
         };
+
+        return Tools.normalize(normal);
     }
 
     private double[] calculateCenter() {
@@ -74,5 +82,19 @@ public class Triangle {
 
     public double[][] getTextureCoords() {
         return textureCoords;
+    }
+
+    public double[] getNormal() {
+        if (cashedNormal == null) {
+            cashedNormal = calculateNormal();
+        }
+        return cashedNormal;
+    }
+
+    public double[] getCenter() {
+        if (cashedCenter == null) {
+            cashedCenter = calculateCenter();
+        }
+        return cashedCenter;
     }
 }
