@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class KeyboardFactory {
     public static InlineKeyboardMarkup searchBoard() {
@@ -85,6 +86,75 @@ public class KeyboardFactory {
         inlineKeyRow.get(0).setCallbackData(Constants.ADVANTAGE);
         inlineKeyRow.add(new InlineKeyboardButton("Нет"));
         inlineKeyRow.get(1).setCallbackData(Constants.DISADVANTAGE);
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
+    public static InlineKeyboardMarkup jobSelectionBoard() {
+        InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
+
+        inlineKeyRow1.add(new InlineKeyboardButton("Боец"));
+        inlineKeyRow1.get(0).setCallbackData(Constants.CREATION_MENU_FIGHTER);
+        inlineKeyRow1.add(new InlineKeyboardButton("Клерик"));
+        inlineKeyRow1.get(1).setCallbackData(Constants.CREATION_MENU_CLERIC);
+
+        InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
+
+        inlineKeyRow2.add(new InlineKeyboardButton("Маг"));
+        inlineKeyRow2.get(0).setCallbackData(Constants.CREATION_MENU_MAGE);
+        inlineKeyRow2.add(new InlineKeyboardButton("Плут"));
+        inlineKeyRow2.get(1).setCallbackData(Constants.CREATION_MENU_ROGUE);
+        inlineKeyRow2.add(new InlineKeyboardButton("Следопыт"));
+        inlineKeyRow2.get(2).setCallbackData(Constants.CREATION_MENU_RANGER);
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow1);
+        inlineKeyboardRows.add(inlineKeyRow2);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
+    public static InlineKeyboardMarkup assignStatsBoard(HashSet<String> bannedButtons) {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_STRENGTH)) {
+            InlineKeyboardButton strength = new InlineKeyboardButton("Сила");
+            strength.setCallbackData(Constants.CREATION_MENU_STRENGTH);
+            inlineKeyRow.add(strength);
+        }
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_DEXTERITY)) {
+            InlineKeyboardButton dexterity = new InlineKeyboardButton("Ловкость");
+            dexterity.setCallbackData(Constants.CREATION_MENU_DEXTERITY);
+            inlineKeyRow.add(dexterity);
+        }
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_CONSTITUTION)) {
+            InlineKeyboardButton constitution = new InlineKeyboardButton("Выносливость");
+            constitution.setCallbackData(Constants.CREATION_MENU_CONSTITUTION);
+            inlineKeyRow.add(constitution);
+        }
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_INTELLIGENCE)) {
+            InlineKeyboardButton intelligence = new InlineKeyboardButton("Интеллект");
+            intelligence.setCallbackData(Constants.CREATION_MENU_INTELLIGENCE);
+            inlineKeyRow.add(intelligence);
+        }
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_WISDOM)) {
+            InlineKeyboardButton wisdom = new InlineKeyboardButton("Мудрость");
+            wisdom.setCallbackData(Constants.CREATION_MENU_WISDOM);
+            inlineKeyRow.add(wisdom);
+        }
+
+        if (!bannedButtons.contains(Constants.CREATION_MENU_CHARISMA)) {
+            InlineKeyboardButton charisma = new InlineKeyboardButton("Харизма");
+            charisma.setCallbackData(Constants.CREATION_MENU_CHARISMA);
+            inlineKeyRow.add(charisma);
+        }
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
         inlineKeyboardRows.add(inlineKeyRow);
