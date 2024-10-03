@@ -1,6 +1,7 @@
 package game;
 
 import common.Constants;
+import tools.Tools;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,13 +9,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.List;
 
 public class Drawer {
-    private static final int CANVAS_WIDTH = 512;  //465;  //310;  //720;  //1440;
-    private static final int CANVAS_HEIGHT = 288;  //304;  //202;  //405;  //810;
+    private static final int CANVAS_WIDTH = 512;  /*465;*/  /*310;*/  /*720;*/  /*1440;*/
+    private static final int CANVAS_HEIGHT = 288;  /*304;*/  /*202;*/  /*405;*/  /*810;*/
 
     private static final double FOV = Math.toRadians(60);
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
@@ -23,7 +22,7 @@ public class Drawer {
     private static final double NEAR_CLIPPING_PLANE = 0.1;
     private static final double FAR_CLIPPING_PLANE = 25.0;
 
-    private static final double LIGHT_ATTENUATION_FACTOR = 0;
+    private static final double LIGHT_ATTENUATION_FACTOR = 1.0;
 
     private double cameraX, cameraY, cameraZ;
     private double yaw, pitch;
@@ -87,13 +86,33 @@ public class Drawer {
         double cosPitch = Math.cos(pitch);
         double sinPitch = Math.sin(pitch);
 
+        // Straight order: yaw -> pitch
         double tempX = cosYaw * x - sinYaw * z;
         double tempZ = sinYaw * x + cosYaw * z;
 
         double tempY = cosPitch * y - sinPitch * tempZ;
         tempZ = sinPitch * y + cosPitch * tempZ;
+
         return new double[] {tempX, tempY, tempZ};
     }
+
+    private double[] unrotateVertex(double x, double y, double z) {
+        double cosPitch = Math.cos(pitch);
+        double sinPitch = Math.sin(pitch);
+        double cosYaw = Math.cos(yaw);
+        double sinYaw = Math.sin(yaw);
+
+        // Inverse order: pitch -> yaw
+        double tempY = cosPitch * y + sinPitch * z;
+        double tempZ = -sinPitch * y + cosPitch * z;
+
+        double tempX = cosYaw * x + sinYaw * tempZ;
+        tempZ = -sinYaw * x + cosYaw * tempZ;
+
+        return new double[] {tempX, tempY, tempZ};
+    }
+
+
 
     private int[] projectVertex(double x, double y, double z, double[] depth) {
         double localX = x - cameraX;
@@ -118,6 +137,24 @@ public class Drawer {
         int pixelY = (int) ((1 - projY) / 2 * CANVAS_HEIGHT);
 
         return new int[] {pixelX, pixelY};
+    }
+
+    private double[] unprojectPixel(int pixelX, int pixelY, double depth) {
+        // Back to NDC
+        double projX = 2.0 * pixelX / CANVAS_WIDTH - 1.0;
+        double projY = 1.0 - 2.0 * pixelY / CANVAS_HEIGHT;
+
+        double localX = projX * depth * ASPECT_RATIO / FOCAL_LENGTH;
+        double localY = projY * depth / FOCAL_LENGTH;
+        double localZ = depth;
+
+        double[] unrotatedCoords = unrotateVertex(localX, localY, localZ);
+
+        return new double[] {
+                unrotatedCoords[0] + cameraX,
+                unrotatedCoords[1] + cameraY,
+                unrotatedCoords[2] + cameraZ
+        };
     }
 
     private int[][] projectTriangle(Triangle triangle, double[] depthValues) {
@@ -158,7 +195,11 @@ public class Drawer {
 //                            g2d.setColor(triangle.getCurrentColor());
                         } else {
                             double[] interpolatedUV = interpolateUV(x, y, projectedCoords, zValues, triangle.getTextureCoords());
-                            g2d.setColor(triangleTexture.getColorAt(interpolatedUV[0], interpolatedUV[1]));
+                            Color textureColor = triangleTexture.getColorAt(interpolatedUV[0], interpolatedUV[1]);
+
+                            Color light = calculateLightning(triangle, x, y, interpolatedZ);
+                            Color finalColor = Tools.multiplyColors(textureColor, light);
+                            g2d.setColor(finalColor);
                         }
 
                         g2d.drawLine(x, y, x, y);     // Draw point
@@ -212,7 +253,46 @@ public class Drawer {
         return new double[] {u, v, w};
     }
 
-    public void drawCube(Graphics2D g2d, Cube cube) {
+    private Color calculateLightning(Triangle triangle, int x, int y, double depth) {
+        Color pixelColor = new Color(0, 0, 0);
+
+        double[] unprojectedPixelCoords = unprojectPixel(x, y, depth);
+        double[] normal = triangle.getNormal();
+
+        for (LightSource source : lights) {
+            Color lightContribution = calculateLightContribution(unprojectedPixelCoords, normal, source);
+            pixelColor = Tools.addColors(pixelColor, lightContribution);
+        }
+
+        return pixelColor;
+    }
+
+    private Color calculateLightContribution(double[] unprojectedPixelCoords, double[] normal, LightSource source) {
+        double[] toLight = Tools.subtractVectors(source.getPosition(), unprojectedPixelCoords);
+
+        double distance = Tools.vectorLength(toLight);
+        toLight[0] /= distance;
+        toLight[1] /= distance;
+        toLight[2] /= distance;
+
+        double attenuation = 1.0 / (source.getConstant() +
+                                    source.getLinear() * distance +
+                                    source.getQuadratic() * distance * distance);
+
+        double angle = Math.max(0.0, Tools.dotProduct(normal, toLight));
+
+        double red = source.getColor().getRed() * source.getIntensity() * angle * attenuation;
+        double green = source.getColor().getGreen() * source.getIntensity() * angle * attenuation;
+        double blue = source.getColor().getBlue() * source.getIntensity() * angle * attenuation;
+
+        red = Math.clamp(red, 0, 255);
+        green = Math.clamp(green, 0, 255);
+        blue = Math.clamp(blue, 0, 255);
+
+        return new Color((int) red, (int) green, (int) blue);
+    }
+
+    public void drawCube(Cube cube) {
         for (Triangle triangle : cube.getTriangles()) {
             if (triangle.isVisible(cameraX, cameraY, cameraZ)) {
                 double[] depthValues = new double[4];
@@ -228,7 +308,7 @@ public class Drawer {
     public void drawScene() {
         resetDepthBuffer();
         for (Cube cube : sceneObjects) {
-            drawCube(g2d, cube);
+            drawCube(cube);
         }
     }
 
@@ -284,9 +364,29 @@ public class Drawer {
     }
 
     public static void main(String[] args) {
-        // This main is only for testing purposes and Drawer class still have WIP status.
-        // Any useful functionality will be added in the next updates.
-        Drawer drawer = new Drawer(0, 0,-10);
+        // v3.0 of unrotateVertex worked
+        Drawer drawer = new Drawer(0, 0, 0);
+        drawer.rotateCamera(Math.toRadians(45), Math.toRadians(-45));
+
+        double[] xyz = new double[] {1, 2, 3};
+        System.out.println("Point itself:\n" + "x = " + xyz[0] + ", y = " + xyz[1] + ", z = " + xyz[2]);
+
+        double[] tmp;
+        tmp = drawer.rotateVertex(xyz[0], xyz[1], xyz[2]);
+        System.out.println("Rotate:\n" + "x = " + tmp[0] + ", y = " + tmp[1] + ", z = " + tmp[2]);
+        tmp = drawer.unrotateVertex(tmp[0], tmp[1], tmp[2]);
+        System.out.println("Unrotate:\n" + "x = " + tmp[0] + ", y = " + tmp[1] + ", z = " + tmp[2]);
+
+        double epsilon = 1e-6;
+        if (Math.abs(xyz[0] - tmp[0]) < epsilon &&
+            Math.abs(xyz[1] - tmp[1]) < epsilon &&
+            Math.abs(xyz[2] - tmp[2]) < epsilon) {
+            System.out.println("Correct");
+        } else {
+            System.out.println("Incorrect");
+        }
+
+        /*Drawer drawer = new Drawer(0, 0,-10);
 
         Random random = new Random();
         int cubeCountTest = 10;
@@ -299,6 +399,6 @@ public class Drawer {
 
         drawer.drawScene();
 
-        drawer.endDrawing();
+        drawer.endDrawing();*/
     }
 }
