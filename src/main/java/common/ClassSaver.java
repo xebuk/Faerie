@@ -29,19 +29,20 @@ public class ClassSaver {
         try {
             in = new FileInputStream(file);
             input = new ObjectInputStream(in);
-            System.out.println(((PlayerCharacter) input.readObject()).name);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+            PlayerCharacter pc = (PlayerCharacter) input.readObject();
+            System.out.println(pc.job);
+            System.out.println(pc.strength);
+            System.out.println(pc.dexterity);
+            System.out.println(pc.constitution);
+            System.out.println(pc.intelligence);
+            System.out.println(pc.wisdom);
+            System.out.println(pc.charisma);
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void main(String[] args) {
-        PlayerCharacter pc = new PlayerCharacter("a", "b", "c");
-        save(pc);
         File file = new File("../token_dir/userData/chatId/pcFile.txt");
         read(file);
     }
