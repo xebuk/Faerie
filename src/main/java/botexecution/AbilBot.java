@@ -2,6 +2,8 @@ package botexecution;
 
 import common.*;
 
+import game.characteristics.Job;
+import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
@@ -40,7 +42,7 @@ public class AbilBot extends AbilityBot {
     private ArrayList<Integer> luck;
 
     private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
-    private final HashMap<String, String> jobAllocator = new HashMap<>();
+    private final HashMap<String, Job> jobAllocator = new HashMap<>();
     private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocator = new HashMap<>();
     private final HashMap<String, String> buttonAllocator = new HashMap<>();
 
@@ -233,11 +235,11 @@ public class AbilBot extends AbilityBot {
          allocator.put(Constants.ROLL_D4, RollD4);
          allocator.put(Constants.CUSTOM_DICE, CustomDice);
 
-         jobAllocator.put(Constants.CREATION_MENU_FIGHTER, "Воин");
-         jobAllocator.put(Constants.CREATION_MENU_CLERIC, "Клерик");
-         jobAllocator.put(Constants.CREATION_MENU_MAGE, "Маг");
-         jobAllocator.put(Constants.CREATION_MENU_ROGUE, "Плут");
-         jobAllocator.put(Constants.CREATION_MENU_RANGER, "Следопыт");
+         jobAllocator.put(Constants.CREATION_MENU_FIGHTER, new Fighter());
+         jobAllocator.put(Constants.CREATION_MENU_CLERIC, new Cleric());
+         jobAllocator.put(Constants.CREATION_MENU_MAGE, new Mage());
+         jobAllocator.put(Constants.CREATION_MENU_ROGUE, new Rogue());
+         jobAllocator.put(Constants.CREATION_MENU_RANGER, new Ranger());
 
          BiConsumer<PlayerCharacter, Integer> strengthMod = PlayerCharacter::setStrength;
          BiConsumer<PlayerCharacter, Integer> dexterityMod = PlayerCharacter::setDexterity;
@@ -393,34 +395,37 @@ public class AbilBot extends AbilityBot {
                 pc.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
                 silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
 
+                statProgress.add(update.getCallbackQuery().getData());
+
                 luck = DiceNew.D6FourTimesCreation();
 
                 SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(luck));
                 stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(statProgress));
                 silent.execute(stats);
-
-                statProgress.add(update.getCallbackQuery().getData());
             }
             else {
                 statProgress.add(update.getCallbackQuery().getData());
 
-                luck = DiceNew.D6FourTimesCreation();
-
-                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(luck));
-                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(statProgress));
-                silent.execute(stats);
-
-                if (!statProgress.isEmpty()) {
-                    statAllocator.get(update.getCallbackQuery().getData()).accept(pc, luck.get(4));
-                }
-
                 if (statProgress.size() == 7) {
-                    silent.send(Constants.CREATION_MENU_HEALTH + "\n"
-                            + Constants.CREATION_MENU_ARMOR + "\n"
-                            + Constants.CREATION_MENU_ATTACK, getChatId(update));
+                    pc.setHealth();
+                    pc.setArmorClass();
+                    pc.setAttackPower();
+                    silent.send(Constants.CREATION_MENU_HEALTH + pc.health + "\n"
+                            + Constants.CREATION_MENU_ARMOR + pc.armorClass + "\n"
+                            + Constants.CREATION_MENU_ATTACK + pc.attackPower, getChatId(update));
                     ClassSaver.save(pc);
                     pc = null;
                     statProgress.clear();
+                    creationOfPc = false;
+                }
+                else {
+                    luck = DiceNew.D6FourTimesCreation();
+
+                    SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(luck));
+                    stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(statProgress));
+                    silent.execute(stats);
+
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(pc, luck.get(4));
                 }
             }
         }
