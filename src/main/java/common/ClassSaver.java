@@ -30,7 +30,12 @@ public class ClassSaver {
             in = new FileInputStream(file);
             input = new ObjectInputStream(in);
             PlayerCharacter pc = (PlayerCharacter) input.readObject();
-            System.out.println(pc.job);
+            System.out.println(pc.job.startHp);
+            System.out.println(pc.job.startArmorClass);
+            System.out.println(pc.job.startAttackRoll);
+            System.out.println(pc.health);
+            System.out.println(pc.armorClass);
+            System.out.println(pc.attackPower);
             System.out.println(pc.strength);
             System.out.println(pc.dexterity);
             System.out.println(pc.constitution);
