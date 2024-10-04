@@ -91,8 +91,11 @@ public class DiceNew {
         int dice3 = dices.get(2);
         int dice4 = dices.get(3);
 
+        int stat = dices.get(4);
+
         luck.append(dice1).append(" / ").append(dice2).append(" / ").append(dice3).append(" / ").append(dice4).append("\n");
-        luck.append("Итоговый стат по костям: ").append(dice1 + dice2 + dice3 + dice4 - Integer.min(Integer.min(dice1, dice2), Integer.min(dice3, dice4)));
+        luck.append("Итоговый стат по костям: ").append(stat).append("\n");
+        luck.append("Итоговый модификатор стата: ").append(-5 + (stat / 2));
 
         return luck.toString();
     }
