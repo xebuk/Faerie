@@ -42,7 +42,7 @@ public class PlayerCharacter implements Serializable {
         this.job = job;
     }
 
-    public void setHealth() {
+    public void initHealth() {
         this.health = job.startHp + constitutionModifier;
     }
 
@@ -54,32 +54,32 @@ public class PlayerCharacter implements Serializable {
         this.attackPower = job.startAttackRoll;
     }
 
-    public void setStrength(int strength) {
+    public void initStrength(int strength) {
         this.strength = strength;
         this.strengthModifier = modifierSet(strength);
     }
 
-    public void setDexterity(int dexterity) {
+    public void initDexterity(int dexterity) {
         this.dexterity = dexterity;
         this.dexterityModifier = modifierSet(dexterity);
     }
 
-    public void setConstitution(int constitution) {
+    public void initConstitution(int constitution) {
         this.constitution = constitution;
         this.constitutionModifier = modifierSet(constitution);
     }
 
-    public void setIntelligence(int intelligence) {
+    public void initIntelligence(int intelligence) {
         this.intelligence = intelligence;
         this.intelligenceModifier = modifierSet(intelligence);
     }
 
-    public void setWisdom(int wisdom) {
+    public void initWisdom(int wisdom) {
         this.wisdom = wisdom;
         this.wisdomModifier = modifierSet(wisdom);
     }
 
-    public void setCharisma(int charisma) {
+    public void initCharisma(int charisma) {
         this.charisma = charisma;
         this.charismaModifier = modifierSet(charisma);
     }

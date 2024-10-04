@@ -5,19 +5,15 @@ import common.*;
 import game.characteristics.Job;
 import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
@@ -241,12 +237,12 @@ public class AbilBot extends AbilityBot {
          jobAllocator.put(Constants.CREATION_MENU_ROGUE, new Rogue());
          jobAllocator.put(Constants.CREATION_MENU_RANGER, new Ranger());
 
-         BiConsumer<PlayerCharacter, Integer> strengthMod = PlayerCharacter::setStrength;
-         BiConsumer<PlayerCharacter, Integer> dexterityMod = PlayerCharacter::setDexterity;
-         BiConsumer<PlayerCharacter, Integer> constitutionMod = PlayerCharacter::setConstitution;
-         BiConsumer<PlayerCharacter, Integer> intelligenceMod = PlayerCharacter::setIntelligence;
-         BiConsumer<PlayerCharacter, Integer> wisdomMod = PlayerCharacter::setWisdom;
-         BiConsumer<PlayerCharacter, Integer> charismaMod = PlayerCharacter::setCharisma;
+         BiConsumer<PlayerCharacter, Integer> strengthMod = PlayerCharacter::initStrength;
+         BiConsumer<PlayerCharacter, Integer> dexterityMod = PlayerCharacter::initDexterity;
+         BiConsumer<PlayerCharacter, Integer> constitutionMod = PlayerCharacter::initConstitution;
+         BiConsumer<PlayerCharacter, Integer> intelligenceMod = PlayerCharacter::initIntelligence;
+         BiConsumer<PlayerCharacter, Integer> wisdomMod = PlayerCharacter::initWisdom;
+         BiConsumer<PlayerCharacter, Integer> charismaMod = PlayerCharacter::initCharisma;
 
          statAllocator.put(Constants.CREATION_MENU_STRENGTH, strengthMod);
          statAllocator.put(Constants.CREATION_MENU_DEXTERITY, dexterityMod);
@@ -407,7 +403,7 @@ public class AbilBot extends AbilityBot {
                 statProgress.add(update.getCallbackQuery().getData());
 
                 if (statProgress.size() == 7) {
-                    pc.setHealth();
+                    pc.initHealth();
                     pc.setArmorClass();
                     pc.setAttackPower();
                     silent.send(Constants.CREATION_MENU_HEALTH + pc.health + "\n"
