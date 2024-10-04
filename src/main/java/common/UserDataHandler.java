@@ -12,15 +12,24 @@ import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getCha
 public class UserDataHandler {
 
     public static void createChatFile(Update update) {
-        File userFile = new File("../token_dir/userData/" + getChatId(update));
-        if (!userFile.exists()) {
-            userFile.mkdir();
+        File newUserDirectoryFile = new File("../token_dir/userData/" + getChatId(update));
+        if (!newUserDirectoryFile.exists()) {
+            newUserDirectoryFile.mkdir();
+        }
 
-            File userFileMessage = new File("../token_dir/userData/" + getChatId(update) + "/dicePresets.txt");
-
+        File newUserSessionFile = new File("../token_dir/userData/" + getChatId(update) + "/session.txt");
+        if (!newUserSessionFile.exists()) {
             try {
-                FileWriter message = new FileWriter(userFileMessage);
-                message.close();
+                newUserSessionFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        File newUserDiceFile = new File("../token_dir/userData/" + getChatId(update) + "/dicePresets.txt");
+        if (!newUserDiceFile.exists()) {
+            try {
+                newUserDiceFile.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -38,34 +47,8 @@ public class UserDataHandler {
         preset.close();
     }
 
-    public static void catchMessage(Update update) {
-        Date date = new Date();
-
-        StringBuilder fileName = new StringBuilder();
-        fileName.append(date.getDay()).append("/")
-                .append(date.getMonth()).append("/")
-                .append(date.getYear()).append(" ")
-                .append(date.getHours()).append(" ").append(date.getMinutes()).append(" ").append(date.getSeconds());
-
-        File userFileMessage = new File("../token_dir/userData/" + getChatId(update) + "/" + fileName.toString() + ".txt");
-
-        PrintWriter message;
-        try {
-            message = new PrintWriter(userFileMessage);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        StringBuilder post = new StringBuilder();
-        post.append(update.getMessage().getChat().getUserName()).append(" - ").append(update.getMessage().getText());
-
-        System.out.println(post.toString());
-        message.println(post.toString());
-        message.close();
-    }
-
-     public static void save(PlayerCharacter pc) {
-        File pcFile = new File("../token_dir/userData/chatId/pcFile.txt");
+     public static void save(PlayerCharacter pc, Update update) {
+        File pcFile = new File("../token_dir/userData/" + getChatId(update) + "/pcFile.txt");
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -80,7 +63,7 @@ public class UserDataHandler {
     }
 
     public static void save(ChatSession cs) {
-        File sessionFile = new File("../token_dir/userData/" + cs.getChatId() + "/pcFile.txt");
+        File sessionFile = new File("../token_dir/userData/" + cs.getChatId() + "/session.txt");
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -94,6 +77,21 @@ public class UserDataHandler {
         }
     }
 
+    public static ChatSession readSession(Update update) {
+        FileInputStream in;
+        ObjectInputStream input;
+        try {
+            in = new FileInputStream("../token_dir/userData/" + getChatId(update) + "/session.txt");
+            input = new ObjectInputStream(in);
+            ChatSession cs = (ChatSession) input.readObject();
+            input.close();
+            in.close();
+            return cs;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void read(File file) {
         FileInputStream in;
         ObjectInputStream input;
@@ -101,6 +99,8 @@ public class UserDataHandler {
             in = new FileInputStream(file);
             input = new ObjectInputStream(in);
             PlayerCharacter pc = (PlayerCharacter) input.readObject();
+            input.close();
+            in.close();
             System.out.println(pc.job.startHp);
             System.out.println(pc.job.startArmorClass);
             System.out.println(pc.job.startAttackRoll);
