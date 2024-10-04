@@ -29,7 +29,6 @@ public class AbilBot extends AbilityBot {
     private final HashMap<String, Consumer<ChatSession>> allocator = new HashMap<>();
     private final HashMap<String, Job> jobAllocator = new HashMap<>();
     private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocator = new HashMap<>();
-    private final HashMap<String, String> buttonAllocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -161,7 +160,7 @@ public class AbilBot extends AbilityBot {
     private void startNewUser(MessageContext ctx) {
         patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
 
-        UserDataHandler.createChatFile(ctx.update().toString());
+        UserDataHandler.createChatFile(getChatId(ctx.update()).toString());
         ChatSession newUser = new ChatSession(ctx);
         UserDataHandler.saveSession(newUser, ctx.update());
     }
@@ -255,14 +254,6 @@ public class AbilBot extends AbilityBot {
          statAllocator.put(Constants.CREATION_MENU_INTELLIGENCE, intelligenceMod);
          statAllocator.put(Constants.CREATION_MENU_WISDOM, wisdomMod);
          statAllocator.put(Constants.CREATION_MENU_CHARISMA, charismaMod);
-
-         buttonAllocator.put(Constants.CREATION_MENU_STRENGTH, "Сила");
-         buttonAllocator.put(Constants.CREATION_MENU_DEXTERITY, "Ловкость");
-         buttonAllocator.put(Constants.CREATION_MENU_CONSTITUTION, "Выносливость");
-         buttonAllocator.put(Constants.CREATION_MENU_INTELLIGENCE, "Интеллект");
-         buttonAllocator.put(Constants.CREATION_MENU_WISDOM, "Мудрость");
-         buttonAllocator.put(Constants.CREATION_MENU_CHARISMA, "Харизма");
-
     }
 
     public Ability startOut() {
@@ -387,11 +378,11 @@ public class AbilBot extends AbilityBot {
 
         ChatSession currentUser = UserDataHandler.readSession(update);
 
-        if (currentUser.creationOfPc && update.hasCallbackQuery()) {
+        if (currentUser.creationOfPc && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             if (currentUser.statProgress.isEmpty()) {
-                currentUser.statProgress = new HashSet<>();
                 currentUser.pc = new PlayerCharacter();
 
+                currentUser.pc.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
                 currentUser.pc.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
                 silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
 
@@ -402,42 +393,46 @@ public class AbilBot extends AbilityBot {
                 SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
                 stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
                 silent.execute(stats);
+                UserDataHandler.saveSession(currentUser, update);
             }
             else {
-                currentUser.statProgress.add(update.getCallbackQuery().getData());
+                if (currentUser.statProgress.size() == 6) {
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.pc, currentUser.luck.get(4));
 
-                if (currentUser.statProgress.size() == 7) {
                     currentUser.pc.initHealth();
                     currentUser.pc.setArmorClass();
-                    currentUser.pc.setAttackPower();
-                    silent.send(Constants.CREATION_MENU_HEALTH + currentUser.pc.health + "\n"
-                            + Constants.CREATION_MENU_ARMOR + currentUser.pc.armorClass + "\n"
-                            + Constants.CREATION_MENU_ATTACK + currentUser.pc.attackPower, getChatId(update));
+                    currentUser.pc.setAttackDice();
+
+                    silent.send(currentUser.pc.statWindow(), getChatId(update));
                     UserDataHandler.savePlayerCharacter(currentUser.pc, update);
+
                     currentUser.pc = null;
                     currentUser.statProgress.clear();
                     currentUser.creationOfPc = false;
+                    UserDataHandler.saveSession(currentUser, update);
                 }
                 else {
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.pc, currentUser.luck.get(4));
+                    currentUser.statProgress.add(update.getCallbackQuery().getData());
                     currentUser.luck = DiceNew.D6FourTimesCreation();
 
                     SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
                     stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
                     silent.execute(stats);
-
-                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.pc, currentUser.luck.get(4));
+                    UserDataHandler.saveSession(currentUser, update);
                 }
             }
         }
 
-        else if (update.hasCallbackQuery()) {
+        else if (update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
             allocator.get(responseQuery).accept(currentUser);
+            UserDataHandler.saveSession(currentUser, update);
         }
 
-        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
+        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
 
             if (currentUser.rollCustom) {
                 currentUser.dicePresets = UserDataHandler.readDicePresets(update);
@@ -447,6 +442,7 @@ public class AbilBot extends AbilityBot {
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
                 currentUser.rollCustom = false;
+                UserDataHandler.saveSession(currentUser, update);
             }
 
             else if (currentUser.searchSuccess) {
@@ -500,13 +496,13 @@ public class AbilBot extends AbilityBot {
                 currentUser.sectionId = "";
                 currentUser.searchSuccess = false;
                 currentUser.title = "";
+                UserDataHandler.saveSession(currentUser, update);
             }
 
             else if (!currentUser.sectionId.isEmpty()) {
                 currentUser.searchSuccess = searchEngine(currentUser.sectionId, update.getMessage().getText(), update);
+                UserDataHandler.saveSession(currentUser, update);
             }
         }
-
-        UserDataHandler.saveSession(currentUser, update);
     }
 }
