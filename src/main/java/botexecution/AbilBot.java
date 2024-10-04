@@ -161,8 +161,9 @@ public class AbilBot extends AbilityBot {
     private void startNewUser(MessageContext ctx) {
         patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
 
+        UserDataHandler.createChatFile(ctx.update().toString());
         ChatSession newUser = new ChatSession(ctx);
-        UserDataHandler.save(newUser);
+        UserDataHandler.saveSession(newUser, ctx.update());
     }
 
     private void createPlayer(MessageContext ctx) {
@@ -170,7 +171,7 @@ public class AbilBot extends AbilityBot {
 
         ChatSession newUser = UserDataHandler.readSession(ctx.update());
         newUser.creationOfPc = true;
-        UserDataHandler.save(newUser);
+        UserDataHandler.saveSession(newUser, ctx.update());
     }
 
     private void articleMessaging(ArrayList<String> article, Update update) {
@@ -412,7 +413,7 @@ public class AbilBot extends AbilityBot {
                     silent.send(Constants.CREATION_MENU_HEALTH + currentUser.pc.health + "\n"
                             + Constants.CREATION_MENU_ARMOR + currentUser.pc.armorClass + "\n"
                             + Constants.CREATION_MENU_ATTACK + currentUser.pc.attackPower, getChatId(update));
-                    UserDataHandler.save(currentUser.pc, update);
+                    UserDataHandler.savePlayerCharacter(currentUser.pc, update);
                     currentUser.pc = null;
                     currentUser.statProgress.clear();
                     currentUser.creationOfPc = false;
@@ -439,11 +440,10 @@ public class AbilBot extends AbilityBot {
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
 
             if (currentUser.rollCustom) {
-                try {
-                    UserDataHandler.saveDicePresets(update);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                currentUser.dicePresets = UserDataHandler.readDicePresets(update);
+                currentUser.dicePresets.add(update.getMessage().getText());
+                UserDataHandler.saveDicePresets(currentUser.dicePresets, update);
+
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
                 currentUser.rollCustom = false;
@@ -507,6 +507,6 @@ public class AbilBot extends AbilityBot {
             }
         }
 
-        UserDataHandler.save(currentUser);
+        UserDataHandler.saveSession(currentUser, update);
     }
 }
