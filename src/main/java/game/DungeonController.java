@@ -14,6 +14,7 @@ public class DungeonController {
     // Called when user do smth like /startgame and creates unique controller for each user and each game session
     public DungeonController(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
         sceneObjects = new ArrayList<>();
+        lights = new ArrayList<>();
 
         mazeGenerator = new MazeGenerator(mazeWidth, mazeHeight, roomMinSize, roomMaxSize, roomCount);
         mazeGenerator.generateMaze();
@@ -22,6 +23,12 @@ public class DungeonController {
 
         int[] cameraXZ = mazeGenerator.getRandomRoomCenter();
         drawer = new Drawer(cameraXZ[0], 0.5, cameraXZ[1]);
+
+//        lights.add(new LightSource(cameraXZ[0], 0.5, cameraXZ[1], 3));
+        for (MazeGenerator.Room room : mazeGenerator.getRooms()) {
+            int[] center = room.getCenter();
+            lights.add(new LightSource(center[0], 0.5, center[1], 5));
+        }
 //        drawer = new Drawer(2, 1.5, -10);
         System.out.println("Camera pos: " + cameraXZ[0] + ", " + cameraXZ[1]);
 
@@ -54,7 +61,7 @@ public class DungeonController {
     }
 
     public static void main(String[] args) {
-        DungeonController dungeonController = new DungeonController(50, 50, 3, 7, 30);
+        DungeonController dungeonController = new DungeonController(20, 20, 3, 7, 30);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {

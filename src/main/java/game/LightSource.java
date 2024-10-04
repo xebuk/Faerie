@@ -1,18 +1,61 @@
 package game;
 
-public class LightSource {
-    private final int x, y, z;
-    private final double intensity;
+import java.awt.*;
 
-    public LightSource(int x, int y, int z, double intensity) {
+public class LightSource {
+    private final double x, y, z;
+    private final double intensity;
+    private Color color;
+
+    private final double constant, linear, quadratic;
+
+    public LightSource(double x, double y, double z, double intensity) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.intensity = intensity;
+        this.color = Color.WHITE;
+        this.constant = 1.0;
+        this.linear = 0.7;
+        this.quadratic = 1.8;
     }
 
-    public double calculateIntensityInPoint(int x, int y, int z, double attenuationFactor) {
-        double distance = Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2) + Math.pow(z - this.z, 2));
-        return intensity / (1 + attenuationFactor * (distance * distance));
+    public LightSource(double x, double y, double z, double intensity, Color color) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.intensity = intensity;
+        this.color = color;
+        this.constant = 1.0;
+        this.linear = 0.7;
+        this.quadratic = 1.8;
+    }
+
+    public double[] getPosition() {
+        return new double[] {this.x, this.y, this.z};
+    }
+
+    public double getIntensity() {
+        return this.intensity;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public double getConstant() {
+        return this.constant;
+    }
+
+    public double getLinear() {
+        return this.linear;
+    }
+
+    public double getQuadratic() {
+        return this.quadratic;
     }
 }
