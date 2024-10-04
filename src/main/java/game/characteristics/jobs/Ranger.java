@@ -5,8 +5,9 @@ import game.characteristics.Job;
 public class Ranger extends Job {
 
     public Ranger() {
+        this.jobName = "Следопыт";
         this.startHp = 8;
         this.startArmorClass = 6;
-        this.startAttackRoll = "1d10";
+        this.startAttackDice = "1d10";
     }
 }
