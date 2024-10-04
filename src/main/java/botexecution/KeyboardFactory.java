@@ -96,7 +96,7 @@ public class KeyboardFactory {
     public static InlineKeyboardMarkup jobSelectionBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
-        inlineKeyRow1.add(new InlineKeyboardButton("Боец"));
+        inlineKeyRow1.add(new InlineKeyboardButton("Воин"));
         inlineKeyRow1.get(0).setCallbackData(Constants.CREATION_MENU_FIGHTER);
         inlineKeyRow1.add(new InlineKeyboardButton("Клерик"));
         inlineKeyRow1.get(1).setCallbackData(Constants.CREATION_MENU_CLERIC);
