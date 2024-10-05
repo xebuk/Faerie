@@ -161,7 +161,7 @@ public class AbilBot extends AbilityBot {
     private void startNewUser(MessageContext ctx) {
         patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
 
-        UserDataHandler.createChatFile(getChatId(ctx.update()).toString());
+        UserDataHandler.createChatFile(ctx.chatId().toString());
         ChatSession newUser = new ChatSession(ctx);
         UserDataHandler.saveSession(newUser, ctx.update());
     }
