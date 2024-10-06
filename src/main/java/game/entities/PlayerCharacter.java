@@ -51,7 +51,7 @@ public class PlayerCharacter implements Serializable {
     }
 
     public void initHealth() {
-        this.health = job.startHp + constitutionModifier;
+        this.health = job.startHealth + constitutionModifier;
     }
 
     public void setArmorClass() {

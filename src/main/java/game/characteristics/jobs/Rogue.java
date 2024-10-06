@@ -6,7 +6,7 @@ public class Rogue extends Job {
 
     public Rogue() {
         this.jobName = "Плут";
-        this.startHp = 8;
+        this.startHealth = 8;
         this.startArmorClass = 8;
         this.startAttackDice = "1d12";
     }
