@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class ChatSession implements Serializable {
-    private final Long chatId;
+    private final long chatId;
 
     public String sectionId = "";
     public boolean searchSuccess = false;
@@ -20,9 +20,9 @@ public class ChatSession implements Serializable {
     public boolean rollCustom = false;
     public HashSet<String> dicePresets;
 
-    public boolean creationOfPc = false;
+    public boolean creationOfPlayerCharacter = false;
     public HashSet<String> statProgress = new HashSet<>();
-    public PlayerCharacter pc;
+    public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
     public ChatSession(Update update) {

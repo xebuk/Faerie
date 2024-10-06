@@ -71,6 +71,7 @@ public class AbilBot extends AbilityBot {
             silent.send(Constants.SEARCH_MESSAGE_FAIL, cs.getChatId());
             return false;
         }
+
         else if (matches.size() == 2) {
             ArrayList<String> article;
             switch (section) {
@@ -170,7 +171,7 @@ public class AbilBot extends AbilityBot {
         patternExecute(ctx, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard());
 
         ChatSession newUser = UserDataHandler.readSession(ctx.update());
-        newUser.creationOfPc = true;
+        newUser.creationOfPlayerCharacter = true;
         UserDataHandler.saveSession(newUser, ctx.update());
     }
 
@@ -345,13 +346,13 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
-    public Ability createPc() {
+    public Ability createPlayerCharacter() {
         Consumer<MessageContext> createNewPc = this::createPlayer;
 
         return Ability
                 .builder()
                 .name("createacharacter")
-                .info("creates a pc")
+                .info("creates a player character")
                 .input(0)
                 .locality(USER)
                 .privacy(PUBLIC)
@@ -379,12 +380,12 @@ public class AbilBot extends AbilityBot {
 
         ChatSession currentUser = UserDataHandler.readSession(update);
 
-        if (currentUser.creationOfPc && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
+        if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             if (currentUser.statProgress.isEmpty()) {
-                currentUser.pc = new PlayerCharacter();
+                currentUser.playerCharacter = new PlayerCharacter();
 
-                currentUser.pc.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
-                currentUser.pc.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
+                currentUser.playerCharacter.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
+                currentUser.playerCharacter.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
                 silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
 
                 currentUser.statProgress.add(update.getCallbackQuery().getData());
@@ -398,22 +399,22 @@ public class AbilBot extends AbilityBot {
             }
             else {
                 if (currentUser.statProgress.size() == 6) {
-                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.pc, currentUser.luck.get(4));
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
 
-                    currentUser.pc.initHealth();
-                    currentUser.pc.setArmorClass();
-                    currentUser.pc.setAttackDice();
+                    currentUser.playerCharacter.initHealth();
+                    currentUser.playerCharacter.setArmorClass();
+                    currentUser.playerCharacter.setAttackDice();
 
-                    silent.send(currentUser.pc.statWindow(), getChatId(update));
-                    UserDataHandler.savePlayerCharacter(currentUser.pc, update);
+                    silent.send(currentUser.playerCharacter.statWindow(), getChatId(update));
+                    UserDataHandler.savePlayerCharacter(currentUser.playerCharacter, update);
 
-                    currentUser.pc = null;
+                    currentUser.playerCharacter = null;
                     currentUser.statProgress.clear();
-                    currentUser.creationOfPc = false;
+                    currentUser.creationOfPlayerCharacter = false;
                     UserDataHandler.saveSession(currentUser, update);
                 }
                 else {
-                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.pc, currentUser.luck.get(4));
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
                     currentUser.statProgress.add(update.getCallbackQuery().getData());
                     currentUser.luck = DiceNew.D6FourTimesCreation();
 
