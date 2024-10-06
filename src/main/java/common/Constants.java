@@ -78,6 +78,27 @@ public interface Constants {
     String FEATS = "Sentinel!";
     String BACKGROUNDS = "Criminal!";
 
+    String CREATION_MENU_CHOOSE_JOB = "Выберите свой класс: ";
+
+    String CREATION_MENU_FIGHTER = "Action Surge!";
+    String CREATION_MENU_CLERIC = "Divine Intervention!";
+    String CREATION_MENU_MAGE = "Wish!";
+    String CREATION_MENU_ROGUE = "Stealth!";
+    String CREATION_MENU_RANGER = "Arrow!";
+
+    String CREATION_MENU_SET_STATS = "Установите характеристики персонажа: ";
+
+    String CREATION_MENU_STRENGTH = "SMASH!!!";
+    String CREATION_MENU_DEXTERITY = "Initiative!";
+    String CREATION_MENU_CONSTITUTION = "Illness!";
+    String CREATION_MENU_INTELLIGENCE = "Analysis!";
+    String CREATION_MENU_WISDOM = "Perception!";
+    String CREATION_MENU_CHARISMA = "Intimidation!";
+
+    String CREATION_MENU_HEALTH = "Ваше здоровье равно: ";
+    String CREATION_MENU_ARMOR = "Ваш класс брони равен: ";
+    String CREATION_MENU_ATTACK = "Ваш кубик атаки: ";
+
     String CLASSES_LIST = """
             Официальные классы:
             <a href="https://dnd.su/class/88">Бард [Bard]</a>

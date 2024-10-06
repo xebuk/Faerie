@@ -2,6 +2,9 @@ package botexecution;
 
 import common.*;
 
+import game.characteristics.Job;
+import game.characteristics.jobs.*;
+import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
@@ -14,8 +17,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
@@ -23,13 +26,10 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
 public class AbilBot extends AbilityBot {
-    private String sectionId = "";
-    private boolean searchSuccess = false;
-    private String title = "";
+    private final HashMap<String, Consumer<ChatSession>> methodsAllocator = new HashMap<>();
 
-    private boolean rollCustom = false;
-
-    private final HashMap<String, Consumer<Update>> allocator = new HashMap<>();
+    private final HashMap<String, Job> jobAllocator = new HashMap<>();
+    private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocator = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -48,29 +48,30 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
-    private boolean reportImpossible(Update update) {
-        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, getChatId(update));
+    private boolean reportImpossible(ChatSession cs) {
+        silent.send(Constants.SEARCH_MESSAGE_IMPOSSIBLE, cs.getChatId());
         return false;
     }
 
-    private boolean reportIncorrect(Update update) {
-        silent.send(Constants.SEARCH_MESSAGE_INCORRECT, getChatId(update));
+    private boolean reportIncorrect(ChatSession cs) {
+        silent.send(Constants.SEARCH_MESSAGE_INCORRECT, cs.getChatId());
         return false;
     }
 
-    private boolean searchEngine(String section, String entry, Update update) {
+    private boolean searchEngine(String section, String entry, ChatSession cs) {
         ArrayList<String> matches;
 
         try {
             matches = DataReader.searchArticleIds(section, entry);
         } catch (IOException e) {
-            return reportIncorrect(update);
+            return reportIncorrect(cs);
         }
 
         if (matches.isEmpty()) {
-            silent.send(Constants.SEARCH_MESSAGE_FAIL, getChatId(update));
+            silent.send(Constants.SEARCH_MESSAGE_FAIL, cs.getChatId());
             return false;
         }
+
         else if (matches.size() == 2) {
             ArrayList<String> article;
             switch (section) {
@@ -78,53 +79,53 @@ public class AbilBot extends AbilityBot {
                     try {
                         article = SiteParser.SpellsGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 case "items":
                     try {
                         article = SiteParser.ItemsGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 case "bestiary":
                     try {
                         article = SiteParser.BestiaryGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 case "races":
                     try {
                         article = SiteParser.RacesGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 case "feats":
                     try {
                         article = SiteParser.FeatsGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 case "backgrounds":
                     try {
                         article = SiteParser.BackgroundsGrabber(matches.getFirst());
                     } catch (IOException e) {
-                        return reportIncorrect(update);
+                        return reportIncorrect(cs);
                     }
                     break;
                 default:
                     return false;
             }
 
-            articleMessaging(article, update);
+            articleMessaging(article, cs);
             return false;
         }
         String searchPage = SiteParser.addressWriter(matches, section);
-        SendMessage page = new SendMessage(getChatId(update).toString(), searchPage);
+        SendMessage page = new SendMessage(cs.getChatId().toString(), searchPage);
         page.setParseMode("HTML");
         silent.execute(page);
         return true;
@@ -136,14 +137,14 @@ public class AbilBot extends AbilityBot {
         silent.execute(text);
     }
 
-    private void sendList(Update update) {
-        SendMessage list = new SendMessage(getChatId(update).toString(), Constants.CLASSES_LIST);
+    private void sendList(ChatSession cs) {
+        SendMessage list = new SendMessage(cs.getChatId().toString(), Constants.CLASSES_LIST);
         list.setParseMode("HTML");
         silent.execute(list);
     }
 
-    private void rollAdvantage(Update update) {
-        SendMessage rollAdv = new SendMessage(getChatId(update).toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
+    private void rollAdvantage(ChatSession cs) {
+        SendMessage rollAdv = new SendMessage(cs.getChatId().toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
         rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
     }
@@ -158,7 +159,23 @@ public class AbilBot extends AbilityBot {
         }
     }
 
-    private void articleMessaging(ArrayList<String> article, Update update) {
+    private void startNewUser(MessageContext ctx) {
+        patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
+
+        UserDataHandler.createChatFile(ctx.chatId().toString());
+        ChatSession newUser = new ChatSession(ctx);
+        UserDataHandler.saveSession(newUser, ctx.update());
+    }
+
+    private void createPlayer(MessageContext ctx) {
+        patternExecute(ctx, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard());
+
+        ChatSession newUser = UserDataHandler.readSession(ctx.update());
+        newUser.creationOfPlayerCharacter = true;
+        UserDataHandler.saveSession(newUser, ctx.update());
+    }
+
+    private void articleMessaging(ArrayList<String> article, ChatSession cs) {
         StringBuilder partOfArticle = new StringBuilder();
         int lengthOfMessage = 0;
 
@@ -168,61 +185,81 @@ public class AbilBot extends AbilityBot {
                 lengthOfMessage = lengthOfMessage + paragraph.length();
             }
             else {
-                silent.send(partOfArticle.toString(), getChatId(update));
+                silent.send(partOfArticle.toString(), cs.getChatId());
                 partOfArticle.setLength(0);
                 lengthOfMessage = paragraph.length();
                 partOfArticle.append(paragraph);
             }
         }
-        silent.send(partOfArticle.toString(), getChatId(update));
+        silent.send(partOfArticle.toString(), cs.getChatId());
     }
 
     private void allocate() {
-         Consumer<Update> Spell = update -> {silent.send(Constants.SEARCH_MESSAGE_SPELLS, getChatId(update));
-             sectionId = "spells";};
-         Consumer<Update> Item = update -> {silent.send(Constants.SEARCH_MESSAGE_ITEMS, getChatId(update));
-             sectionId = "items";};
-         Consumer<Update> Bestiary = update -> {silent.send(Constants.SEARCH_MESSAGE_BESTIARY, getChatId(update));
-             sectionId = "bestiary";};
-         Consumer<Update> Race = update -> {silent.send(Constants.SEARCH_MESSAGE_RACES, getChatId(update));
-             sectionId = "race";};
-         Consumer<Update> Class = this::sendList;
-         Consumer<Update> Feat = update -> {silent.send(Constants.SEARCH_MESSAGE_FEATS, getChatId(update));
-             sectionId = "feats";};
-         Consumer<Update> Background = update -> {silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, getChatId(update));
-             sectionId = "backgrounds";};
-         Consumer<Update> RollD20 = update -> silent.send(DiceNew.D20(), getChatId(update));
-         Consumer<Update> Roll2D20 = this::rollAdvantage;
-         Consumer<Update> RollAdvantage = update -> silent.send(DiceNew.D20TwoTimes(true), getChatId(update));
-         Consumer<Update> RollDisadvantage = update -> silent.send(DiceNew.D20TwoTimes(false), getChatId(update));
-         Consumer<Update> RollD8 = update -> silent.send(DiceNew.D8(), getChatId(update));
-         Consumer<Update> RollD6 = update -> silent.send(DiceNew.D6(), getChatId(update));
-         Consumer<Update> Roll4D6 = update -> silent.send(DiceNew.D6FourTimes(), getChatId(update));
-         Consumer<Update> RollD4 = update -> silent.send(DiceNew.D4(), getChatId(update));
-         Consumer<Update> CustomDice = update -> {silent.send(Constants.CUSTOM_DICE_MESSAGE, getChatId(update));
-             rollCustom = true;};
+         Consumer<ChatSession> Spell = cs -> {silent.send(Constants.SEARCH_MESSAGE_SPELLS, cs.getChatId());
+             cs.sectionId = "spells";};
+         Consumer<ChatSession> Item = cs -> {silent.send(Constants.SEARCH_MESSAGE_ITEMS, cs.getChatId());
+             cs.sectionId = "items";};
+         Consumer<ChatSession> Bestiary = cs -> {silent.send(Constants.SEARCH_MESSAGE_BESTIARY, cs.getChatId());
+             cs.sectionId = "bestiary";};
+         Consumer<ChatSession> Race = cs -> {silent.send(Constants.SEARCH_MESSAGE_RACES, cs.getChatId());
+             cs.sectionId = "race";};
+         Consumer<ChatSession> Class = this::sendList;
+         Consumer<ChatSession> Feat = cs -> {silent.send(Constants.SEARCH_MESSAGE_FEATS, cs.getChatId());
+             cs.sectionId = "feats";};
+         Consumer<ChatSession> Background = cs -> {silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, cs.getChatId());
+             cs.sectionId = "backgrounds";};
 
-         allocator.put(Constants.SPELLS, Spell);
-         allocator.put(Constants.ITEMS, Item);
-         allocator.put(Constants.BESTIARY, Bestiary);
-         allocator.put(Constants.RACES, Race);
-         allocator.put(Constants.CLASSES, Class);
-         allocator.put(Constants.FEATS, Feat);
-         allocator.put(Constants.BACKGROUNDS, Background);
-         allocator.put(Constants.ROLL_D20, RollD20);
-         allocator.put(Constants.ROLL_2D20, Roll2D20);
-         allocator.put(Constants.ADVANTAGE, RollAdvantage);
-         allocator.put(Constants.DISADVANTAGE, RollDisadvantage);
-         allocator.put(Constants.ROLL_D8, RollD8);
-         allocator.put(Constants.ROLL_D6, RollD6);
-         allocator.put(Constants.ROLL_4D6, Roll4D6);
-         allocator.put(Constants.ROLL_D4, RollD4);
-         allocator.put(Constants.CUSTOM_DICE, CustomDice);
+         Consumer<ChatSession> RollD20 = cs -> silent.send(DiceNew.D20(), cs.getChatId());
+         Consumer<ChatSession> Roll2D20 = this::rollAdvantage;
+         Consumer<ChatSession> RollAdvantage = cs -> silent.send(DiceNew.D20TwoTimes(true), cs.getChatId());
+         Consumer<ChatSession> RollDisadvantage = cs -> silent.send(DiceNew.D20TwoTimes(false), cs.getChatId());
+         Consumer<ChatSession> RollD8 = cs -> silent.send(DiceNew.D8(), cs.getChatId());
+         Consumer<ChatSession> RollD6 = cs -> silent.send(DiceNew.D6(), cs.getChatId());
+         Consumer<ChatSession> Roll4D6 = cs -> silent.send(DiceNew.D6FourTimes(), cs.getChatId());
+         Consumer<ChatSession> RollD4 = cs -> silent.send(DiceNew.D4(), cs.getChatId());
+         Consumer<ChatSession> CustomDice = cs -> {silent.send(Constants.CUSTOM_DICE_MESSAGE, cs.getChatId());
+             cs.rollCustom = true;};
+
+         methodsAllocator.put(Constants.SPELLS, Spell);
+         methodsAllocator.put(Constants.ITEMS, Item);
+         methodsAllocator.put(Constants.BESTIARY, Bestiary);
+         methodsAllocator.put(Constants.RACES, Race);
+         methodsAllocator.put(Constants.CLASSES, Class);
+         methodsAllocator.put(Constants.FEATS, Feat);
+         methodsAllocator.put(Constants.BACKGROUNDS, Background);
+         methodsAllocator.put(Constants.ROLL_D20, RollD20);
+         methodsAllocator.put(Constants.ROLL_2D20, Roll2D20);
+         methodsAllocator.put(Constants.ADVANTAGE, RollAdvantage);
+         methodsAllocator.put(Constants.DISADVANTAGE, RollDisadvantage);
+         methodsAllocator.put(Constants.ROLL_D8, RollD8);
+         methodsAllocator.put(Constants.ROLL_D6, RollD6);
+         methodsAllocator.put(Constants.ROLL_4D6, Roll4D6);
+         methodsAllocator.put(Constants.ROLL_D4, RollD4);
+         methodsAllocator.put(Constants.CUSTOM_DICE, CustomDice);
+
+         jobAllocator.put(Constants.CREATION_MENU_FIGHTER, new Fighter());
+         jobAllocator.put(Constants.CREATION_MENU_CLERIC, new Cleric());
+         jobAllocator.put(Constants.CREATION_MENU_MAGE, new Mage());
+         jobAllocator.put(Constants.CREATION_MENU_ROGUE, new Rogue());
+         jobAllocator.put(Constants.CREATION_MENU_RANGER, new Ranger());
+
+         BiConsumer<PlayerCharacter, Integer> strengthMod = PlayerCharacter::initStrength;
+         BiConsumer<PlayerCharacter, Integer> dexterityMod = PlayerCharacter::initDexterity;
+         BiConsumer<PlayerCharacter, Integer> constitutionMod = PlayerCharacter::initConstitution;
+         BiConsumer<PlayerCharacter, Integer> intelligenceMod = PlayerCharacter::initIntelligence;
+         BiConsumer<PlayerCharacter, Integer> wisdomMod = PlayerCharacter::initWisdom;
+         BiConsumer<PlayerCharacter, Integer> charismaMod = PlayerCharacter::initCharisma;
+
+         statAllocator.put(Constants.CREATION_MENU_STRENGTH, strengthMod);
+         statAllocator.put(Constants.CREATION_MENU_DEXTERITY, dexterityMod);
+         statAllocator.put(Constants.CREATION_MENU_CONSTITUTION, constitutionMod);
+         statAllocator.put(Constants.CREATION_MENU_INTELLIGENCE, intelligenceMod);
+         statAllocator.put(Constants.CREATION_MENU_WISDOM, wisdomMod);
+         statAllocator.put(Constants.CREATION_MENU_CHARISMA, charismaMod);
     }
 
     public Ability startOut() {
-        Consumer<MessageContext> start =
-                ctx -> patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
+        Consumer<MessageContext> start = this::startNewUser;
 
         return Ability
                 .builder()
@@ -309,6 +346,20 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability createPlayerCharacter() {
+        Consumer<MessageContext> createNewPc = this::createPlayer;
+
+        return Ability
+                .builder()
+                .name("createacharacter")
+                .info("creates a player character")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(createNewPc)
+                .build();
+    }
+
     public Ability sendPhotoOnDemand() {
         Consumer<MessageContext> pic = this::sendPic;
 
@@ -327,75 +378,132 @@ public class AbilBot extends AbilityBot {
     public void consume(Update update) {
         super.consume(update);
 
-        if (update.hasCallbackQuery()) {
+        ChatSession currentUser = UserDataHandler.readSession(update);
+
+        if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
+            if (currentUser.statProgress.isEmpty()) {
+                currentUser.playerCharacter = new PlayerCharacter();
+
+                currentUser.playerCharacter.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
+                currentUser.playerCharacter.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
+                silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
+
+                currentUser.statProgress.add(update.getCallbackQuery().getData());
+
+                currentUser.luck = DiceNew.D6FourTimesCreation();
+
+                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
+                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
+                silent.execute(stats);
+                UserDataHandler.saveSession(currentUser, update);
+            }
+            else {
+                if (currentUser.statProgress.size() == 6) {
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
+
+                    currentUser.playerCharacter.initHealth();
+                    currentUser.playerCharacter.setArmorClass();
+                    currentUser.playerCharacter.setAttackDice();
+
+                    silent.send(currentUser.playerCharacter.statWindow(), getChatId(update));
+                    UserDataHandler.savePlayerCharacter(currentUser.playerCharacter, update);
+
+                    currentUser.playerCharacter = null;
+                    currentUser.statProgress.clear();
+                    currentUser.creationOfPlayerCharacter = false;
+                    UserDataHandler.saveSession(currentUser, update);
+                }
+                else {
+                    statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
+                    currentUser.statProgress.add(update.getCallbackQuery().getData());
+                    currentUser.luck = DiceNew.D6FourTimesCreation();
+
+                    SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
+                    stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
+                    silent.execute(stats);
+                    UserDataHandler.saveSession(currentUser, update);
+                }
+            }
+        }
+
+        else if (update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            allocator.get(responseQuery).accept(update);
+            methodsAllocator.get(responseQuery).accept(currentUser);
+            UserDataHandler.saveSession(currentUser, update);
         }
 
-        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()) {
-            if (rollCustom) {
+        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
+
+            if (currentUser.rollCustom) {
+                currentUser.dicePresets = UserDataHandler.readDicePresets(update);
+                currentUser.dicePresets.add(update.getMessage().getText());
+                UserDataHandler.saveDicePresets(currentUser.dicePresets, update);
+
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
-                rollCustom = false;
+                currentUser.rollCustom = false;
+                UserDataHandler.saveSession(currentUser, update);
             }
 
-            else if (searchSuccess) {
-                title = update.getMessage().getText();
-                switch (sectionId) {
+            else if (currentUser.searchSuccess) {
+                currentUser.title = update.getMessage().getText();
+                switch (currentUser.sectionId) {
                     case "spells":
                         try {
-                            articleMessaging(SiteParser.SpellsGrabber(title), update);
+                            articleMessaging(SiteParser.SpellsGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     case "items":
                         try {
-                            articleMessaging(SiteParser.ItemsGrabber(title), update);
+                            articleMessaging(SiteParser.ItemsGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     case "bestiary":
                         try {
-                            articleMessaging(SiteParser.BestiaryGrabber(title), update);
+                            articleMessaging(SiteParser.BestiaryGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     case "race":
                         try {
-                            articleMessaging(SiteParser.RacesGrabber(title), update);
+                            articleMessaging(SiteParser.RacesGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     case "feats":
                         try {
-                            articleMessaging(SiteParser.FeatsGrabber(title), update);
+                            articleMessaging(SiteParser.FeatsGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     case "backgrounds":
                         try {
-                            articleMessaging(SiteParser.BackgroundsGrabber(title), update);
+                            articleMessaging(SiteParser.BackgroundsGrabber(currentUser.title), currentUser);
                         } catch (IOException e) {
-                            reportImpossible(update);
+                            reportImpossible(currentUser);
                         }
                         break;
                     default:
                         break;
                 }
-                sectionId = "";
-                searchSuccess = false;
-                title = "";
+                currentUser.sectionId = "";
+                currentUser.searchSuccess = false;
+                currentUser.title = "";
+                UserDataHandler.saveSession(currentUser, update);
             }
 
-            else if (!sectionId.isEmpty()) {
-                searchSuccess = searchEngine(sectionId, update.getMessage().getText(), update);
+            else if (!currentUser.sectionId.isEmpty()) {
+                currentUser.searchSuccess = searchEngine(currentUser.sectionId, update.getMessage().getText(), currentUser);
+                UserDataHandler.saveSession(currentUser, update);
             }
         }
     }
