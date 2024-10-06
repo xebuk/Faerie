@@ -65,7 +65,7 @@ public class DungeonController {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            int[] direction = {0, 0, 0};
+            int[] direction = {0, 0};
             int[] rotation = {0, 0};
 
             String command = scanner.next();
@@ -79,12 +79,10 @@ public class DungeonController {
                 };
             } else {
                 direction = switch (command.charAt(0)) {
-                    case 'w' -> new int[]{0, 0, 1};
-                    case 's' -> new int[]{0, 0, -1};
-                    case 'a' -> new int[]{-1, 0, 0};
-                    case 'd' -> new int[]{1, 0, 0};
-                    case 'q' -> new int[]{0, 1, 0};
-                    case 'e' -> new int[]{0, -1, 0};
+                    case 'w' -> new int[]{0, 1};
+                    case 's' -> new int[]{0, -1};
+                    case 'a' -> new int[]{-1, 0};
+                    case 'd' -> new int[]{1, 0};
                     default -> new int[]{0, 0, 0};
                 };
             }
@@ -95,9 +93,8 @@ public class DungeonController {
             dungeonController.drawer.rotateCamera(Math.toRadians(dYaw), Math.toRadians(dPitch));
 
             int dx = direction[0] * value;
-            int dy = direction[1] * value;
-            int dz = direction[2] * value;
-            dungeonController.drawer.moveCamera(dx, dy, dz);
+            int dz = direction[1] * value;
+            dungeonController.drawer.moveCamera(dx, dz);
 
             dungeonController.drawer.startDrawing(Color.BLACK, dungeonController.sceneObjects, dungeonController.lights);
             dungeonController.drawer.drawScene();
