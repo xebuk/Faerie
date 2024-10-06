@@ -1,10 +1,13 @@
 package game.entities;
 
-import game.characteristics.Types;
+import game.characteristics.EnemyType;
 
-public class NonPlayerCharacter {
+import java.io.Serializable;
+
+public class NonPlayerCharacter implements Serializable {
     public String name;
-    public Types type;
+    public EnemyType enemyType;
+
     public int health;
     public int armorClass;
     public int attackPower;
