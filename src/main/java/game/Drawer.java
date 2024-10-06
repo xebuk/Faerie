@@ -112,8 +112,6 @@ public class Drawer {
         return new double[] {tempX, tempY, tempZ};
     }
 
-
-
     private int[] projectVertex(double x, double y, double z, double[] depth) {
         double localX = x - cameraX;
         double localY = y - cameraY;
@@ -327,78 +325,8 @@ public class Drawer {
         pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
     }
 
-    public void moveCamera(double dx, double dy, double dz) {
-        cameraX += dx;
-        cameraY += dy;
-        cameraZ += dz;
-    }
-
-    public void setCameraPosition(double x, double y, double z) {
-        cameraX = x;
-        cameraY = y;
-        cameraZ = z;
-    }
-
-    public double getCameraX() {
-        return cameraX;
-    }
-
-    public void setCameraX(double cameraX) {
-        this.cameraX = cameraX;
-    }
-
-    public double getCameraY() {
-        return cameraY;
-    }
-
-    public void setCameraY(double cameraY) {
-        this.cameraY = cameraY;
-    }
-
-    public double getCameraZ() {
-        return cameraZ;
-    }
-
-    public void setCameraZ(double cameraZ) {
-        this.cameraZ = cameraZ;
-    }
-
-    public static void main(String[] args) {
-        // v3.0 of unrotateVertex worked
-        Drawer drawer = new Drawer(0, 0, 0);
-        drawer.rotateCamera(Math.toRadians(45), Math.toRadians(-45));
-
-        double[] xyz = new double[] {1, 2, 3};
-        System.out.println("Point itself:\n" + "x = " + xyz[0] + ", y = " + xyz[1] + ", z = " + xyz[2]);
-
-        double[] tmp;
-        tmp = drawer.rotateVertex(xyz[0], xyz[1], xyz[2]);
-        System.out.println("Rotate:\n" + "x = " + tmp[0] + ", y = " + tmp[1] + ", z = " + tmp[2]);
-        tmp = drawer.unrotateVertex(tmp[0], tmp[1], tmp[2]);
-        System.out.println("Unrotate:\n" + "x = " + tmp[0] + ", y = " + tmp[1] + ", z = " + tmp[2]);
-
-        double epsilon = 1e-6;
-        if (Math.abs(xyz[0] - tmp[0]) < epsilon &&
-            Math.abs(xyz[1] - tmp[1]) < epsilon &&
-            Math.abs(xyz[2] - tmp[2]) < epsilon) {
-            System.out.println("Correct");
-        } else {
-            System.out.println("Incorrect");
-        }
-
-        /*Drawer drawer = new Drawer(0, 0,-10);
-
-        Random random = new Random();
-        int cubeCountTest = 10;
-        List<Cube> cubes = new ArrayList<>();
-        for (int i = 0; i < cubeCountTest; i++) {
-            cubes.add(new Cube(random.nextInt(10)-5, random.nextInt(10)-5, random.nextInt(10)-5, 1));
-        }
-
-        drawer.startDrawing(Color.BLACK, cubes, null);
-
-        drawer.drawScene();
-
-        drawer.endDrawing();*/
+    public void moveCamera(double dx, double dz) {
+        cameraX +=  dx * Math.cos(yaw) + dz * Math.sin(yaw);
+        cameraZ += -dx * Math.sin(yaw) + dz * Math.cos(yaw);
     }
 }
