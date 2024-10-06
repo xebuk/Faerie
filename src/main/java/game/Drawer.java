@@ -326,7 +326,7 @@ public class Drawer {
     }
 
     public void moveCamera(double dx, double dz) {
-        cameraX += -dx * Math.cos(yaw) + dz * Math.sin(yaw);
-        cameraZ +=  dx * Math.sin(yaw) + dz * Math.cos(yaw);
+        cameraX +=  dx * Math.cos(yaw) + dz * Math.sin(yaw);
+        cameraZ += -dx * Math.sin(yaw) + dz * Math.cos(yaw);
     }
 }
