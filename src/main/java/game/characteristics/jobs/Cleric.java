@@ -6,7 +6,7 @@ public class Cleric extends Job {
 
     public Cleric() {
         this.jobName = "Клерик";
-        this.startHp = 8;
+        this.startHealth = 8;
         this.startArmorClass = 12;
         this.startAttackDice = "1d6";
     }
