@@ -3,10 +3,10 @@ package game.items.weapons;
 import game.items.Ammunition;
 import game.items.artefacts.CommonItem;
 
-public class Arrow extends Ammunition {
+public class Air extends Ammunition {
 
-    public Arrow() {
-        this.damage = 2;
+    public Air() {
+        this.damage = 0;
 
         this.specialBonuses = new CommonItem();
     }
