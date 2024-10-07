@@ -1,11 +1,16 @@
 package common;
 
+import game.MazeGenerator;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 
@@ -67,5 +72,38 @@ public class DataReader {
             return true;
         }
         return false;
+    }
+
+    public static MazeGenerator.Tiles[][][] readRoomPresets() throws IOException {
+        MazeGenerator.Tiles[][][] roomPresets;
+
+        File[] filesList = new File(Constants.ROOM_PRESETS_PATH).listFiles();
+        int filesCount = filesList.length;
+        roomPresets = new MazeGenerator.Tiles[filesCount][][];
+
+        for (int i = 0; i < filesCount; i++) {
+            File presetFile = filesList[i];
+            long linesCount;
+            try (Stream<String> stream = Files.lines(presetFile.toPath())) {
+                linesCount = stream.count();
+            }
+            roomPresets[i] = new MazeGenerator.Tiles[filesCount][];
+
+            try (BufferedReader br = new BufferedReader(new FileReader(presetFile))) {
+                String line;
+                for (int j = 0; j < linesCount; j++) {
+                    line = br.readLine();
+                    for (int k = 0; k < line.length(); k++) {
+                        roomPresets[i][j][k] = switch (line.charAt(k)) {
+                            case '#' -> MazeGenerator.Tiles.WALL;
+                            case '.' -> MazeGenerator.Tiles.FLOOR;
+                            default -> MazeGenerator.Tiles.NONE;
+                        };
+                    }
+                }
+            }
+        }
+
+        return roomPresets;
     }
 }
