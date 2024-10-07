@@ -7,7 +7,7 @@ public class Ranger extends Job {
     public Ranger() {
         this.jobName = "Следопыт";
         this.startHealth = 8;
-        this.startArmorClass = 6;
+        this.startArmorClass = 8;
         this.startAttackDice = "1d10";
     }
 }
