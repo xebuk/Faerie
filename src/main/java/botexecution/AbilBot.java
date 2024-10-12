@@ -74,51 +74,31 @@ public class AbilBot extends AbilityBot {
 
         else if (matches.size() == 2) {
             ArrayList<String> article;
-            switch (section) {
-                case "spells":
-                    try {
+            try {
+                switch (section) {
+                    case "spells":
                         article = SiteParser.SpellsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "items":
-                    try {
+                        break;
+                    case "items":
                         article = SiteParser.ItemsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "bestiary":
-                    try {
+                        break;
+                    case "bestiary":
                         article = SiteParser.BestiaryGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "races":
-                    try {
+                        break;
+                    case "races":
                         article = SiteParser.RacesGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "feats":
-                    try {
+                        break;
+                    case "feats":
                         article = SiteParser.FeatsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "backgrounds":
-                    try {
+                        break;
+                    case "backgrounds":
                         article = SiteParser.BackgroundsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                default:
-                    return false;
+                        break;
+                    default:
+                        return false;
+                }
+            } catch (Exception e) {
+                return reportIncorrect(cs);
             }
 
             articleMessaging(article, cs);
@@ -147,6 +127,20 @@ public class AbilBot extends AbilityBot {
         SendMessage rollAdv = new SendMessage(cs.getChatId().toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
         rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
         silent.execute(rollAdv);
+    }
+
+    private void rollCustom(ChatSession cs) {
+        SendMessage rollVar;
+        if (cs.dicePresets != null) {
+            cs.checkPresetsSize();
+            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE_WITH_PRESETS);
+            rollVar.setReplyMarkup(KeyboardFactory.rollCustomBoard(cs));
+        }
+        else {
+            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE);
+        }
+        silent.execute(rollVar);
+        cs.rollCustom = true;
     }
 
     private void sendPic(MessageContext ctx) {
@@ -217,8 +211,7 @@ public class AbilBot extends AbilityBot {
          Consumer<ChatSession> RollD6 = cs -> silent.send(DiceNew.D6(), cs.getChatId());
          Consumer<ChatSession> Roll4D6 = cs -> silent.send(DiceNew.D6FourTimes(), cs.getChatId());
          Consumer<ChatSession> RollD4 = cs -> silent.send(DiceNew.D4(), cs.getChatId());
-         Consumer<ChatSession> CustomDice = cs -> {silent.send(Constants.CUSTOM_DICE_MESSAGE, cs.getChatId());
-             cs.rollCustom = true;};
+         Consumer<ChatSession> CustomDice = this::rollCustom;
 
          methodsAllocator.put(Constants.SPELLS, Spell);
          methodsAllocator.put(Constants.ITEMS, Item);
@@ -430,14 +423,29 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            methodsAllocator.get(responseQuery).accept(currentUser);
+            if (currentUser.rollCustom) {
+                String[] dices = responseQuery.trim().split("d");
+                try {
+                    silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
+                } catch (NumberFormatException e) {
+                    reportImpossible(currentUser);
+                }
+                currentUser.rollCustom = false;
+            }
+            else {
+                methodsAllocator.get(responseQuery).accept(currentUser);
+            }
             UserDataHandler.saveSession(currentUser, update);
         }
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
 
             if (currentUser.rollCustom) {
-                currentUser.dicePresets = UserDataHandler.readDicePresets(update);
+                try {
+                    currentUser.dicePresets = UserDataHandler.readDicePresets(update);
+                } catch (Exception e) {
+                    currentUser.dicePresets = new ArrayDeque<>();
+                }
                 currentUser.dicePresets.add(update.getMessage().getText());
                 UserDataHandler.saveDicePresets(currentUser.dicePresets, update);
 
@@ -449,52 +457,33 @@ public class AbilBot extends AbilityBot {
 
             else if (currentUser.searchSuccess) {
                 currentUser.title = update.getMessage().getText();
-                switch (currentUser.sectionId) {
-                    case "spells":
-                        try {
+                try {
+                    switch (currentUser.sectionId) {
+                        case "spells":
                             articleMessaging(SiteParser.SpellsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "items":
-                        try {
+                            break;
+                        case "items":
                             articleMessaging(SiteParser.ItemsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "bestiary":
-                        try {
+                            break;
+                        case "bestiary":
                             articleMessaging(SiteParser.BestiaryGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "race":
-                        try {
+                            break;
+                        case "race":
                             articleMessaging(SiteParser.RacesGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "feats":
-                        try {
+                            break;
+                        case "feats":
                             articleMessaging(SiteParser.FeatsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "backgrounds":
-                        try {
+                            break;
+                        case "backgrounds":
                             articleMessaging(SiteParser.BackgroundsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (IOException e) {
+                    reportImpossible(currentUser);
                 }
+
                 currentUser.sectionId = "";
                 currentUser.searchSuccess = false;
                 currentUser.title = "";
