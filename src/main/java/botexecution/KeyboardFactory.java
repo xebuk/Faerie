@@ -93,6 +93,21 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup rollCustomBoard(ChatSession cs) {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        for (String diceVariant : cs.dicePresets) {
+            InlineKeyboardButton dice = new InlineKeyboardButton(diceVariant);
+            dice.setCallbackData(diceVariant);
+            inlineKeyRow.add(dice);
+        }
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
     public static InlineKeyboardMarkup jobSelectionBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
