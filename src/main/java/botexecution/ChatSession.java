@@ -7,6 +7,7 @@ import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -18,7 +19,7 @@ public class ChatSession implements Serializable {
     public String title = "";
 
     public boolean rollCustom = false;
-    public HashSet<String> dicePresets;
+    public ArrayDeque<String> dicePresets;
 
     public boolean creationOfPlayerCharacter = false;
     public HashSet<String> statProgress = new HashSet<>();
@@ -37,5 +38,15 @@ public class ChatSession implements Serializable {
 
     public Long getChatId() {
         return chatId;
+    }
+
+    public void checkPresetsSize() {
+        while (dicePresets.size() > 5) {
+            dicePresets.removeFirst();
+        }
+    }
+
+    public void failsafe(Update update) {
+        UserDataHandler.saveSession(this, update);
     }
 }
