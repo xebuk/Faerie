@@ -19,7 +19,7 @@ public class ChatSession implements Serializable {
     public String title = "";
 
     public boolean rollCustom = false;
-    public ArrayDeque<String> dicePresets;
+    public ArrayDeque<String> dicePresets = new ArrayDeque<>();
 
     public boolean creationOfPlayerCharacter = false;
     public HashSet<String> statProgress = new HashSet<>();
