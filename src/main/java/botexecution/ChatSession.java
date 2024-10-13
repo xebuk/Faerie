@@ -46,8 +46,4 @@ public class ChatSession implements Serializable {
             dicePresets.removeFirst();
         }
     }
-
-    public void failsafe(Update update) {
-        UserDataHandler.saveSession(this, update);
-    }
 }
