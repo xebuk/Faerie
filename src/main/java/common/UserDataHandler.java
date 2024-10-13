@@ -126,8 +126,8 @@ public class UserDataHandler {
         }
     }
 
-    public static void saveSession(ChatSession cs, Update update) {
-        File sessionFile = new File("../token_dir/userData/" + getChatId(update) + "/session.txt");
+    public static void saveSession(ChatSession cs) {
+        File sessionFile = new File("../token_dir/userData/" + cs.getChatId() + "/session.txt");
         if (!sessionFile.exists()) {
             try {
                 sessionFile.createNewFile();
