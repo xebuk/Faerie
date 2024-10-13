@@ -157,7 +157,7 @@ public class AbilBot extends AbilityBot {
 
     private void createPlayer(MessageContext ctx) {
         ChatSession newUser = UserDataHandler.readSession(ctx.update());
-        patternExecute(newUser, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard(), false);
+        patternExecute(newUser, Constants.CREATION_MENU_CHOOSE_NAME, null, false);
 
         newUser.creationOfPlayerCharacter = true;
         UserDataHandler.saveSession(newUser, ctx.update());
@@ -369,19 +369,13 @@ public class AbilBot extends AbilityBot {
 
         if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             if (currentUser.statProgress.isEmpty()) {
-                currentUser.playerCharacter = new PlayerCharacter();
-
-                currentUser.playerCharacter.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
                 currentUser.playerCharacter.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
                 silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
 
                 currentUser.statProgress.add(update.getCallbackQuery().getData());
-
                 currentUser.luck = DiceNew.D6FourTimesCreation();
 
-                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
-                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
-                silent.execute(stats);
+                patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoard(currentUser.statProgress), false);
                 UserDataHandler.saveSession(currentUser, update);
             }
             else {
@@ -398,6 +392,7 @@ public class AbilBot extends AbilityBot {
                     currentUser.playerCharacter = null;
                     currentUser.statProgress.clear();
                     currentUser.creationOfPlayerCharacter = false;
+                    currentUser.nameIsChosen = false;
                     UserDataHandler.saveSession(currentUser, update);
                 }
                 else {
@@ -405,9 +400,7 @@ public class AbilBot extends AbilityBot {
                     currentUser.statProgress.add(update.getCallbackQuery().getData());
                     currentUser.luck = DiceNew.D6FourTimesCreation();
 
-                    SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
-                    stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
-                    silent.execute(stats);
+                    patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoard(currentUser.statProgress), false);
                     UserDataHandler.saveSession(currentUser, update);
                 }
             }
@@ -434,7 +427,17 @@ public class AbilBot extends AbilityBot {
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
 
-            if (currentUser.rollCustom) {
+            if (currentUser.creationOfPlayerCharacter && !currentUser.nameIsChosen) {
+                currentUser.playerCharacter = new PlayerCharacter();
+                currentUser.playerCharacter.setName(update.getMessage().getText());
+                currentUser.nameIsChosen = true;
+
+                patternExecute(currentUser, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard(), false);
+
+                UserDataHandler.saveSession(currentUser, update);
+            }
+
+            else if (currentUser.rollCustom) {
                 try {
                     currentUser.dicePresets = UserDataHandler.readDicePresets(update);
                 } catch (Exception ignored) {}

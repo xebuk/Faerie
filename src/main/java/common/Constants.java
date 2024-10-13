@@ -82,6 +82,7 @@ public interface Constants {
     String FEATS = "Sentinel!";
     String BACKGROUNDS = "Criminal!";
 
+    String CREATION_MENU_CHOOSE_NAME = "Введите своё имя.";
     String CREATION_MENU_CHOOSE_JOB = "Выберите свой класс: ";
 
     String CREATION_MENU_FIGHTER = "Action Surge!";

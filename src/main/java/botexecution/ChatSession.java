@@ -22,6 +22,7 @@ public class ChatSession implements Serializable {
     public ArrayDeque<String> dicePresets = new ArrayDeque<>();
 
     public boolean creationOfPlayerCharacter = false;
+    public boolean nameIsChosen = false;
     public HashSet<String> statProgress = new HashSet<>();
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
