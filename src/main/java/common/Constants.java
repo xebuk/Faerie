@@ -71,6 +71,8 @@ public interface Constants {
 //    String CUSTOM_DICE_MESSAGE = "Write a number and a dice in pattern: 10d40";
 //    String CUSTOM_DICE_MESSAGE_WITH_PRESETS = "Choose a variant below or write a number and a dice in pattern: 10d40";
 
+    int MAX_CUSTOM_DICE_PRESETS = 5;
+
     String SEARCH_COMMAND = "User requested an article search.";
     String DICE_COMMAND = "User requested a dice roll.";
 

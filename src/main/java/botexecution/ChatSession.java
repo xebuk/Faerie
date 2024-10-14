@@ -1,5 +1,6 @@
 package botexecution;
 
+import common.Constants;
 import common.UserDataHandler;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
@@ -42,7 +43,7 @@ public class ChatSession implements Serializable {
     }
 
     public void checkPresetsSize() {
-        while (dicePresets.size() > 5) {
+        while (dicePresets.size() > Constants.MAX_CUSTOM_DICE_PRESETS) {
             dicePresets.removeFirst();
         }
     }
