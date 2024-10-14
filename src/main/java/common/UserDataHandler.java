@@ -5,7 +5,7 @@ import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.*;
-import java.util.HashSet;
+import java.util.ArrayDeque;
 
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
@@ -36,8 +36,15 @@ public class UserDataHandler {
         }
     }
 
-    public static void saveDicePresets(HashSet<String> dicePresets, Update update) {
+    public static void saveDicePresets(ArrayDeque<String> dicePresets, Update update) {
         File diceFile = new File("../token_dir/userData/" + getChatId(update) + "/dicePresets.txt");
+        if (!diceFile.exists()) {
+            try {
+                diceFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -51,14 +58,21 @@ public class UserDataHandler {
         }
     }
 
-    public static HashSet<String> readDicePresets(Update update) {
+    public static ArrayDeque<String> readDicePresets(Update update) {
         File diceFile = new File("../token_dir/userData/" + getChatId(update) + "/dicePresets.txt");
+        if (!diceFile.exists()) {
+            try {
+                diceFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileInputStream in;
         ObjectInputStream input;
         try {
             in = new FileInputStream(diceFile);
             input = new ObjectInputStream(in);
-            HashSet<String> dicePreset = (HashSet<String>) input.readObject();
+            ArrayDeque<String> dicePreset = (ArrayDeque<String>) input.readObject();
             input.close();
             in.close();
             return dicePreset;
@@ -69,6 +83,13 @@ public class UserDataHandler {
 
      public static void savePlayerCharacter(PlayerCharacter pc, Update update) {
         File pcFile = new File("../token_dir/userData/" + getChatId(update) + "/pcFile.txt");
+        if (!pcFile.exists()) {
+            try {
+                pcFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -84,6 +105,13 @@ public class UserDataHandler {
 
     public static PlayerCharacter readPlayerCharacter(Update update) {
         File pcFile = new File("../token_dir/userData/" + getChatId(update) + "/pcFile.txt");
+        if (!pcFile.exists()) {
+            try {
+                pcFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileInputStream in;
         ObjectInputStream input;
         try {
@@ -98,12 +126,18 @@ public class UserDataHandler {
         }
     }
 
-    public static void saveSession(ChatSession cs, Update update) {
-        File sessionFile = new File("../token_dir/userData/" + getChatId(update) + "/session.txt");
+    public static void saveSession(ChatSession cs) {
+        File sessionFile = new File("../token_dir/userData/" + cs.getChatId() + "/session.txt");
+        if (!sessionFile.exists()) {
+            try {
+                sessionFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileOutputStream out;
         ObjectOutputStream output;
         try {
-            sessionFile.createNewFile();
             out = new FileOutputStream(sessionFile);
             output = new ObjectOutputStream(out);
             output.writeObject(cs);
@@ -114,10 +148,18 @@ public class UserDataHandler {
     }
 
     public static ChatSession readSession(Update update) {
+        File sessionFile = new File("../token_dir/userData/" + getChatId(update) + "/session.txt");
+        if (!sessionFile.exists()) {
+            try {
+                sessionFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileInputStream in;
         ObjectInputStream input;
         try {
-            in = new FileInputStream("../token_dir/userData/" + getChatId(update) + "/session.txt");
+            in = new FileInputStream(sessionFile);
             input = new ObjectInputStream(in);
             ChatSession cs = (ChatSession) input.readObject();
             input.close();

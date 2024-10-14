@@ -26,6 +26,7 @@ public interface Constants {
     String SEARCH_MESSAGE_BACKGROUNDS = "Введите название предыстории.";
 
     String SEARCH_MESSAGE_FAIL = "Такой статьи не было найдено. Поиск отменен.";
+    String SEARCH_MESSAGE_FAIL_SECOND_STAGE = "В запросе есть ошибка. Пожалуйста, попробуйте ввести его ещё раз.";
     String SEARCH_MESSAGE_INCORRECT = "Название введено неверно. Поиск отменен.";
     String SEARCH_MESSAGE_IMPOSSIBLE = "Там, где ошибка невозможна, случилась ошибка. Сообщите об этом авторам бота.";
 
@@ -65,7 +66,12 @@ public interface Constants {
 
     String CUSTOM_DICE = "Uh-oh, big number incoming!";
     String CUSTOM_DICE_MESSAGE = "Введите количество и номер кости в виде: 10d40";
+    String CUSTOM_DICE_MESSAGE_WITH_PRESETS = "Выберите вариант из предложенных или введите количество и номер кости в виде: 10d40";
+    String CUSTOM_DICE_ERROR = "Во время вашего броска возникла ошибка. Попробуйте ещё раз.";
 //    String CUSTOM_DICE_MESSAGE = "Write a number and a dice in pattern: 10d40";
+//    String CUSTOM_DICE_MESSAGE_WITH_PRESETS = "Choose a variant below or write a number and a dice in pattern: 10d40";
+
+    int MAX_CUSTOM_DICE_PRESETS = 5;
 
     String SEARCH_COMMAND = "User requested an article search.";
     String DICE_COMMAND = "User requested a dice roll.";
@@ -78,6 +84,7 @@ public interface Constants {
     String FEATS = "Sentinel!";
     String BACKGROUNDS = "Criminal!";
 
+    String CREATION_MENU_CHOOSE_NAME = "Введите своё имя.";
     String CREATION_MENU_CHOOSE_JOB = "Выберите свой класс: ";
 
     String CREATION_MENU_FIGHTER = "Action Surge!";

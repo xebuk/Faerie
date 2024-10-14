@@ -58,11 +58,11 @@ public class AbilBot extends AbilityBot {
         return false;
     }
 
-    private boolean searchEngine(String section, String entry, ChatSession cs) {
+    private boolean searchEngine(ChatSession cs, String entry) {
         ArrayList<String> matches;
 
         try {
-            matches = DataReader.searchArticleIds(section, entry);
+            matches = DataReader.searchArticleIds(cs.sectionId, entry);
         } catch (IOException e) {
             return reportIncorrect(cs);
         }
@@ -74,79 +74,66 @@ public class AbilBot extends AbilityBot {
 
         else if (matches.size() == 2) {
             ArrayList<String> article;
-            switch (section) {
-                case "spells":
-                    try {
+            try {
+                switch (cs.sectionId) {
+                    case "spells":
                         article = SiteParser.SpellsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "items":
-                    try {
+                        break;
+                    case "items":
                         article = SiteParser.ItemsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "bestiary":
-                    try {
+                        break;
+                    case "bestiary":
                         article = SiteParser.BestiaryGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "races":
-                    try {
+                        break;
+                    case "races":
                         article = SiteParser.RacesGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "feats":
-                    try {
+                        break;
+                    case "feats":
                         article = SiteParser.FeatsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                case "backgrounds":
-                    try {
+                        break;
+                    case "backgrounds":
                         article = SiteParser.BackgroundsGrabber(matches.getFirst());
-                    } catch (IOException e) {
-                        return reportIncorrect(cs);
-                    }
-                    break;
-                default:
-                    return false;
+                        break;
+                    default:
+                        reportImpossible(cs);
+                        return false;
+                }
+            } catch (Exception e) {
+                return reportIncorrect(cs);
             }
 
             articleMessaging(article, cs);
             return false;
         }
-        String searchPage = SiteParser.addressWriter(matches, section);
-        SendMessage page = new SendMessage(cs.getChatId().toString(), searchPage);
-        page.setParseMode("HTML");
-        silent.execute(page);
+
+        patternExecute(cs, SiteParser.addressWriter(matches, cs.sectionId), null, true);
         return true;
     }
 
-    private void patternExecute(MessageContext ctx, String message, ReplyKeyboard Function) {
-        SendMessage text = new SendMessage(ctx.chatId().toString(), message);
-        text.setReplyMarkup(Function);
+    private void patternExecute(ChatSession cs, String message, ReplyKeyboard Function, boolean parseMode) {
+        SendMessage text = new SendMessage(cs.getChatId().toString(), message);
+        if (Function != null) {
+            text.setReplyMarkup(Function);
+        }
+        if (parseMode) {
+            text.setParseMode("HTML");
+            text.disableWebPagePreview();
+        }
         silent.execute(text);
     }
 
-    private void sendList(ChatSession cs) {
-        SendMessage list = new SendMessage(cs.getChatId().toString(), Constants.CLASSES_LIST);
-        list.setParseMode("HTML");
-        silent.execute(list);
-    }
-
-    private void rollAdvantage(ChatSession cs) {
-        SendMessage rollAdv = new SendMessage(cs.getChatId().toString(), Constants.ROLL_MESSAGE_ADVANTAGE);
-        rollAdv.setReplyMarkup(KeyboardFactory.rollAdvantageBoard());
-        silent.execute(rollAdv);
+    private void rollCustom(ChatSession cs) {
+        SendMessage rollVar;
+        if (!cs.dicePresets.isEmpty()) {
+            cs.checkPresetsSize();
+            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE_WITH_PRESETS);
+            rollVar.setReplyMarkup(KeyboardFactory.rollCustomBoard(cs));
+        }
+        else {
+            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE);
+        }
+        silent.execute(rollVar);
+        cs.rollCustom = true;
     }
 
     private void sendPic(MessageContext ctx) {
@@ -160,19 +147,19 @@ public class AbilBot extends AbilityBot {
     }
 
     private void startNewUser(MessageContext ctx) {
-        patternExecute(ctx, Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard());
+        patternExecute(new ChatSession(ctx), Constants.START_MESSAGE, KeyboardFactory.setOfCommandsBoard(), false);
 
         UserDataHandler.createChatFile(ctx.chatId().toString());
         ChatSession newUser = new ChatSession(ctx);
-        UserDataHandler.saveSession(newUser, ctx.update());
+        UserDataHandler.saveSession(newUser);
     }
 
     private void createPlayer(MessageContext ctx) {
-        patternExecute(ctx, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard());
-
         ChatSession newUser = UserDataHandler.readSession(ctx.update());
+        patternExecute(newUser, Constants.CREATION_MENU_CHOOSE_NAME, null, false);
+
         newUser.creationOfPlayerCharacter = true;
-        UserDataHandler.saveSession(newUser, ctx.update());
+        UserDataHandler.saveSession(newUser);
     }
 
     private void articleMessaging(ArrayList<String> article, ChatSession cs) {
@@ -203,22 +190,21 @@ public class AbilBot extends AbilityBot {
              cs.sectionId = "bestiary";};
          Consumer<ChatSession> Race = cs -> {silent.send(Constants.SEARCH_MESSAGE_RACES, cs.getChatId());
              cs.sectionId = "race";};
-         Consumer<ChatSession> Class = this::sendList;
+         Consumer<ChatSession> Class = cs -> patternExecute(cs, Constants.CLASSES_LIST, null, true);
          Consumer<ChatSession> Feat = cs -> {silent.send(Constants.SEARCH_MESSAGE_FEATS, cs.getChatId());
              cs.sectionId = "feats";};
          Consumer<ChatSession> Background = cs -> {silent.send(Constants.SEARCH_MESSAGE_BACKGROUNDS, cs.getChatId());
              cs.sectionId = "backgrounds";};
 
          Consumer<ChatSession> RollD20 = cs -> silent.send(DiceNew.D20(), cs.getChatId());
-         Consumer<ChatSession> Roll2D20 = this::rollAdvantage;
+         Consumer<ChatSession> Roll2D20 = cs -> patternExecute(cs, Constants.ROLL_MESSAGE_ADVANTAGE, KeyboardFactory.rollAdvantageBoard(), false);
          Consumer<ChatSession> RollAdvantage = cs -> silent.send(DiceNew.D20TwoTimes(true), cs.getChatId());
          Consumer<ChatSession> RollDisadvantage = cs -> silent.send(DiceNew.D20TwoTimes(false), cs.getChatId());
          Consumer<ChatSession> RollD8 = cs -> silent.send(DiceNew.D8(), cs.getChatId());
          Consumer<ChatSession> RollD6 = cs -> silent.send(DiceNew.D6(), cs.getChatId());
          Consumer<ChatSession> Roll4D6 = cs -> silent.send(DiceNew.D6FourTimes(), cs.getChatId());
          Consumer<ChatSession> RollD4 = cs -> silent.send(DiceNew.D4(), cs.getChatId());
-         Consumer<ChatSession> CustomDice = cs -> {silent.send(Constants.CUSTOM_DICE_MESSAGE, cs.getChatId());
-             cs.rollCustom = true;};
+         Consumer<ChatSession> CustomDice = this::rollCustom;
 
          methodsAllocator.put(Constants.SPELLS, Spell);
          methodsAllocator.put(Constants.ITEMS, Item);
@@ -318,7 +304,7 @@ public class AbilBot extends AbilityBot {
 
     public Ability requestArticle() {
         Consumer<MessageContext> search =
-                ctx -> patternExecute(ctx, Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard());
+                ctx -> patternExecute(new ChatSession(ctx), Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard(), false);
 
         return Ability
                 .builder()
@@ -333,7 +319,7 @@ public class AbilBot extends AbilityBot {
 
     public Ability diceRoll() {
         Consumer<MessageContext> roll =
-                ctx -> patternExecute(ctx, Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard());
+                ctx -> patternExecute(new ChatSession(ctx), Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard(), false);
 
         return Ability
                 .builder()
@@ -378,24 +364,24 @@ public class AbilBot extends AbilityBot {
     public void consume(Update update) {
         super.consume(update);
 
-        ChatSession currentUser = UserDataHandler.readSession(update);
+        ChatSession currentUser;
+        try {
+            currentUser = UserDataHandler.readSession(update);
+        } catch (Exception e) {
+            UserDataHandler.createChatFile(getChatId(update).toString());
+            currentUser = new ChatSession(update);
+        }
 
         if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             if (currentUser.statProgress.isEmpty()) {
-                currentUser.playerCharacter = new PlayerCharacter();
-
-                currentUser.playerCharacter.setName("Терен"); // Пока так, но надо дать пользователю возможность выбрать ник
                 currentUser.playerCharacter.setJob(jobAllocator.get(update.getCallbackQuery().getData()));
-                silent.send(Constants.CREATION_MENU_SET_STATS, getChatId(update));
+                silent.send(Constants.CREATION_MENU_SET_STATS, currentUser.getChatId());
 
                 currentUser.statProgress.add(update.getCallbackQuery().getData());
-
                 currentUser.luck = DiceNew.D6FourTimesCreation();
 
-                SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
-                stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
-                silent.execute(stats);
-                UserDataHandler.saveSession(currentUser, update);
+                patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoard(currentUser.statProgress), false);
+                UserDataHandler.saveSession(currentUser);
             }
             else {
                 if (currentUser.statProgress.size() == 6) {
@@ -405,23 +391,22 @@ public class AbilBot extends AbilityBot {
                     currentUser.playerCharacter.setArmorClass();
                     currentUser.playerCharacter.setAttackDice();
 
-                    silent.send(currentUser.playerCharacter.statWindow(), getChatId(update));
+                    silent.send(currentUser.playerCharacter.statWindow(), currentUser.getChatId());
                     UserDataHandler.savePlayerCharacter(currentUser.playerCharacter, update);
 
                     currentUser.playerCharacter = null;
                     currentUser.statProgress.clear();
                     currentUser.creationOfPlayerCharacter = false;
-                    UserDataHandler.saveSession(currentUser, update);
+                    currentUser.nameIsChosen = false;
+                    UserDataHandler.saveSession(currentUser);
                 }
                 else {
                     statAllocator.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
                     currentUser.statProgress.add(update.getCallbackQuery().getData());
                     currentUser.luck = DiceNew.D6FourTimesCreation();
 
-                    SendMessage stats = new SendMessage(getChatId(update).toString(), DiceNew.D6FourTimes(currentUser.luck));
-                    stats.setReplyMarkup(KeyboardFactory.assignStatsBoard(currentUser.statProgress));
-                    silent.execute(stats);
-                    UserDataHandler.saveSession(currentUser, update);
+                    patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoard(currentUser.statProgress), false);
+                    UserDataHandler.saveSession(currentUser);
                 }
             }
         }
@@ -430,80 +415,88 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            methodsAllocator.get(responseQuery).accept(currentUser);
-            UserDataHandler.saveSession(currentUser, update);
+            if (currentUser.rollCustom) {
+                String[] dices = responseQuery.trim().split("d");
+                try {
+                    silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
+                } catch (NumberFormatException e) {
+                    silent.send(Constants.CUSTOM_DICE_ERROR, currentUser.getChatId());
+                }
+                currentUser.rollCustom = false;
+            }
+            else {
+                methodsAllocator.get(responseQuery).accept(currentUser);
+            }
+            UserDataHandler.saveSession(currentUser);
         }
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
 
-            if (currentUser.rollCustom) {
-                currentUser.dicePresets = UserDataHandler.readDicePresets(update);
-                currentUser.dicePresets.add(update.getMessage().getText());
+            if (currentUser.creationOfPlayerCharacter && !currentUser.nameIsChosen) {
+                currentUser.playerCharacter = new PlayerCharacter();
+                currentUser.playerCharacter.setName(update.getMessage().getText());
+                currentUser.nameIsChosen = true;
+
+                patternExecute(currentUser, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard(), false);
+
+                UserDataHandler.saveSession(currentUser);
+            }
+
+            else if (currentUser.rollCustom) {
+                try {
+                    currentUser.dicePresets = UserDataHandler.readDicePresets(update);
+                } catch (Exception ignored) {}
+
+                if (!currentUser.dicePresets.contains(update.getMessage().getText())) {
+                    currentUser.dicePresets.add(update.getMessage().getText());
+                }
                 UserDataHandler.saveDicePresets(currentUser.dicePresets, update);
 
                 String[] dices = update.getMessage().getText().trim().split("d");
                 silent.send(DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), getChatId(update));
+
                 currentUser.rollCustom = false;
-                UserDataHandler.saveSession(currentUser, update);
+                UserDataHandler.saveSession(currentUser);
             }
 
             else if (currentUser.searchSuccess) {
                 currentUser.title = update.getMessage().getText();
-                switch (currentUser.sectionId) {
-                    case "spells":
-                        try {
+                try {
+                    switch (currentUser.sectionId) {
+                        case "spells":
                             articleMessaging(SiteParser.SpellsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "items":
-                        try {
+                            break;
+                        case "items":
                             articleMessaging(SiteParser.ItemsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "bestiary":
-                        try {
+                            break;
+                        case "bestiary":
                             articleMessaging(SiteParser.BestiaryGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "race":
-                        try {
+                            break;
+                        case "race":
                             articleMessaging(SiteParser.RacesGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "feats":
-                        try {
+                            break;
+                        case "feats":
                             articleMessaging(SiteParser.FeatsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
-                            reportImpossible(currentUser);
-                        }
-                        break;
-                    case "backgrounds":
-                        try {
+                            break;
+                        case "backgrounds":
                             articleMessaging(SiteParser.BackgroundsGrabber(currentUser.title), currentUser);
-                        } catch (IOException e) {
+                            break;
+                        default:
                             reportImpossible(currentUser);
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                    }
+                    currentUser.sectionId = "";
+                    currentUser.searchSuccess = false;
+                    currentUser.title = "";
+                } catch (IOException e) {
+                    silent.send(Constants.SEARCH_MESSAGE_FAIL_SECOND_STAGE, currentUser.getChatId());
                 }
-                currentUser.sectionId = "";
-                currentUser.searchSuccess = false;
-                currentUser.title = "";
-                UserDataHandler.saveSession(currentUser, update);
+                UserDataHandler.saveSession(currentUser);
             }
 
             else if (!currentUser.sectionId.isEmpty()) {
-                currentUser.searchSuccess = searchEngine(currentUser.sectionId, update.getMessage().getText(), currentUser);
-                UserDataHandler.saveSession(currentUser, update);
+                currentUser.searchSuccess = searchEngine(currentUser, update.getMessage().getText());
+                UserDataHandler.saveSession(currentUser);
             }
         }
     }

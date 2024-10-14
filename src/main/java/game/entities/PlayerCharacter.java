@@ -55,11 +55,11 @@ public class PlayerCharacter implements Serializable {
     }
 
     public void setArmorClass() {
-        this.armorClass = job.startArmorClass;
+        this.armorClass = job.armorType.armorValue;
     }
 
     public void setAttackDice() {
-        this.attackDice = job.startAttackDice;
+        this.attackDice = job.weaponType.attackDice;
     }
 
     public void initStrength(int strength) {
