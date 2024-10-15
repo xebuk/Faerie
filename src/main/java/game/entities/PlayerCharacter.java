@@ -3,8 +3,10 @@ package game.entities;
 import game.characteristics.Job;
 import game.characteristics.Race;
 import game.characteristics.races.Human;
+import game.items.Artefact;
 
 import java.io.Serializable;
+import java.util.Stack;
 
 public class PlayerCharacter implements Serializable {
     public String name;
@@ -28,13 +30,9 @@ public class PlayerCharacter implements Serializable {
     public int charisma;
     public int charismaModifier;
 
-    public PlayerCharacter() {
-        this.race = new Human();
-    }
+    public Stack<Artefact> inventory = new Stack<>();
 
-    public PlayerCharacter(String name, Job job) {
-        this.name = name;
-        this.job = job;
+    public PlayerCharacter() {
         this.race = new Human();
     }
 
@@ -114,5 +112,16 @@ public class PlayerCharacter implements Serializable {
         windowText.append("Харизма - ").append(charisma).append(" (").append(charismaModifier > 0 ? "+" + charismaModifier : charismaModifier).append(")").append("\n").append("\n");
 
         return windowText.toString();
+    }
+
+    public void getItem(Artefact item) {
+        initStrength(this.strength + item.strengthValue);
+        initDexterity(this.dexterity + item.dexterityValue);
+        initConstitution(this.constitution + item.constitutionValue);
+        initIntelligence(this.intelligence + item.intelligenceValue);
+        initWisdom(this.wisdom + item.wisdomValue);
+        initCharisma(this.charisma + item.charismaValue);
+
+        this.inventory.push(item);
     }
 }
