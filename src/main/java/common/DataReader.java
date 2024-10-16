@@ -1,5 +1,7 @@
 package common;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,15 +27,27 @@ public class DataReader {
         List<String> lines = Files.readAllLines(articleIdFilePath);;
         String[] separated;
 
+        LevenshteinDistance env = new LevenshteinDistance();
+        int minSimilarityDistance = 1999999999;
+        String resArticleId = "1";
+
         for (String articleId: lines) {
             separated = articleId.trim().split("~ ");
-            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
-                //System.out.println(separated[0]);
-                //System.out.println(separated[1]);
-                return separated[0];
+            int distance;
+            if ((int) name.charAt(0) < 123 && (int) name.charAt(0) > 96) {
+                distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
+            }
+            else {
+                distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
+            }
+
+            if (distance < minSimilarityDistance) {
+                minSimilarityDistance = distance;
+                resArticleId = separated[0];
             }
         }
-        return name;
+
+        return resArticleId;
     }
 
     public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
