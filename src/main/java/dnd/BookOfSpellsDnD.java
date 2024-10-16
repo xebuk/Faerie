@@ -2,7 +2,11 @@ package dnd;
 
 import java.util.ArrayList;
 
-public class BookOfSpells {
+public class BookOfSpellsDnD {
+    public int spellsBaseStat;
+    public int saveDc;
+    public int attackBonus;
+
     public ArrayList<String> cantrips;
 
     public ArrayList<String> level1;
@@ -40,4 +44,6 @@ public class BookOfSpells {
     public ArrayList<String> level9;
     public int level9SpellSlotsTotal;
     public int level9SpellSlotsSpent;
+
+    public BookOfSpellsDnD() {}
 }
