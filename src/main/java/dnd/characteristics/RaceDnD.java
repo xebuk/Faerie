@@ -1,6 +1,6 @@
-package dnd;
+package dnd.characteristics;
 
-public class NonPlayerDnD {
+public class RaceDnD {
     public String name;
     public String summary;
 }

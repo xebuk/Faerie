@@ -1,4 +1,4 @@
-package dnd;
+package dnd.characteristics;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,6 @@
-package dnd;
+package dnd.dmtools;
 
-public class RaceDnD {
+public class NonPlayerDnD {
     public String name;
     public String summary;
 }

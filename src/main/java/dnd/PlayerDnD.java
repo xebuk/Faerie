@@ -1,5 +1,11 @@
 package dnd;
 
+import dnd.characteristics.BackgroundDnD;
+import dnd.characteristics.JobDnD;
+import dnd.characteristics.RaceDnD;
+import dnd.dmtools.*;
+import dnd.characteristics.BookOfSpellsDnD;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

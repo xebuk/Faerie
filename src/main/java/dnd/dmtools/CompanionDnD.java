@@ -1,4 +1,6 @@
-package dnd;
+package dnd.dmtools;
+
+import dnd.characteristics.JobDnD;
 
 public class CompanionDnD extends NonPlayerDnD {
     public String race;

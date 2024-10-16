@@ -1,5 +1,7 @@
 package dnd;
 
+import dnd.dmtools.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

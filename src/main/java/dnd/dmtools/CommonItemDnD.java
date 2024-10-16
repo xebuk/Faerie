@@ -1,4 +1,4 @@
-package dnd;
+package dnd.dmtools;
 
 public class CommonItemDnD {
     public String name;

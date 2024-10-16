@@ -1,4 +1,4 @@
-package dnd;
+package dnd.characteristics;
 
 public class BackgroundDnD {
     public String name;
