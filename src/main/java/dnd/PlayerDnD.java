@@ -1,17 +1,21 @@
 package dnd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class PlayerDnD {
+public class PlayerDnD implements Serializable {
     public String name;
-    public String job;
+    public ArrayList<String> job;
     public String background;
+
     public String playerName;
 
     public String race;
     public String alignment;
     public int experience;
-    public int level;
+    public ArrayList<Integer> level;
+    public int totalLevel;
 
     public int inspiration;
     public int bonusMastery;
@@ -76,4 +80,25 @@ public class PlayerDnD {
     public ArrayList<String> equipment;
     public ArrayList<String> proficienciesAndLanguages;
     public ArrayList<String> traits;
+
+    public int age;
+    public int height;
+    public int weight;
+    public int eyes;
+    public int skin;
+    public int hair;
+
+    public HashMap<String, String> allies;
+    public String backgroundSummary;
+    public ArrayList<String> features;
+    public HashMap<String, String> quests;
+    public HashMap<String, String> itemCollection;
+
+    public HashMap<String, String> notes;
+
+    public int spellsBaseStat;
+    public int saveDc;
+    public int attackBonus;
+
+    public BookOfSpells spellBook;
 }
