@@ -6,12 +6,12 @@ import java.util.HashMap;
 
 public class PlayerDnD implements Serializable {
     public String name;
-    public ArrayList<String> job;
-    public String background;
+    public ArrayList<JobDnD> jobs;
+    public BackgroundDnD background;
 
     public String playerName;
 
-    public String race;
+    public RaceDnD race;
     public String alignment;
     public int experience;
     public ArrayList<Integer> level;
@@ -77,28 +77,26 @@ public class PlayerDnD implements Serializable {
     public int passivePerception;
 
     public ArrayList<String> attacksAndSpells;
-    public ArrayList<String> equipment;
+    public ArrayList<MagicItemDnD> equipment;
     public ArrayList<String> proficienciesAndLanguages;
     public ArrayList<String> traits;
 
-    public int age;
-    public int height;
-    public int weight;
-    public int eyes;
-    public int skin;
-    public int hair;
+    public String age;
+    public String height;
+    public String weight;
+    public String eyes;
+    public String skin;
+    public String hair;
 
     public HashMap<String, String> allies;
     public String backgroundSummary;
     public ArrayList<String> features;
-    public HashMap<String, String> quests;
-    public HashMap<String, String> itemCollection;
+    public ArrayList<QuestDnD> quests;
+    public ArrayList<CommonItemDnD> itemCollection;
 
     public HashMap<String, String> notes;
 
-    public int spellsBaseStat;
-    public int saveDc;
-    public int attackBonus;
+    public BookOfSpellsDnD spellBook;
 
-    public BookOfSpells spellBook;
+    public PlayerDnD() {}
 }
