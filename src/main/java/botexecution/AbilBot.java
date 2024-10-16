@@ -266,7 +266,7 @@ public class AbilBot extends AbilityBot {
                 .name("help")
                 .info("shows all commands")
                 .input(0)
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(helpHand)
                 .build();
@@ -281,7 +281,7 @@ public class AbilBot extends AbilityBot {
                 .name("mofu")
                 .info("mofu")
                 .input(0)
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(mofu)
                 .build();
@@ -296,7 +296,7 @@ public class AbilBot extends AbilityBot {
                 .name("credits")
                 .info("shows authors and coders for this bot")
                 .input(0)
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(credits)
                 .build();
@@ -311,7 +311,7 @@ public class AbilBot extends AbilityBot {
                 .name("search")
                 .info("searches article on DnD.su")
                 .input(0)
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(search)
                 .build();
@@ -326,7 +326,7 @@ public class AbilBot extends AbilityBot {
                 .name("roll")
                 .info("rolls a dice")
                 .input(0)
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(roll)
                 .build();
