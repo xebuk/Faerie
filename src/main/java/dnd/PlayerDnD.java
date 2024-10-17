@@ -34,6 +34,7 @@ public class PlayerDnD implements Serializable {
     public int maxHealthPoints;
     public int temporaryHealthPoints;
     public String healthDice;
+
     public int deathThrowsSuccess;
     public int deathThrowsFailure;
 
@@ -95,9 +96,8 @@ public class PlayerDnD implements Serializable {
     public String hair;
 
     public HashMap<String, String> allies;
-    public String backgroundSummary;
     public ArrayList<String> features;
-    public ArrayList<QuestDnD> quests;
+    public ArrayList<QuestDnDForPlayers> quests;
     public ArrayList<CommonItemDnD> itemCollection;
 
     public HashMap<String, String> notes;
