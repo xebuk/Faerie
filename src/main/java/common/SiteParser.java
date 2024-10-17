@@ -15,13 +15,7 @@ import static common.Constants.URL;
 public class SiteParser {
 
     public static ArrayList<String> SpellsGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("spells", id);
-        }
+        String article = DataReader.searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells" + "/" + article);
         Document page;
@@ -63,13 +57,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> ItemsGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("items", id);
-        }
+        String article = DataReader.searchArticleId("items", id);;
 
         Connection link = Jsoup.connect(URL + "items" + "/" + article);
         Document page;
@@ -106,13 +94,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("bestiary", id);
-        }
+        String article = DataReader.searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary" + "/" + article);
         Document page;
@@ -200,13 +182,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> RacesGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("race", id);
-        }
+        String article = DataReader.searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race" + "/" + article);
         Document page;
@@ -273,13 +249,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> FeatsGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("feats", id);
-        }
+        String article = DataReader.searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats" + "/" + article);
         Document page;
@@ -306,13 +276,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
-        String article;
-        try {
-            int index = Integer.parseInt(id);
-            article = id;
-        } catch (NumberFormatException e) {
-            article = DataReader.searchArticleId("backgrounds", id);
-        }
+        String article = DataReader.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
         Document page;
