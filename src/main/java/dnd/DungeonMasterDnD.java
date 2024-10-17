@@ -14,7 +14,7 @@ public class DungeonMasterDnD implements Serializable {
     public ArrayList<CommonItemDnD> itemCollection;
     public ArrayList<MagicItemDnD> magicItemCollection;
 
-    public ArrayList<QuestDnD> questRoster;
+    public ArrayList<QuestDnDForDm> questRoster;
 
     public ArrayList<NonPlayerDnD> npcRoster;
     public ArrayList<CompanionDnD> companionRoster;
