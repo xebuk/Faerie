@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class DataReader {
     }
 
     public static String searchArticleId(String section, String name) throws IOException {
+        try {
+            int index = Integer.parseInt(name);
+            return name;
+        } catch (NumberFormatException ignored) {}
+
         Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
         List<String> lines = Files.readAllLines(articleIdFilePath);;
         String[] separated;
