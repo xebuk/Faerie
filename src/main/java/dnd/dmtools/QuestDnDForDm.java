@@ -1,6 +1,7 @@
 package dnd.dmtools;
 
-public class QuestDnD {
+public class QuestDnDForDm {
     public String title;
     public String summary;
+    public String notes;
 }
