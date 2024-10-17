@@ -14,6 +14,8 @@ import java.util.HashSet;
 
 public class ChatSession implements Serializable {
     private final long chatId;
+    private final boolean isPM;
+    public String username;
 
     public String sectionId = "";
     public boolean searchSuccess = false;
@@ -30,16 +32,22 @@ public class ChatSession implements Serializable {
 
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
+        this.isPM = !(this.chatId < 0);
         UserDataHandler.createChatFile(String.valueOf(chatId));
     }
 
     public ChatSession(MessageContext ctx) {
         this.chatId = ctx.chatId();
+        this.isPM = !(this.chatId < 0);
         UserDataHandler.createChatFile(String.valueOf(chatId));
     }
 
     public Long getChatId() {
         return chatId;
+    }
+
+    public boolean isPM() {
+        return isPM;
     }
 
     public void checkPresetsSize() {
