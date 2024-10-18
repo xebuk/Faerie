@@ -108,6 +108,20 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup YesOrNoBoard() {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        inlineKeyRow.add(new InlineKeyboardButton("Да"));
+        inlineKeyRow.get(0).setCallbackData("Да");
+        inlineKeyRow.add(new InlineKeyboardButton("Нет"));
+        inlineKeyRow.get(1).setCallbackData("Нет");
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
     public static InlineKeyboardMarkup jobSelectionBoard() {
         InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
 
