@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class PlayerDnD implements Serializable {
     public String name;
-    public ArrayList<JobDnD> jobs;
+    public ArrayList<JobDnD> jobs = new ArrayList<>();
     public BackgroundDnD background;
 
     public String playerName;
