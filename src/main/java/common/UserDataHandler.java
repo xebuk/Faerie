@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.*;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
@@ -45,6 +47,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -67,6 +70,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileInputStream in;
         ObjectInputStream input;
         try {
@@ -90,6 +94,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -112,6 +117,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileInputStream in;
         ObjectInputStream input;
         try {
@@ -135,6 +141,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileOutputStream out;
         ObjectOutputStream output;
         try {
@@ -156,6 +163,7 @@ public class UserDataHandler {
                 throw new RuntimeException(e);
             }
         }
+
         FileInputStream in;
         ObjectInputStream input;
         try {
@@ -168,5 +176,120 @@ public class UserDataHandler {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static ChatSession readSession(long chatId) {
+        File sessionFile = new File("../token_dir/userData/" + chatId + "/session.txt");
+        if (!sessionFile.exists()) {
+            try {
+                sessionFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        FileInputStream in;
+        ObjectInputStream input;
+        try {
+            in = new FileInputStream(sessionFile);
+            input = new ObjectInputStream(in);
+            ChatSession cs = (ChatSession) input.readObject();
+            input.close();
+            in.close();
+            return cs;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void createUsernameToChatIdHashMapFile() {
+        HashMap<String, Long> chatIdToUsername = new HashMap<>();
+
+        File hashMapFile = new File("../token_dir/userData/usernameToChatID.txt");
+        if (!hashMapFile.exists()) {
+            try {
+                hashMapFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        FileOutputStream out;
+        ObjectOutputStream output;
+        try {
+            out = new FileOutputStream(hashMapFile);
+            output = new ObjectOutputStream(out);
+            output.writeObject(chatIdToUsername);
+            output.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void addUsernameToChatIdEntry(String username, long chatId) {
+        File hashMapFile = new File("../token_dir/userData/usernameToChatID.txt");
+
+        FileInputStream in;
+        ObjectInputStream input;
+        FileOutputStream out;
+        ObjectOutputStream output;
+        try {
+            in = new FileInputStream(hashMapFile);
+            input = new ObjectInputStream(in);
+            HashMap<String, Long> usernameToChatId = (HashMap<String, Long>) input.readObject();
+            input.close();
+            in.close();
+
+            usernameToChatId.put(username, chatId);
+
+            out = new FileOutputStream(hashMapFile);
+            output = new ObjectOutputStream(out);
+            output.writeObject(usernameToChatId);
+            output.close();
+            out.close();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Long findChatId(String username) {
+        File hashMapFile = new File("../token_dir/userData/usernameToChatID.txt");
+
+        FileInputStream in;
+        ObjectInputStream input;
+        try {
+            in = new FileInputStream(hashMapFile);
+            input = new ObjectInputStream(in);
+            HashMap<String, Long> usernameToChatId = (HashMap<String, Long>) input.readObject();
+            input.close();
+            in.close();
+
+            return usernameToChatId.get(username);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String findUsername(long chatId) {
+        File hashMapFile = new File("../token_dir/userData/usernameToChatID.txt");
+
+        FileInputStream in;
+        ObjectInputStream input;
+        try {
+            in = new FileInputStream(hashMapFile);
+            input = new ObjectInputStream(in);
+            HashMap<String, Long> usernameToChatId = (HashMap<String, Long>) input.readObject();
+            input.close();
+            in.close();
+
+            for (Map.Entry<String, Long> entry : usernameToChatId.entrySet()) {
+                if (entry.getValue() == chatId) {
+                    return entry.getKey();
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return "";
     }
 }
