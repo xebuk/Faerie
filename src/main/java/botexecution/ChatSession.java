@@ -2,6 +2,8 @@ package botexecution;
 
 import common.Constants;
 import common.UserDataHandler;
+import dnd.DungeonMasterDnD;
+import dnd.PlayerDnD;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
@@ -10,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class ChatSession implements Serializable {
@@ -30,15 +33,25 @@ public class ChatSession implements Serializable {
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
+    public DungeonMasterDnD activeDm;
+    public PlayerDnD activePc;
+    public boolean campaignNameIsChosen = false;
+    public boolean creationOfPlayerDnD = false;
+    public int creationStage = 0;
+
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
+        this.username = UserDataHandler.findUsername(chatId);
         this.isPM = !(this.chatId < 0);
         UserDataHandler.createChatFile(String.valueOf(chatId));
     }
 
     public ChatSession(MessageContext ctx) {
         this.chatId = ctx.chatId();
+        this.username = "@" + ctx.user().getUserName();
         this.isPM = !(this.chatId < 0);
+
+        UserDataHandler.addUsernameToChatIdEntry(username, chatId);
         UserDataHandler.createChatFile(String.valueOf(chatId));
     }
 
