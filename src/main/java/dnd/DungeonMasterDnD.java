@@ -9,6 +9,7 @@ import java.util.HashMap;
 public class DungeonMasterDnD implements Serializable {
     public long chatId;
     public String username;
+    public String password;
     public String campaignName;
 
     public HashMap<String, PlayerDnD> playerDnDHashMap = new HashMap<>();
