@@ -3,6 +3,7 @@ package botexecution;
 import common.Constants;
 import common.UserDataHandler;
 import dnd.DungeonMasterDnD;
+import dnd.PlayerCreationStageDnD;
 import dnd.PlayerDnD;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
@@ -12,8 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+
+import static dnd.PlayerCreationStageDnD.*;
 
 public class ChatSession implements Serializable {
     private final long chatId;
@@ -33,11 +35,16 @@ public class ChatSession implements Serializable {
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
+    public boolean isHavingACampaign = false;
+    public boolean isEndingACampaign = false;
+    public boolean campaignNameIsChosen = false;
+
+    public boolean creationOfPlayerDnD = false;
+    public boolean haltCreation = true;
+    public PlayerCreationStageDnD creationStage = NAME;
+
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
-    public boolean campaignNameIsChosen = false;
-    public boolean creationOfPlayerDnD = false;
-    public int creationStage = 0;
 
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
