@@ -83,23 +83,22 @@ public class DataReader {
 
         for (int i = 0; i < filesCount; i++) {
             File presetFile = filesList[i];
-            long linesCount;
-            try (Stream<String> stream = Files.lines(presetFile.toPath())) {
-                linesCount = stream.count();
-            }
-            roomPresets[i] = new MazeGenerator.Tiles[filesCount][];
+            int linesCount = (int) Files.lines(presetFile.toPath()).count();
+            roomPresets[i] = new MazeGenerator.Tiles[linesCount][];
 
-            try (BufferedReader br = new BufferedReader(new FileReader(presetFile))) {
-                String line;
-                for (int j = 0; j < linesCount; j++) {
-                    line = br.readLine();
-                    for (int k = 0; k < line.length(); k++) {
-                        roomPresets[i][j][k] = switch (line.charAt(k)) {
-                            case '#' -> MazeGenerator.Tiles.WALL;
-                            case '.' -> MazeGenerator.Tiles.FLOOR;
-                            default -> MazeGenerator.Tiles.NONE;
-                        };
-                    }
+            BufferedReader br = new BufferedReader(new FileReader(presetFile));
+            String line;
+            for (int j = 0; j < linesCount; j++) {
+                line = br.readLine();
+                int lineLength = line.length();
+                roomPresets[i][j] = new MazeGenerator.Tiles[lineLength];
+
+                for (int k = 0; k < lineLength; k++) {
+                    roomPresets[i][j][k] = switch (line.charAt(k)) {
+                        case '#' -> MazeGenerator.Tiles.WALL;
+                        case '.' -> MazeGenerator.Tiles.FLOOR;
+                        default -> MazeGenerator.Tiles.NONE;
+                    };
                 }
             }
         }
