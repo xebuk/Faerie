@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Drawer {
-    private static final int CANVAS_WIDTH = 512;  /*465;*/  /*310;*/  /*720;*/  /*1440;*/
-    private static final int CANVAS_HEIGHT = 288;  /*304;*/  /*202;*/  /*405;*/  /*810;*/
+    private static final int CANVAS_WIDTH = 512;
+    private static final int CANVAS_HEIGHT = 288;
 
     private static final double FOV = Math.toRadians(60);
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
@@ -32,16 +32,18 @@ public class Drawer {
     //       replace -> List<GameObject>
     private List<Cube> sceneObjects;
     private List<LightSource> lights;
+    private final MazeGenerator mazeGenerator;        // For hitboxes checks
 
     private Graphics2D g2d;
     private BufferedImage image;
 
     private static final boolean DEBUG_SAVE = true;
 
-    public Drawer(double cameraX, double cameraY, double cameraZ) {
+    public Drawer(double cameraX, double cameraY, double cameraZ, MazeGenerator mazeGenerator) {
         this.cameraX = cameraX;
         this.cameraY = cameraY;
         this.cameraZ = cameraZ;
+        this.mazeGenerator = mazeGenerator;
         this.depthBuffer = new double[CANVAS_WIDTH][CANVAS_HEIGHT];
 
         resetDepthBuffer();
@@ -326,7 +328,12 @@ public class Drawer {
     }
 
     public void moveCamera(double dx, double dz) {
-        cameraX +=  dx * Math.cos(yaw) + dz * Math.sin(yaw);
-        cameraZ += -dx * Math.sin(yaw) + dz * Math.cos(yaw);
+        double moveX =  dx * Math.cos(yaw) + dz * Math.sin(yaw);
+        double moveZ = -dx * Math.sin(yaw) + dz * Math.cos(yaw);
+
+        if (mazeGenerator.getTile((int) (cameraX + moveX), (int) (cameraZ + moveZ)) == MazeGenerator.Tiles.FLOOR) {
+            cameraX += moveX;
+            cameraZ += moveZ;
+        }
     }
 }
