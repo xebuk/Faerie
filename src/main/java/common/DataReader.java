@@ -3,12 +3,19 @@ package common;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.io.*;
+import game.MazeGenerator;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 
@@ -128,5 +135,43 @@ public class DataReader {
             return true;
         }
         return false;
+    }
+
+    public static MazeGenerator.Tiles[][][] readRoomPresets() throws IOException {
+        MazeGenerator.Tiles[][][] roomPresets;
+
+        File[] filesList = new File(Constants.ROOM_PRESETS_PATH).listFiles();
+        int filesCount = filesList.length;
+        roomPresets = new MazeGenerator.Tiles[filesCount][][];
+
+        for (int i = 0; i < filesCount; i++) {
+            File presetFile = filesList[i];
+            List<String> lines = Files.lines(presetFile.toPath()).toList();
+            int linesCount = lines.size();
+            roomPresets[i] = new MazeGenerator.Tiles[linesCount][];
+
+            int lineSize = -1;
+            int j = 0;
+            for (String line : lines) {
+                int lineLength = line.length();
+                if (lineSize == -1) {
+                    lineSize = lineLength;
+                } else if (lineSize != lineLength) {
+                    throw new RuntimeException("Lines are not the same length.");
+                }
+                roomPresets[i][j] = new MazeGenerator.Tiles[lineLength];
+
+                for (int k = 0; k < lineLength; k++) {
+                    roomPresets[i][j][k] = switch (line.charAt(k)) {
+                        case '#' -> MazeGenerator.Tiles.WALL;
+                        case '.' -> MazeGenerator.Tiles.FLOOR;
+                        default -> MazeGenerator.Tiles.NONE;
+                    };
+                }
+                j++;
+            }
+        }
+
+        return roomPresets;
     }
 }

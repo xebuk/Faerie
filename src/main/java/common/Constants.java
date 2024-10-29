@@ -171,4 +171,5 @@ public interface Constants {
     String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
     String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
+    String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
 }
