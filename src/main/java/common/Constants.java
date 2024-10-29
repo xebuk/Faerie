@@ -19,6 +19,8 @@ public interface Constants {
     String CHANGE_TO_COMMON_KEYBOARD = "Вы перешли на стандартную клавиатуру!";
     String CHANGE_TO_GAME_KEYBOARD = "Вы перешли на клавиатуру игры!";
     String CHANGE_TO_DND_KEYBOARD = "Вы перешли на клавиатуру DnD!";
+    String CHANGE_TO_DM_KEYBOARD = "Вы перешли на клавиатуру DM-a!";
+    String CHANGE_TO_CAMPAIGN_KEYBOARD = "Вы перешли на клавиатуру компании!";
 
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
@@ -165,6 +167,8 @@ public interface Constants {
     String CAMPAIGN_END_AFFIRMATION = "Вы точно уверены, что хотите закончить данную компанию?";
     String CAMPAIGN_END = "Компания была распущена.";
     String CAMPAIGN_END_FALSE_ALARM = "Действия отменены.";
+
+    String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
     String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
 }
