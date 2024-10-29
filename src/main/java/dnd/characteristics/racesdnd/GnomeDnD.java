@@ -1,19 +1,26 @@
 package dnd.characteristics.racesdnd;
 
+import dnd.values.LanguagesDnD;
 import dnd.characteristics.RaceDnD;
+import dnd.values.RacesSizeDnD;
+import dnd.values.ScriptsDnD;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 public class GnomeDnD extends RaceDnD {
 
     public GnomeDnD() {
         this.name = "Гном";
         this.subspeciesName = "Не выбран";
+        this.size = RacesSizeDnD.SMALL;
 
         this.intelligenceBonus = 2;
 
         this.walkingSpeed = 25;
+
+        this.languages = Set.of(LanguagesDnD.COMMON, LanguagesDnD.GNOMISH);
+        this.scripts = Set.of(ScriptsDnD.COMMON, ScriptsDnD.DWARVISH);
 
         this.personality = Arrays.asList("Как только вам начинает нравится что-то, вы становитесь одержимы этим.",
                 "Вы живёте подобно листу на ветру, следуя туда, куда вас понесёт ветер.",

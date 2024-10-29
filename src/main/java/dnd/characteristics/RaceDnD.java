@@ -1,12 +1,17 @@
 package dnd.characteristics;
 
-import java.util.ArrayList;
+import dnd.values.LanguagesDnD;
+import dnd.values.RacesSizeDnD;
+import dnd.values.ScriptsDnD;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class RaceDnD {
     public String name;
     public String subspeciesName;
+    public RacesSizeDnD size;
 
     public int strengthBonus = 0;
     public int dexterityBonus = 0;
@@ -22,7 +27,9 @@ public class RaceDnD {
 
     public int walkingSpeed;
 
-    public List<String> languages;
+    public int bonusLanguages = 0;
+    public Set<LanguagesDnD> languages;
+    public Set<ScriptsDnD> scripts;
 
     public HashMap<String, String> features;
 
