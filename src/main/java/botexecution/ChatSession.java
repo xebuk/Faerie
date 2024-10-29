@@ -2,20 +2,18 @@ package botexecution;
 
 import common.Constants;
 import common.UserDataHandler;
-import dnd.DungeonMasterDnD;
-import dnd.PlayerCreationStageDnD;
-import dnd.PlayerDnD;
+import dnd.mainobjects.DungeonMasterDnD;
+import dnd.values.PlayerDnDCreationStage;
+import dnd.mainobjects.PlayerDnD;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.Serializable;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
-import static dnd.PlayerCreationStageDnD.*;
+import static dnd.values.PlayerDnDCreationStage.*;
 
 public class ChatSession implements Serializable {
     private final long chatId;
@@ -41,7 +39,12 @@ public class ChatSession implements Serializable {
 
     public boolean creationOfPlayerDnD = false;
     public boolean haltCreation = true;
-    public PlayerCreationStageDnD creationStage = NAME;
+    public PlayerDnDCreationStage creationStage = NAME;
+
+    public HashMap<String, Long> campaigns = new HashMap<>();
+    public Long currentCampaign;
+    public PlayerDnD currentPlayer;
+    public boolean editCurrentPlayer = false;
 
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
@@ -68,6 +71,17 @@ public class ChatSession implements Serializable {
 
     public boolean isPM() {
         return isPM;
+    }
+
+    public void setUsername(String usernameGetter) {
+        try {
+            this.username = "@" + usernameGetter;
+        } catch (Exception e) {
+            this.username = "@[ДАННЫЕ УДАЛЕНЫ]";
+        }
+        if (Objects.equals(this.username, "@") || Objects.equals(this.username, "@null")) {
+            this.username = "@[ДАННЫЕ УДАЛЕНЫ]";
+        }
     }
 
     public void checkPresetsSize() {
