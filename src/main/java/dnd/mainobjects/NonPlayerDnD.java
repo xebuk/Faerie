@@ -1,4 +1,4 @@
-package dnd.dmtools;
+package dnd.mainobjects;
 
 public class NonPlayerDnD {
     public String name;

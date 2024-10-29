@@ -1,6 +1,8 @@
-package dnd;
+package dnd.mainobjects;
 
 import dnd.dmtools.*;
+import dnd.equipment.ItemDnD;
+import dnd.equipment.MagicItemDnD;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ public class DungeonMasterDnD implements Serializable {
     public HashMap<String, PlayerDnD> playerDnDHashMap = new HashMap<>();
     public int multiclassLimit = 0;
 
-    public ArrayList<CommonItemDnD> itemCollection = new ArrayList<>();
+    public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
     public ArrayList<MagicItemDnD> magicItemCollection = new ArrayList<>();
 
     public ArrayList<QuestDnDForDm> questRoster = new ArrayList<>();
