@@ -1,9 +1,12 @@
 package dnd.characteristics;
 
-import dnd.dmtools.CommonItemDnD;
+import dnd.equipment.ItemDnD;
+import dnd.values.InstrumentsDnD;
+import dnd.values.LanguagesDnD;
+import dnd.values.ScriptsDnD;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class BackgroundDnD {
     public String name = "";
@@ -12,15 +15,16 @@ public class BackgroundDnD {
     public String specialAbility = "";
     public String specialAbilitySummary = "";
 
+    public int bonusSkills;
     public List<String> learnedSkills;
-    public List<String> languages;
 
-    public String instrumentMastery1 = "";
-    public String instrumentMastery2 = "";
+    public Set<InstrumentsDnD> instrumentMastery;
 
-    public ArrayList<CommonItemDnD> startingEquipment;
+    public int bonusLanguages;
+    public Set<LanguagesDnD> languages;
+    public Set<ScriptsDnD> scripts;
 
-    public ArrayList<String> specialInfo;
+    public List<String> specialInfo;
 
     public List<String> personality;
     public List<String> ideal;
