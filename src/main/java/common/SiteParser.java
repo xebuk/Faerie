@@ -299,6 +299,44 @@ public class SiteParser {
         return result;
     }
 
+    public static void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
+        String article = DataReader.searchArticleId("backgrounds", id);
+
+        Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
+        Document page;
+        do {
+            page = link.get();
+        } while (!page.hasText());
+
+        Elements body = page.select("div[itemprop=description]");
+
+        Elements tables = body.select("tr");
+
+        for (Element i : tables) {
+            String result = "\"" + i.text().substring(i.text().indexOf(" ") + 1).trim() + "\",";
+            System.out.println(result);
+        }
+    }
+
+    public static void BackgroundSpecialAbilityGrabber(String id) throws IOException {
+        String article = DataReader.searchArticleId("backgrounds", id);
+
+        Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
+        Document page;
+        do {
+            page = link.get();
+        } while (!page.hasText());
+
+        Elements body = page.select("div[itemprop=description]");
+
+        Elements ability = body.select("h3.smallSectionTitle,h3.smallSectionTitle + p,p + p");
+
+        for (Element i : ability) {
+            String result = "\"" + i.text().trim() + "\",";
+            System.out.println(result);
+        }
+    }
+
     public static void DictWriter(String section) {
         Connection link;
         Connection.Response response;
@@ -397,6 +435,10 @@ public class SiteParser {
     }
 
     public static void main(String[] args) {
-        DictWriter("bestiary");
+        try {
+            BackgroundSpecialAbilityGrabber("770");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
