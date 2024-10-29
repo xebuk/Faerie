@@ -2,14 +2,15 @@ package botexecution;
 
 import common.*;
 
-import dnd.DungeonMasterDnD;
-import dnd.PlayerDnD;
+import dnd.mainobjects.DungeonMasterDnD;
+import dnd.mainobjects.PlayerDnD;
 import dnd.characteristics.BackgroundDnD;
 import dnd.characteristics.JobDnD;
 import dnd.characteristics.RaceDnD;
 import dnd.characteristics.backgroundsdnd.*;
 import dnd.characteristics.jobsdnd.*;
 import dnd.characteristics.racesdnd.*;
+import dnd.values.PlayerDnDCreationStage;
 import game.characteristics.Job;
 import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
@@ -29,7 +30,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static dnd.PlayerCreationStageDnD.*;
+import static dnd.values.PlayerDnDCreationStage.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
@@ -40,11 +41,13 @@ public class AbilBot extends AbilityBot {
     private final HashMap<String, Job> jobAllocatorGame = new HashMap<>();
     private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocatorGame = new HashMap<>();
 
+    private final HashMap<PlayerDnDCreationStage, BiConsumer<ChatSession, String>> playerDnDGeneratorAllocator = new HashMap<>();
     private final HashMap<String, RaceDnD> raceDnDAllocator = new HashMap<>();
     private final HashMap<String, JobDnD> jobDnDAllocator = new HashMap<>();
     private final HashMap<String, BackgroundDnD> backgroundDnDAllocator = new HashMap<>();
     private final HashMap<String, BiConsumer<PlayerDnD, Integer>> statAllocatorDnD = new HashMap<>();
     private final HashMap<String, Consumer<PlayerDnD>> skillAllocatorDnD = new HashMap<>();
+    private final HashMap<String, Consumer<PlayerDnD>> languagesAllocatorDnD = new HashMap<>();
 
     public AbilBot() throws IOException {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
@@ -145,14 +148,23 @@ public class AbilBot extends AbilityBot {
         silent.execute(text);
     }
 
-    private String variantsMessageConfigurator(List<String> variants) {
-        StringBuilder text = new StringBuilder();
+    private void articleMessaging(List<String> article, ChatSession cs) {
+        StringBuilder partOfArticle = new StringBuilder();
+        int lengthOfMessage = 0;
 
-        for (int i = 1; i < variants.size() + 1; i++) {
-            text.append(i).append(".").append(variants.get(i - 1)).append("\n\n");
+        for (String paragraph: article) {
+            if (lengthOfMessage + paragraph.length() <= 4095) {
+                partOfArticle.append(paragraph);
+                lengthOfMessage = lengthOfMessage + paragraph.length();
+            }
+            else {
+                silent.send(partOfArticle.toString(), cs.getChatId());
+                partOfArticle.setLength(0);
+                lengthOfMessage = paragraph.length();
+                partOfArticle.append(paragraph);
+            }
         }
-
-        return text.toString();
+        silent.send(partOfArticle.toString(), cs.getChatId());
     }
 
     private void rollCustom(ChatSession cs) {
@@ -235,6 +247,126 @@ public class AbilBot extends AbilityBot {
         }
     }
 
+    private void showCampaigns(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+
+        if (currentUser.campaigns.isEmpty()) {
+            silent.send("На данный момент вы не ведете никаких компаний.", ctx.chatId());
+            return;
+        }
+
+        ArrayList<String> campaigns = new ArrayList<>();
+        campaigns.add("Текущие компании, которые ведете вы: \n");
+        int index = 1;
+        for (String i : currentUser.campaigns.keySet()) {
+            campaigns.add(String.valueOf(index));
+            campaigns.add(". ");
+            campaigns.add(i);
+            campaigns.add("\n");
+            index++;
+        }
+
+        articleMessaging(campaigns, currentUser);
+    }
+
+    private void setCurrentCampaign(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+
+        try {
+            currentUser.currentCampaign = currentUser.campaigns.get(ctx.firstArg());
+            currentUser.currentPlayer = null;
+            currentUser.editCurrentPlayer = false;
+            silent.send("Компания " + currentUser.currentCampaign
+                    + " была установлена как основная. Теперь вы можете менять её параметры и добавлять свои предметы.", ctx.chatId());
+        } catch (Exception e) {
+            silent.send("Такой компании не найдено. Попробуйте ещё раз.", ctx.chatId());
+        }
+
+        UserDataHandler.saveSession(currentUser);
+    }
+
+    private void setCampaignName(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentCampaign;
+        try {
+            currentCampaign = UserDataHandler.readSession(currentUser.currentCampaign);
+        } catch (Exception e) {
+            silent.send("Текущая компания не была указана. Для начала укажите текущую компанию.", ctx.chatId());
+            return;
+        }
+
+        currentUser.campaigns.remove(currentCampaign.activeDm.campaignName);
+        currentCampaign.activeDm.campaignName = ctx.firstArg();
+        currentUser.campaigns.put(currentCampaign.activeDm.campaignName, currentUser.currentCampaign);
+
+        silent.send("Название компании было изменено.", ctx.chatId());
+
+        UserDataHandler.saveSession(currentCampaign);
+        UserDataHandler.saveSession(currentUser);
+    }
+
+    private void setPassword(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentCampaign;
+        try {
+            currentCampaign = UserDataHandler.readSession(currentUser.currentCampaign);
+        } catch (Exception e) {
+            silent.send("Текущая компания не была указана. Для начала укажите текущую компанию.", ctx.chatId());
+            return;
+        }
+
+        currentCampaign.activeDm.password = ctx.firstArg();
+        silent.send("Пароль для удаления компании был указан. При удалении компании он отправится к вам в личные сообщения.", ctx.chatId());
+
+        UserDataHandler.saveSession(currentCampaign);
+        UserDataHandler.saveSession(currentUser);
+    }
+
+    private void setMulticlassLimit(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentCampaign;
+        try {
+            currentCampaign = UserDataHandler.readSession(currentUser.currentCampaign);
+        } catch (Exception e) {
+            silent.send("Текущая компания не была указана. Для начала укажите текущую компанию.", ctx.chatId());
+            return;
+        }
+
+        try {
+            currentCampaign.activeDm.multiclassLimit = Integer.parseInt(ctx.firstArg());
+        } catch (NumberFormatException e) {
+            silent.send("Пожалуйста, введите корректное число.", ctx.chatId());
+            return;
+        }
+        silent.send("Лимит классов на персонажа установлен. Теперь максимальное количество классов - "
+                + currentCampaign.activeDm.multiclassLimit, ctx.chatId());
+        silent.send("При установке лимита классов на персонажа на 0, вы снимаете ограничение на количество классов.", ctx.chatId());
+
+        UserDataHandler.saveSession(currentCampaign);
+        UserDataHandler.saveSession(currentUser);
+    }
+
+    private void showPlayers(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentCampaign;
+        try {
+            currentCampaign = UserDataHandler.readSession(currentUser.currentCampaign);
+        } catch (Exception e) {
+            silent.send("Текущая компания не была указана. Для начала укажите текущую компанию.", ctx.chatId());
+            return;
+        }
+
+        StringBuilder playersList = new StringBuilder();
+        playersList.append("Игроки текущей компании: \n");
+        int index = 1;
+        for (Map.Entry<String, PlayerDnD> player : currentCampaign.activeDm.playerDnDHashMap.entrySet()) {
+            playersList.append(index).append(". ").append(player.getKey()).append(" - ").append(player.getValue().name);
+            index++;
+        }
+
+        silent.send(playersList.toString(), ctx.chatId());
+    }
+
     private void addAPlayerDnD(MessageContext ctx) {
         long userChatId = UserDataHandler.findChatId("@" + ctx.user().getUserName());
         ChatSession currentUser = UserDataHandler.readSession(userChatId);
@@ -257,26 +389,15 @@ public class AbilBot extends AbilityBot {
     private void haltCreationOfPlayerDnD(MessageContext ctx) {
         ChatSession currentUser = UserDataHandler.readSession(ctx.update());
         currentUser.haltCreation = !currentUser.haltCreation;
-        UserDataHandler.saveSession(currentUser);
-    }
 
-    private void articleMessaging(ArrayList<String> article, ChatSession cs) {
-        StringBuilder partOfArticle = new StringBuilder();
-        int lengthOfMessage = 0;
-
-        for (String paragraph: article) {
-            if (lengthOfMessage + paragraph.length() <= 4095) {
-                partOfArticle.append(paragraph);
-                lengthOfMessage = lengthOfMessage + paragraph.length();
-            }
-            else {
-                silent.send(partOfArticle.toString(), cs.getChatId());
-                partOfArticle.setLength(0);
-                lengthOfMessage = paragraph.length();
-                partOfArticle.append(paragraph);
-            }
+        if (currentUser.haltCreation) {
+            silent.send("Процесс создания персонажа ДнД был поставлен на паузу.", ctx.chatId());
         }
-        silent.send(partOfArticle.toString(), cs.getChatId());
+        else {
+            silent.send("Процесс создания персонажа ДнД был возобновлен.", ctx.chatId());
+        }
+
+        UserDataHandler.saveSession(currentUser);
     }
 
     private void allocate() {
@@ -333,25 +454,22 @@ public class AbilBot extends AbilityBot {
         methodsAllocator.put(Constants.ROLL_D4, RollD4);
         methodsAllocator.put(Constants.CUSTOM_DICE, CustomDice);
 
+        // Аллокаторы для игры
+
         jobAllocatorGame.put(Constants.CREATION_MENU_FIGHTER, new Fighter());
         jobAllocatorGame.put(Constants.CREATION_MENU_CLERIC, new Cleric());
         jobAllocatorGame.put(Constants.CREATION_MENU_MAGE, new Mage());
         jobAllocatorGame.put(Constants.CREATION_MENU_ROGUE, new Rogue());
         jobAllocatorGame.put(Constants.CREATION_MENU_RANGER, new Ranger());
 
-        BiConsumer<PlayerCharacter, Integer> strengthModGame = PlayerCharacter::initStrength;
-        BiConsumer<PlayerCharacter, Integer> dexterityModGame = PlayerCharacter::initDexterity;
-        BiConsumer<PlayerCharacter, Integer> constitutionModGame = PlayerCharacter::initConstitution;
-        BiConsumer<PlayerCharacter, Integer> intelligenceModGame = PlayerCharacter::initIntelligence;
-        BiConsumer<PlayerCharacter, Integer> wisdomModGame = PlayerCharacter::initWisdom;
-        BiConsumer<PlayerCharacter, Integer> charismaModGame = PlayerCharacter::initCharisma;
+        statAllocatorGame.put(Constants.CREATION_MENU_STRENGTH, PlayerCharacter::initStrength);
+        statAllocatorGame.put(Constants.CREATION_MENU_DEXTERITY, PlayerCharacter::initDexterity);
+        statAllocatorGame.put(Constants.CREATION_MENU_CONSTITUTION, PlayerCharacter::initConstitution);
+        statAllocatorGame.put(Constants.CREATION_MENU_INTELLIGENCE, PlayerCharacter::initIntelligence);
+        statAllocatorGame.put(Constants.CREATION_MENU_WISDOM, PlayerCharacter::initWisdom);
+        statAllocatorGame.put(Constants.CREATION_MENU_CHARISMA, PlayerCharacter::initCharisma);
 
-        statAllocatorGame.put(Constants.CREATION_MENU_STRENGTH, strengthModGame);
-        statAllocatorGame.put(Constants.CREATION_MENU_DEXTERITY, dexterityModGame);
-        statAllocatorGame.put(Constants.CREATION_MENU_CONSTITUTION, constitutionModGame);
-        statAllocatorGame.put(Constants.CREATION_MENU_INTELLIGENCE, intelligenceModGame);
-        statAllocatorGame.put(Constants.CREATION_MENU_WISDOM, wisdomModGame);
-        statAllocatorGame.put(Constants.CREATION_MENU_CHARISMA, charismaModGame);
+        // Аллокаторы для менеджера компаний ДнД
 
         raceDnDAllocator.put("Гном", new GnomeDnD());
         raceDnDAllocator.put("Дварф", new DwarfDnD());
@@ -393,57 +511,101 @@ public class AbilBot extends AbilityBot {
         backgroundDnDAllocator.put("Чужеземец", new OutlanderDnD());
         backgroundDnDAllocator.put("Шарлатан", new CharlatanDnD());
 
-        BiConsumer<PlayerDnD, Integer> strengthModDnD = PlayerDnD::initStrength;
-        BiConsumer<PlayerDnD, Integer> dexterityModDnD = PlayerDnD::initDexterity;
-        BiConsumer<PlayerDnD, Integer> constitutionModDnD = PlayerDnD::initConstitution;
-        BiConsumer<PlayerDnD, Integer> intelligenceModDnD = PlayerDnD::initIntelligence;
-        BiConsumer<PlayerDnD, Integer> wisdomModDnD = PlayerDnD::initWisdom;
-        BiConsumer<PlayerDnD, Integer> charismaModDnD = PlayerDnD::initCharisma;
+        statAllocatorDnD.put("Сила", PlayerDnD::initStrength);
+        statAllocatorDnD.put("Ловкость", PlayerDnD::initDexterity);
+        statAllocatorDnD.put("Выносливость", PlayerDnD::initConstitution);
+        statAllocatorDnD.put("Интеллект", PlayerDnD::initIntelligence);
+        statAllocatorDnD.put("Мудрость", PlayerDnD::initWisdom);
+        statAllocatorDnD.put("Харизма", PlayerDnD::initCharisma);
 
-        statAllocatorDnD.put("Сила", strengthModDnD);
-        statAllocatorDnD.put("Ловкость", dexterityModDnD);
-        statAllocatorDnD.put("Выносливость", constitutionModDnD);
-        statAllocatorDnD.put("Интеллект", intelligenceModDnD);
-        statAllocatorDnD.put("Мудрость", wisdomModDnD);
-        statAllocatorDnD.put("Харизма", charismaModDnD);
+        skillAllocatorDnD.put("Акробатика", PlayerDnD::setAcrobaticsMastery);
+        skillAllocatorDnD.put("Анализ", PlayerDnD::setAnalysisMastery);
+        skillAllocatorDnD.put("Атлетика", PlayerDnD::setAthleticsMastery);
+        skillAllocatorDnD.put("Восприятие", PlayerDnD::setPerceptionMastery);
+        skillAllocatorDnD.put("Выживание", PlayerDnD::setSurvivalMastery);
+        skillAllocatorDnD.put("Выступление", PlayerDnD::setPerformanceMastery);
+        skillAllocatorDnD.put("Запугивание", PlayerDnD::setIntimidationMastery);
+        skillAllocatorDnD.put("История", PlayerDnD::setHistoryMastery);
+        skillAllocatorDnD.put("Ловкость рук", PlayerDnD::setSleightOfHandMastery);
+        skillAllocatorDnD.put("Магия", PlayerDnD::setArcaneMastery);
+        skillAllocatorDnD.put("Медицина", PlayerDnD::setMedicineMastery);
+        skillAllocatorDnD.put("Обман", PlayerDnD::setDeceptionMastery);
+        skillAllocatorDnD.put("Природа", PlayerDnD::setNatureMastery);
+        skillAllocatorDnD.put("Проницательность", PlayerDnD::setInsightMastery);
+        skillAllocatorDnD.put("Религия", PlayerDnD::setReligionMastery);
+        skillAllocatorDnD.put("Скрытность", PlayerDnD::setStealthMastery);
+        skillAllocatorDnD.put("Убеждение", PlayerDnD::setPersuasionMastery);
+        skillAllocatorDnD.put("Уход за животными", PlayerDnD::setAnimalHandlingMastery);
 
-        Consumer<PlayerDnD> acrobaticsModDnD = PlayerDnD::setAcrobaticsMastery;
-        Consumer<PlayerDnD> analysisModDnD = PlayerDnD::setAnalysisMastery;
-        Consumer<PlayerDnD> athleticsModDnD = PlayerDnD::setAthleticsMastery;
-        Consumer<PlayerDnD> perceptionModDnD = PlayerDnD::setPerceptionMastery;
-        Consumer<PlayerDnD> survivalModDnD = PlayerDnD::setSurvivalMastery;
-        Consumer<PlayerDnD> performanceModDnD = PlayerDnD::setPerformanceMastery;
-        Consumer<PlayerDnD> intimidationModDnD = PlayerDnD::setIntimidationMastery;
-        Consumer<PlayerDnD> historyModDnD = PlayerDnD::setHistoryMastery;
-        Consumer<PlayerDnD> sleightOfHandModDnD = PlayerDnD::setSleightOfHandMastery;
-        Consumer<PlayerDnD> arcaneModDnD = PlayerDnD::setArcaneMastery;
-        Consumer<PlayerDnD> medicineModDnD = PlayerDnD::setMedicineMastery;
-        Consumer<PlayerDnD> deceptionModDnD = PlayerDnD::setDeceptionMastery;
-        Consumer<PlayerDnD> natureModDnD = PlayerDnD::setNatureMastery;
-        Consumer<PlayerDnD> insightModDnD = PlayerDnD::setInsightMastery;
-        Consumer<PlayerDnD> religionModDnD = PlayerDnD::setReligionMastery;
-        Consumer<PlayerDnD> stealthModDnD = PlayerDnD::setStealthMastery;
-        Consumer<PlayerDnD> persuasionModDnD = PlayerDnD::setPersuasionMastery;
-        Consumer<PlayerDnD> animalHandlingModDnD = PlayerDnD::setAnimalHandlingMastery;
+        languagesAllocatorDnD.put("Великанский", PlayerDnD::learnGiantsLanguage);
+        languagesAllocatorDnD.put("Гномий", PlayerDnD::learnGnomishLanguage);
+        languagesAllocatorDnD.put("Гоблинский", PlayerDnD::learnGoblinLanguage);
+        languagesAllocatorDnD.put("Дварфский", PlayerDnD::learnDwarvishLanguage);
+        languagesAllocatorDnD.put("Общий", PlayerDnD::learnCommonLanguage);
+        languagesAllocatorDnD.put("Орочий", PlayerDnD::learnOrcishLanguage);
+        languagesAllocatorDnD.put("Язык Полуросликов", PlayerDnD::learnHalflingLanguage);
+        languagesAllocatorDnD.put("Эльфийский", PlayerDnD::learnElvishLanguage);
+        languagesAllocatorDnD.put("Язык Бездны", PlayerDnD::learnAbyssalLanguage);
+        languagesAllocatorDnD.put("Небесный", PlayerDnD::learnCelestialLanguage);
+        languagesAllocatorDnD.put("Драконий", PlayerDnD::learnDraconicLanguage);
+        languagesAllocatorDnD.put("Глубинная речь", PlayerDnD::learnDeepSpeech);
+        languagesAllocatorDnD.put("Инфернальный", PlayerDnD::learnInfernalLanguage);
+        languagesAllocatorDnD.put("Первичный", PlayerDnD::learnPrimordialLanguage);
+        languagesAllocatorDnD.put("Сильван", PlayerDnD::learnSylvanLanguage);
+        languagesAllocatorDnD.put("Подземный", PlayerDnD::learnUndercommonLanguage);
 
-        skillAllocatorDnD.put("Акробатика", acrobaticsModDnD);
-        skillAllocatorDnD.put("Анализ", analysisModDnD);
-        skillAllocatorDnD.put("Атлетика", athleticsModDnD);
-        skillAllocatorDnD.put("Восприятие", perceptionModDnD);
-        skillAllocatorDnD.put("Выживание", survivalModDnD);
-        skillAllocatorDnD.put("Выступление", performanceModDnD);
-        skillAllocatorDnD.put("Запугивание", intimidationModDnD);
-        skillAllocatorDnD.put("История", historyModDnD);
-        skillAllocatorDnD.put("Ловкость рук", sleightOfHandModDnD);
-        skillAllocatorDnD.put("Магия", arcaneModDnD);
-        skillAllocatorDnD.put("Медицина", medicineModDnD);
-        skillAllocatorDnD.put("Обман", deceptionModDnD);
-        skillAllocatorDnD.put("Природа", natureModDnD);
-        skillAllocatorDnD.put("Проницательность", insightModDnD);
-        skillAllocatorDnD.put("Религия", religionModDnD);
-        skillAllocatorDnD.put("Скрытность", stealthModDnD);
-        skillAllocatorDnD.put("Убеждение", persuasionModDnD);
-        skillAllocatorDnD.put("Уход за животными", animalHandlingModDnD);
+        BiConsumer<ChatSession, String> name = (cs, response) -> PlayerDnDGenerator.nameSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> race = (cs, response) -> PlayerDnDGenerator.raceSetter(cs, response, raceDnDAllocator, silent);
+        BiConsumer<ChatSession, String> racePersonality = (cs, response) -> PlayerDnDGenerator.racePersonalitySetter(cs, response, silent);
+        BiConsumer<ChatSession, String> raceIdeal = (cs, response) -> PlayerDnDGenerator.raceIdealSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> raceBond = (cs, response) -> PlayerDnDGenerator.raceBondSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> raceFlaw = (cs, response) -> PlayerDnDGenerator.raceFlawSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> job = (cs, response) -> PlayerDnDGenerator.jobSetter(cs, response, jobDnDAllocator, silent);
+        BiConsumer<ChatSession, String> background = (cs, response) -> PlayerDnDGenerator.backgroundSetter(cs, response, backgroundDnDAllocator, skillAllocatorDnD, silent);
+        BiConsumer<ChatSession, String> backgroundSpecialInfo = (cs, response) -> PlayerDnDGenerator.backgroundSpecialInfoSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> backgroundPersonality = (cs, response) -> PlayerDnDGenerator.backgroundPersonalitySetter(cs, response, silent);
+        BiConsumer<ChatSession, String> backgroundIdeal = (cs, response) -> PlayerDnDGenerator.backgroundIdealSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> backgroundBond = (cs, response) -> PlayerDnDGenerator.backgroundBondSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> backgroundFlaw = (cs, response) -> PlayerDnDGenerator.backgroundFlawSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> alignment = (cs, response) -> PlayerDnDGenerator.alignmentSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> stats = (cs, response) -> PlayerDnDGenerator.statSetter(cs, response, statAllocatorDnD, silent);
+        BiConsumer<ChatSession, String> skill = (cs, response) -> PlayerDnDGenerator.skillsSetter(cs, response, skillAllocatorDnD, silent);
+        BiConsumer<ChatSession, String> language = (cs, response) -> PlayerDnDGenerator.languageSetter(cs, response, languagesAllocatorDnD, silent);
+        BiConsumer<ChatSession, String> age = (cs, response) -> PlayerDnDGenerator.ageSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> height = (cs, response) -> PlayerDnDGenerator.heightSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> weight = (cs, response) -> PlayerDnDGenerator.weightSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> eyes = (cs, response) -> PlayerDnDGenerator.eyesSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> skin = (cs, response) -> PlayerDnDGenerator.skinSetter(cs, response, silent);
+        BiConsumer<ChatSession, String> hair = (cs, response) -> PlayerDnDGenerator.hairSetter(cs, response, silent);
+
+        playerDnDGeneratorAllocator.put(NAME, name);
+        playerDnDGeneratorAllocator.put(RACE, race);
+        playerDnDGeneratorAllocator.put(RACE_PERSONALITY, racePersonality);
+        playerDnDGeneratorAllocator.put(RACE_IDEAL, raceIdeal);
+        playerDnDGeneratorAllocator.put(RACE_BOND, raceBond);
+        playerDnDGeneratorAllocator.put(RACE_FLAW, raceFlaw);
+        playerDnDGeneratorAllocator.put(JOB, job);
+        playerDnDGeneratorAllocator.put(BACKGROUND, background);
+        playerDnDGeneratorAllocator.put(BACKGROUND_SPECIAL_INFO, backgroundSpecialInfo);
+        playerDnDGeneratorAllocator.put(BACKGROUND_PERSONALITY, backgroundPersonality);
+        playerDnDGeneratorAllocator.put(BACKGROUND_IDEAL, backgroundIdeal);
+        playerDnDGeneratorAllocator.put(BACKGROUND_BOND, backgroundBond);
+        playerDnDGeneratorAllocator.put(BACKGROUND_FLAW, backgroundFlaw);
+        playerDnDGeneratorAllocator.put(ALIGNMENT, alignment);
+        playerDnDGeneratorAllocator.put(STATS1, stats);
+        playerDnDGeneratorAllocator.put(STATS2, stats);
+        playerDnDGeneratorAllocator.put(STATS3, stats);
+        playerDnDGeneratorAllocator.put(STATS4, stats);
+        playerDnDGeneratorAllocator.put(STATS5, stats);
+        playerDnDGeneratorAllocator.put(STATS6, stats);
+        playerDnDGeneratorAllocator.put(SKILLS, skill);
+        playerDnDGeneratorAllocator.put(LANGUAGE, language);
+        playerDnDGeneratorAllocator.put(AGE, age);
+        playerDnDGeneratorAllocator.put(HEIGHT, height);
+        playerDnDGeneratorAllocator.put(WEIGHT, weight);
+        playerDnDGeneratorAllocator.put(EYES, eyes);
+        playerDnDGeneratorAllocator.put(SKIN, skin);
+        playerDnDGeneratorAllocator.put(HAIR, hair);
     }
 
     public Ability startOut() {
@@ -531,6 +693,36 @@ public class AbilBot extends AbilityBot {
                 .locality(ALL)
                 .privacy(PUBLIC)
                 .action(dndKeyboard)
+                .build();
+    }
+
+    public Ability moveToDMBoard() {
+        Consumer<MessageContext> dmKeyboard =
+                ctx -> patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_DM_KEYBOARD, KeyboardFactory.dmSetOfCommandsBoard(), false);
+
+        return Ability
+                .builder()
+                .name("dmboard")
+                .info("shows a dm board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(dmKeyboard)
+                .build();
+    }
+
+    public Ability moveToCampaignBoard() {
+        Consumer<MessageContext> campaignKeyboard =
+                ctx -> patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_CAMPAIGN_KEYBOARD, KeyboardFactory.campaignSettingsBoard(), false);
+
+        return Ability
+                .builder()
+                .name("campaignsettings")
+                .info("shows a campaign board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignKeyboard)
                 .build();
     }
 
@@ -648,6 +840,61 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability showCampaigns() {
+        Consumer<MessageContext> campaigns = this::showCampaigns;
+
+        return Ability
+                .builder()
+                .name("showcampaigns")
+                .info("shows your campaigns")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaigns)
+                .build();
+    }
+
+    public Ability setCampaign() {
+        Consumer<MessageContext> campaign = this::setCurrentCampaign;
+
+        return Ability
+                .builder()
+                .name("setcampaign")
+                .info("sets current campaign")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .build();
+    }
+
+    public Ability setCampaignName() {
+        Consumer<MessageContext> campaignName = this::setCampaignName;
+
+        return Ability
+                .builder()
+                .name("setcampaignname")
+                .info("sets a campaign name")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignName)
+                .build();
+    }
+
+    public Ability setPassword() {
+        Consumer<MessageContext> password = this::setPassword;
+
+        return Ability
+                .builder()
+                .name("setpassword")
+                .info("sets a campaign password")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(password)
+                .build();
+    }
+
     public Ability createPlayerDnD() {
         Consumer<MessageContext> player = this::addAPlayerDnD;
 
@@ -727,18 +974,34 @@ public class AbilBot extends AbilityBot {
             }
         }
 
+        else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation) {
+            String response;
+            if (update.hasMessage() && update.getMessage().hasText()) {
+                response = update.getMessage().getText();
+                try {
+                    playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, response);
+                } catch (Exception e) {
+                    patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
+                }
+            }
+            else if (update.hasCallbackQuery()) {
+                response = update.getCallbackQuery().getData();
+                try {
+                    playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, response);
+                } catch (Exception e) {
+                    patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
+                }
+            }
+            else {
+                patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
+            }
+        }
+
         else if (update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            try {
-                currentUser.username = "@" + query.getFrom().getUserName();
-            } catch (Exception e) {
-                currentUser.username = "@[ДАННЫЕ УДАЛЕНЫ]";
-            }
-            if (Objects.equals(currentUser.username, "@") || Objects.equals(currentUser.username, "@null")) {
-                currentUser.username = "@[ДАННЫЕ УДАЛЕНЫ]";
-            }
+            currentUser.setUsername(query.getFrom().getUserName());
 
             if (currentUser.rollCustom) {
                 String[] dices = responseQuery.trim().split("d");
@@ -771,140 +1034,6 @@ public class AbilBot extends AbilityBot {
                     }
                 }
             }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == RACE) {
-                currentUser.activePc.race = raceDnDAllocator.get(responseQuery);
-                currentUser.activePc.initSpeed();
-
-                if (currentUser.activePc.race.personality.isEmpty()) {
-                    patternExecute(currentUser, "Выберите класс из предложенных.", KeyboardFactory.jobDnDSelectionBoard(), false);
-                    currentUser.creationStage = JOB;
-                }
-                else {
-                    patternExecute(currentUser, "Выберите черту характера персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.race.personality), KeyboardFactory.variantsBoard(currentUser.activePc.race.personality), false);
-                    currentUser.creationStage = RACE_PERSONALITY;
-                }
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == RACE_PERSONALITY) {
-                currentUser.activePc.personality.put(currentUser.activePc.race.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите идеал персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.race.ideal), KeyboardFactory.variantsBoard(currentUser.activePc.race.ideal), false);
-                currentUser.creationStage = RACE_IDEAL;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == RACE_IDEAL) {
-                currentUser.activePc.ideals.put(currentUser.activePc.race.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите привязанность персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.race.bond), KeyboardFactory.variantsBoard(currentUser.activePc.race.bond), false);
-                currentUser.creationStage = RACE_BOND;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == RACE_BOND) {
-                currentUser.activePc.bonds.put(currentUser.activePc.race.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите слабость персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.race.flaw), KeyboardFactory.variantsBoard(currentUser.activePc.race.flaw), false);
-                currentUser.creationStage = RACE_FLAW;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == RACE_FLAW) {
-                currentUser.activePc.flaws.put(currentUser.activePc.race.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите класс из предложенных.", KeyboardFactory.jobDnDSelectionBoard(), false);
-                currentUser.creationStage = JOB;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == JOB) {
-                currentUser.activePc.jobs.add(jobDnDAllocator.get(responseQuery));
-
-                currentUser.activePc.initBookOfSpellsDnD();
-                currentUser.activePc.initStartHealth();
-
-                patternExecute(currentUser, "Выберите предысторию из предложенных.", KeyboardFactory.backgroundDnDSelectionBoard(), false);
-                currentUser.creationStage = BACKGROUND;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == BACKGROUND) {
-                currentUser.activePc.background = backgroundDnDAllocator.get(responseQuery);
-
-                for (String skill : currentUser.activePc.background.learnedSkills) {
-                    skillAllocatorDnD.get(skill).accept(currentUser.activePc);
-                    currentUser.activePc.learnedSkills.add(skill);
-                }
-
-                if (currentUser.activePc.background.personality.isEmpty()) {
-                    patternExecute(currentUser, "Выберите свое мировоззрение:", KeyboardFactory.alignmentDnDSelectionBoard(), false);
-                    currentUser.creationStage = ALIGNMENT;
-                }
-                else {
-                    patternExecute(currentUser, "Выберите черту характера персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.background.personality), KeyboardFactory.variantsBoard(currentUser.activePc.background.personality), false);
-                    currentUser.creationStage = BACKGROUND_PERSONALITY;
-                }
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == BACKGROUND_PERSONALITY) {
-                currentUser.activePc.personality.put(currentUser.activePc.background.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите идеал персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.background.ideal), KeyboardFactory.variantsBoard(currentUser.activePc.background.ideal), false);
-                currentUser.creationStage = BACKGROUND_IDEAL;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == BACKGROUND_IDEAL) {
-                currentUser.activePc.ideals.put(currentUser.activePc.background.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите привязанность персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.background.bond), KeyboardFactory.variantsBoard(currentUser.activePc.background.bond), false);
-                currentUser.creationStage = BACKGROUND_BOND;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == BACKGROUND_BOND) {
-                currentUser.activePc.bonds.put(currentUser.activePc.background.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите слабость персонажа: \n" + variantsMessageConfigurator(currentUser.activePc.background.flaw), KeyboardFactory.variantsBoard(currentUser.activePc.background.flaw), false);
-                currentUser.creationStage = BACKGROUND_FLAW;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == BACKGROUND_FLAW) {
-                currentUser.activePc.flaws.put(currentUser.activePc.background.name, responseQuery);
-
-                patternExecute(currentUser, "Выберите свое мировоззрение:", KeyboardFactory.alignmentDnDSelectionBoard(), false);
-                currentUser.creationStage = ALIGNMENT;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == ALIGNMENT) {
-                currentUser.activePc.alignment = responseQuery;
-
-                patternExecute(currentUser, "Распределите характеристики.", null, false);
-
-                currentUser.luck = DiceNew.D6FourTimesCreation();
-                patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoardDnD(currentUser.statProgress), false);
-
-                currentUser.creationStage = STATS1;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation & currentUser.creationStage.ordinal() < STATS6.ordinal()) {
-                statAllocatorDnD.get(responseQuery).accept(currentUser.activePc, currentUser.luck.get(4));
-
-                currentUser.statProgress.add(responseQuery);
-                currentUser.luck = DiceNew.D6FourTimesCreation();
-
-                patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoardDnD(currentUser.statProgress), false);
-                currentUser.creationStage = currentUser.creationStage.next();
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation & currentUser.creationStage == STATS6) {
-                statAllocatorDnD.get(responseQuery).accept(currentUser.activePc, currentUser.luck.get(4));
-
-                currentUser.statProgress.clear();
-                currentUser.luck.clear();
-
-                patternExecute(currentUser, "Выберите навыки персонажа. Осталось навыков: " + currentUser.activePc.jobs.get(0).startingSkillAmount, KeyboardFactory.assignSkillsBoardDnD(currentUser.activePc.jobs.get(0).skillRoster, currentUser.activePc.learnedSkills), false);
-                currentUser.creationStage = SKILLS;
-            }
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation && currentUser.creationStage == SKILLS) {
-                if (currentUser.activePc.jobs.get(0).startingSkillAmount == 1) {
-                    skillAllocatorDnD.get(responseQuery).accept(currentUser.activePc);
-
-                    currentUser.activePc.learnedSkills.add(responseQuery);
-                    currentUser.activePc.jobs.get(0).startingSkillAmount--;
-
-                    patternExecute(currentUser, "Введите возраст персонажа.", null, false);
-                    currentUser.creationStage = AGE;
-                }
-                else {
-                    skillAllocatorDnD.get(responseQuery).accept(currentUser.activePc);
-
-                    currentUser.activePc.learnedSkills.add(responseQuery);
-                    currentUser.activePc.jobs.get(0).startingSkillAmount--;
-
-                    patternExecute(currentUser, "Осталось навыков: " + currentUser.activePc.jobs.get(0).startingSkillAmount, KeyboardFactory.assignSkillsBoardDnD(currentUser.activePc.jobs.get(0).skillRoster, currentUser.activePc.learnedSkills), false);
-                }
-            }
             else {
                 methodsAllocator.get(responseQuery).accept(currentUser);
             }
@@ -912,18 +1041,16 @@ public class AbilBot extends AbilityBot {
         }
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-            try {
-                currentUser.username = "@" + update.getMessage().getForwardSenderName();
-            } catch (Exception e) {
-                currentUser.username = "@[ДАННЫЕ УДАЛЕНЫ]";
-            }
-            if (Objects.equals(currentUser.username, "")) {
-                currentUser.username = "@[ДАННЫЕ УДАЛЕНЫ]";
-            }
+            currentUser.setUsername(update.getMessage().getForwardSenderName());
 
             if (currentUser.campaignNameIsChosen) {
                 currentUser.activeDm.campaignName = update.getMessage().getText();
                 currentUser.campaignNameIsChosen = false;
+
+                ChatSession dungeonMaster = UserDataHandler.readSession(currentUser.activeDm.chatId);
+                dungeonMaster.campaigns.put(currentUser.activeDm.campaignName, currentUser.activeDm.chatId);
+                UserDataHandler.saveSession(dungeonMaster);
+
                 silent.send(Constants.CAMPAIGN_CREATION_CONGRATULATION, currentUser.getChatId());
                 silent.send(Constants.PLAYER_CREATION_WARNING, currentUser.getChatId());
             }
@@ -993,56 +1120,6 @@ public class AbilBot extends AbilityBot {
             else if (!currentUser.sectionId.isEmpty()) {
                 currentUser.searchSuccess = searchEngine(currentUser, update.getMessage().getText());
                 UserDataHandler.saveSession(currentUser);
-            }
-
-            else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation) {
-                switch (currentUser.creationStage) {
-                    case NAME:
-                        currentUser.activePc.name = update.getMessage().getText();
-                        patternExecute(currentUser, "Выберите расу из предложенных.", KeyboardFactory.raceDnDSelectionBoard(), false);
-                        currentUser.creationStage = RACE;
-                        break;
-                    case AGE:
-                        currentUser.activePc.age = update.getMessage().getText();
-                        patternExecute(currentUser, "Введите рост персонажа.", null, false);
-                        currentUser.creationStage = HEIGHT;
-                        break;
-                    case HEIGHT:
-                        currentUser.activePc.height = update.getMessage().getText();
-                        patternExecute(currentUser, "Введите вес персонажа.", null, false);
-                        currentUser.creationStage = WEIGHT;
-                        break;
-                    case WEIGHT:
-                        currentUser.activePc.weight = update.getMessage().getText();
-                        patternExecute(currentUser, "Введите описание глаз персонажа.", null, false);
-                        currentUser.creationStage = EYES;
-                        break;
-                    case EYES:
-                        currentUser.activePc.eyes = update.getMessage().getText();
-                        patternExecute(currentUser, "Введите описание кожи персонажа.", null, false);
-                        currentUser.creationStage = SKIN;
-                        break;
-                    case SKIN:
-                        currentUser.activePc.skin = update.getMessage().getText();
-                        patternExecute(currentUser, "Введите описание волос персонажа.", null, false);
-                        currentUser.creationStage = HAIR;
-                        break;
-                    case HAIR:
-                        currentUser.activePc.hair = update.getMessage().getText();
-                        ChatSession currentGroup = UserDataHandler.readSession(currentUser.activePc.campaignChatId);
-                        currentGroup.activeDm.playerDnDHashMap.put(currentUser.username, currentUser.activePc);
-                        currentUser.activePc = null;
-                        currentUser.creationOfPlayerDnD = false;
-                        currentUser.creationStage = NAME;
-                        UserDataHandler.saveSession(currentGroup); // небезопасная вещь, надо либо вывесить предупреждение (сделано), либо что-то с этим решить
-                        UserDataHandler.saveSession(currentUser);
-                        patternExecute(currentUser, Constants.PLAYER_CREATION_END, null, false);
-                        break;
-                    default:
-                        patternExecute(currentUser, "А?", null, false);
-                        break;
-                }
-
             }
         }
     }
