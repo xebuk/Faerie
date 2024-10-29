@@ -1,10 +1,14 @@
 package dnd.characteristics;
 
-import dnd.dmtools.CommonItemDnD;
-import dnd.dmtools.MagicItemDnD;
+import dnd.equipment.ItemDnD;
+import dnd.values.ArmorTypeDnD;
+import dnd.values.InstrumentsDnD;
+import dnd.values.StatsTypeDnD;
+import dnd.values.WeaponTraitsDnD;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class JobDnD {
     public String title;
@@ -15,11 +19,15 @@ public class JobDnD {
     public int startingHealth;
     public String healthDice;
 
-    public String mainStat1;
-    public String mainStat2;
+    public Set<ArmorTypeDnD> armorMastery;
+    public Set<WeaponTraitsDnD> weaponMastery;
+    public Set<InstrumentsDnD> instrumentsMastery;
+    public Set<StatsTypeDnD> saveMastery;
 
     public int startingSkillAmount;
     public List<String> skillRoster;
 
-    public ArrayList<AbilityDnD> abilityRoster;
+    public String inventoryRefusalMoney;
+
+    public List<AbilityDnD> abilityRoster;
 }

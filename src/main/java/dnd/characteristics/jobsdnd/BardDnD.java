@@ -1,8 +1,13 @@
 package dnd.characteristics.jobsdnd;
 
 import dnd.characteristics.JobDnD;
+import dnd.values.ArmorTypeDnD;
+import dnd.values.StatsTypeDnD;
+import dnd.values.WeaponTraitsDnD;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BardDnD extends JobDnD {
 
@@ -14,8 +19,11 @@ public class BardDnD extends JobDnD {
         this.startingHealth = 8;
         this.healthDice = "1d8";
 
-        this.mainStat1 = "Харизма";
-        this.mainStat2 = "Ловкость";
+        this.armorMastery = Set.of(ArmorTypeDnD.LIGHT);
+        this.weaponMastery = Set.of(WeaponTraitsDnD.SIMPLE, WeaponTraitsDnD.LONGSWORD,
+                WeaponTraitsDnD.SHORTSWORD, WeaponTraitsDnD.RAPIER, WeaponTraitsDnD.HAND_CROSSBOW);
+        this.instrumentsMastery = Set.of(); // три музыкальных инструмента на выбор
+        this.saveMastery = Set.of(StatsTypeDnD.DEXTERITY, StatsTypeDnD.CHARISMA);
 
         this.startingSkillAmount = 2;
         this.skillRoster = Arrays.asList("Акробатика", "Анализ", "Атлетика",
@@ -24,5 +32,7 @@ public class BardDnD extends JobDnD {
                 "Магия", "Медицина", "Обман",
                 "Природа", "Проницательность", "Религия",
                 "Скрытность", "Убеждение", "Уход за животными");
+
+        this.inventoryRefusalMoney = "5d4";
     }
 }
