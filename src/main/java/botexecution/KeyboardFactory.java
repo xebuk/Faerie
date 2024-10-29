@@ -1,6 +1,8 @@
 package botexecution;
 
 import common.Constants;
+import dnd.mainobjects.PlayerDnD;
+import dnd.values.LanguagesDnD;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -326,6 +328,113 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup languagesDnDSelectionBoard(HashSet<LanguagesDnD> bannedButtons) {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        InlineKeyboardButton language;
+        if (!bannedButtons.contains(LanguagesDnD.GIANTS)) {
+            language = new InlineKeyboardButton("Великанский");
+            language.setCallbackData("Великанский");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.GNOMISH)) {
+            language = new InlineKeyboardButton("Гномий");
+            language.setCallbackData("Гномий");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.GOBLIN)) {
+            language = new InlineKeyboardButton("Гоблинский");
+            language.setCallbackData("Гоблинский");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.DWARWISH)) {
+            language = new InlineKeyboardButton("Дварфский");
+            language.setCallbackData("Дварфский");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.COMMON)) {
+            language = new InlineKeyboardButton("Общий");
+            language.setCallbackData("Общий");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.ORCISH)) {
+            language = new InlineKeyboardButton("Орочий");
+            language.setCallbackData("Орочий");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.HALFLING)) {
+            language = new InlineKeyboardButton("Язык Полуросликов");
+            language.setCallbackData("Язык Полуросликов");
+            inlineKeyRow.add(language);
+            ;
+        }
+        if (!bannedButtons.contains(LanguagesDnD.ELVISH)) {
+            language = new InlineKeyboardButton("Эльфийский");
+            language.setCallbackData("Эльфийский");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.ABYSSAL)) {
+            language = new InlineKeyboardButton("Язык Бездны");
+            language.setCallbackData("Язык Бездны");
+            inlineKeyRow.add(language);
+            ;
+        }
+        if (!bannedButtons.contains(LanguagesDnD.CELESTIAL)) {
+            language = new InlineKeyboardButton("Небесный");
+            language.setCallbackData("Небесный");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.DRACONIC)) {
+            language = new InlineKeyboardButton("Драконий");
+            language.setCallbackData("Драконий");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.DEEP_SPEECH)) {
+            language = new InlineKeyboardButton("Глубинная речь");
+            language.setCallbackData("Глубинная речь");
+            inlineKeyRow.add(language);
+            ;
+        }
+        if (!bannedButtons.contains(LanguagesDnD.INFERNAL)) {
+            language = new InlineKeyboardButton("Инфернальный");
+            language.setCallbackData("Инфернальный");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.PRIMORDIAL)) {
+            language = new InlineKeyboardButton("Первичный");
+            language.setCallbackData("Первичный");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.SYLVAN)) {
+            language = new InlineKeyboardButton("Сильван");
+            language.setCallbackData("Сильван");
+            inlineKeyRow.add(language);
+
+        }
+        if (!bannedButtons.contains(LanguagesDnD.UNDERCOMMON)) {
+            language = new InlineKeyboardButton("Подземный");
+            language.setCallbackData("Подземный");
+            inlineKeyRow.add(language);
+
+        }
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
     public static InlineKeyboardMarkup assignStatsBoardDnD(HashSet<String> bannedButtons) {
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
 
@@ -445,14 +554,64 @@ public class KeyboardFactory {
         keyRow3.add("/endacampaign");
 
         KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add("/common");
-        keyRow4.add("/game");
+        keyRow4.add("/dmboard");
+
+        KeyboardRow keyRow5 = new KeyboardRow();
+        keyRow5.add("/common");
+        keyRow5.add("/game");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
         keyRowList.add(keyRow3);
         keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup dmSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow();
+        keyRow1.add(new KeyboardButton("/search"));
+        keyRow1.add(new KeyboardButton("/roll"));
+
+        KeyboardRow keyRow2 = new KeyboardRow();
+        keyRow2.add(new KeyboardButton("/showcampaigns"));
+        keyRow2.add(new KeyboardButton("/setcampaign"));
+
+        KeyboardRow keyRow3 = new KeyboardRow();
+        keyRow3.add(new KeyboardButton("/campaignsettings"));
+
+        KeyboardRow keyRow4 = new KeyboardRow();
+        keyRow4.add(new KeyboardButton("/common"));
+        keyRow4.add(new KeyboardButton("/game"));
+        keyRow4.add(new KeyboardButton("/dnd"));
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow4);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup campaignSettingsBoard() {
+        KeyboardRow keyRow4 = new KeyboardRow();
+        keyRow4.add(new KeyboardButton("/setcampaignsname"));
+        keyRow4.add(new KeyboardButton("/setpassword"));
+
+        KeyboardRow keyRow5 = new KeyboardRow();
+        keyRow5.add(new KeyboardButton("/dmboard"));
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);
