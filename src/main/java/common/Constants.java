@@ -124,4 +124,5 @@ public interface Constants {
             """;
 
     String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
+    String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
 }

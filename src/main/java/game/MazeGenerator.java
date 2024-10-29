@@ -1,5 +1,8 @@
 package game;
 
+import common.DataReader;
+
+import java.io.IOException;
 import java.util.*;
 
 public class MazeGenerator {
@@ -7,6 +10,12 @@ public class MazeGenerator {
         NONE,
         FLOOR,
         WALL
+    }
+
+    public enum Mode {
+        RANDOM_ONLY,
+        COMBINED,
+        PRESETS_ONLY
     }
 
     private final static int MAX_ROOM_CREATION_ATTEMPTS = 10000;
@@ -19,6 +28,8 @@ public class MazeGenerator {
     private final List<Room> rooms;
     private final Random random;
 
+    private final Tiles[][][] presets;
+
     public MazeGenerator(int mazeWidth, int mazeHeight, int roomMinSize, int roomMaxSize, int roomCount) {
         this.mazeWidth = mazeWidth;
         this.mazeHeight = mazeHeight;
@@ -28,15 +39,39 @@ public class MazeGenerator {
         maze = new Tiles[mazeWidth][mazeHeight];
         rooms = new ArrayList<>();
         random = new Random();
+
+        Tiles[][][] presetsTmp;
+        try {
+            presetsTmp = DataReader.readRoomPresets();
+        } catch (IOException e) {
+            presetsTmp = null;
+        }
+        presets = presetsTmp;
     }
 
-    public void generateMaze() {
+    public void generateMaze(Mode mode) {
         fillWalls();
-        generateRooms(roomCount);
+        switch (mode) {
+            case RANDOM_ONLY:
+                generateRandomRooms(roomCount);
+                break;
+            case COMBINED:
+                for (int i = 0; i < roomCount; i++) {
+                    int coinFlip = random.nextInt(2);
+                    if (coinFlip == 0) {
+                        generateRandomRooms(1);
+                    } else {
+                        generatePresetsRooms(1);
+                    }
+                }
+                break;
+            case PRESETS_ONLY:
+                generatePresetsRooms(roomCount);
+                break;
+        }
         connectRooms();
         removeIsolatedTiles();
     }
-
 
     private void fillWalls() {
         for (int i = 0; i < mazeWidth; i++) {
@@ -46,9 +81,10 @@ public class MazeGenerator {
         }
     }
 
-    private void generateRooms(int roomCount) {
+    private void generateRandomRooms(int roomCount) {
         int attempts = 0;
-        while (rooms.size() < roomCount && attempts < MAX_ROOM_CREATION_ATTEMPTS) {
+        int created = 0;
+        while (created < roomCount && attempts < MAX_ROOM_CREATION_ATTEMPTS) {
             int roomWidth = random.nextInt(roomMaxSize - roomMinSize + 1) + roomMinSize;
             int roomHeight = random.nextInt(roomMaxSize - roomMinSize + 1) + roomMinSize;
             int xRange = mazeWidth - roomWidth - 2;
@@ -56,11 +92,17 @@ public class MazeGenerator {
             int x = (xRange > 0 ? random.nextInt(xRange) : 0) + 1;
             int y = (yRange > 0 ? random.nextInt(yRange) : 0) + 1;
 
-            Room newRoom = new Room(x, y, roomWidth, roomHeight);
+            // FIXME: The heck is this? Can it be optimized?
+            Tiles[][] layout = new Tiles[roomHeight][roomWidth];
+            Tiles[] rows = new Tiles[roomWidth];
+            Arrays.fill(rows, Tiles.FLOOR);
+            Arrays.fill(layout, rows);
+            Room newRoom = new Room(x, y, roomWidth, roomHeight, layout);
 
             if (canPlaceRoom(newRoom)) {
                 placeRoom(newRoom);
                 rooms.add(newRoom);
+                created++;
             } else {
                 attempts++;
             }
@@ -68,7 +110,38 @@ public class MazeGenerator {
 
         // DEBUG
         if (attempts >= MAX_ROOM_CREATION_ATTEMPTS) {
-            System.out.println("Maximum room creation attempts reached.");
+            System.out.println("Maximum random room creation attempts reached.");
+        }
+    }
+
+    private void generatePresetsRooms(int roomCount) {
+        int attempts = 0;
+        int created = 0;
+        while (created < roomCount && attempts < MAX_ROOM_CREATION_ATTEMPTS) {
+            int roomType = random.nextInt(presets.length);
+
+            int roomWidth = presets[roomType][0].length;
+            int roomHeight = presets[roomType].length;
+            int xRange = mazeWidth - roomWidth - 2;
+            int yRange = mazeHeight - roomHeight - 2;
+            int x = (xRange > 0 ? random.nextInt(xRange) : 0) + 1;
+            int y = (yRange > 0 ? random.nextInt(yRange) : 0) + 1;
+
+            Tiles[][] layout = presets[roomType];
+
+            Room room = new Room(x, y, roomWidth, roomHeight, layout);
+            if (canPlaceRoom(room)) {
+                placeRoom(room);
+                rooms.add(room);
+                created++;
+            } else {
+                attempts++;
+            }
+        }
+
+        // DEBUG
+        if (attempts >= MAX_ROOM_CREATION_ATTEMPTS) {
+            System.out.println("Maximum presets room creation attempts reached.");
         }
     }
 
@@ -84,7 +157,7 @@ public class MazeGenerator {
     private void placeRoom(Room room) {
         for (int i = room.y; i < room.y + room.height; i++) {
             for (int j = room.x; j < room.x + room.width; j++) {
-                maze[i][j] = Tiles.FLOOR;
+                maze[i][j] = room.getTile(j - room.x, i - room.y);
             }
         }
     }
@@ -135,6 +208,13 @@ public class MazeGenerator {
         }
     }
 
+    private boolean hasStrictNeighbour(int x, int y, Tiles tile) {
+        return (x - 1 >= 0 && y - 1 >= 0 && maze[y-1][x-1] == tile) ||
+               (x + 1 < mazeWidth && y - 1 >= 0 && maze[y-1][x+1] == tile) ||
+               (x - 1 >= 0 && y + 1 < mazeHeight && maze[y+1][x-1] == tile) ||
+               (x + 1 < mazeWidth && y + 1 < mazeHeight && maze[y+1][x+1] == tile);
+    }
+
     private boolean isWallOrNone(int i, int j) {
         if (i < 0 || i >= mazeWidth || j < 0 || j >= mazeHeight) {
             return true;
@@ -151,29 +231,35 @@ public class MazeGenerator {
     }
 
     private int[] getRandomEdgePoint(Room room) {
-        int edge = random.nextInt(4);
-        int x, y;
+        int edge = random.nextInt(4);       // 0 - left, 1 - up, 2 - right, 3 - down
 
+        int[] pos = room.getCenterLocal();
+        int x = pos[0];
+        int y = pos[1];
+
+        int dx = 0;
+        int dy = 0;
         switch (edge) {
-            case 0:     // UP border
-                x = random.nextInt(room.width) + room.x;
-                y = room.y + room.height - 1;
+            case 0:
+                dx = -1;
                 break;
-            case 1:     // RIGHT border
-                x = room.x + room.width - 1;
-                y = random.nextInt(room.height) + room.y;
+            case 1:
+                dy = 1;
                 break;
-            case 2:     // DOWN border
-                x = random.nextInt(room.width) + room.x;
-                y = room.y;
+            case 2:
+                dx = 1;
                 break;
-            default:    // LEFT border
-                x = room.x;
-                y = random.nextInt(room.height) + room.y;
+            case 3:
+                dy = -1;
                 break;
         }
 
-        return new int[]{x, y};
+        while (x >= 0 && y >= 0 && x < room.width && y < room.height && room.getTile(x, y) == Tiles.FLOOR) {
+            x += dx;
+            y += dy;
+        }
+
+        return new int[]{x - dx + room.x, y - dy + room.y};
     }
 
     private void generateCorridor(int x1, int y1, int x2, int y2) {
@@ -236,12 +322,14 @@ public class MazeGenerator {
 
     public static class Room {
         int x, y, width, height;
+        Tiles[][] layout;
 
-        Room(int x, int y, int width, int height) {
+        Room(int x, int y, int width, int height, Tiles[][] layout) {
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
+            this.layout = layout;
         }
 
         boolean intersects(Room other) {
@@ -251,8 +339,18 @@ public class MazeGenerator {
                    this.y + this.height + 1 >= other.y;
         }
 
+        public void setTile(int x, int y, Tiles tile) {
+            this.layout[y][x] = tile;
+        }
+        public Tiles getTile(int x, int y) {
+            return layout[y][x];
+        }
         public int[] getCenter() {
             return new int[] {this.x + this.width / 2, this.y + this.height / 2};
+        }
+
+        public int[] getCenterLocal() {
+            return new int[] {this.width / 2, this.height / 2};
         }
     }
 
@@ -264,9 +362,13 @@ public class MazeGenerator {
         return rooms;
     }
 
+    public Tiles getTile(int x, int y) {
+        return maze[y][x];
+    }
+
     public static void main(String[] args) {
         MazeGenerator mazeGenerator = new MazeGenerator(50, 50, 3, 7, 30);
-        mazeGenerator.generateMaze();
+        mazeGenerator.generateMaze(Mode.PRESETS_ONLY);
         mazeGenerator.printMaze();
     }
 }
