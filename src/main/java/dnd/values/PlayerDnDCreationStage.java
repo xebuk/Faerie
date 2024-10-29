@@ -1,6 +1,6 @@
-package dnd;
+package dnd.values;
 
-public enum PlayerCreationStageDnD {
+public enum PlayerDnDCreationStage {
     NAME,
     RACE,
     RACE_PERSONALITY,
@@ -9,11 +9,13 @@ public enum PlayerCreationStageDnD {
     RACE_FLAW,
     JOB,
     BACKGROUND,
+    BACKGROUND_SPECIAL_INFO,
     BACKGROUND_PERSONALITY,
     BACKGROUND_IDEAL,
     BACKGROUND_BOND,
     BACKGROUND_FLAW,
     ALIGNMENT,
+    LANGUAGE,
     STATS1,
     STATS2,
     STATS3,
@@ -28,8 +30,8 @@ public enum PlayerCreationStageDnD {
     SKIN,
     HAIR;
 
-    private static final PlayerCreationStageDnD[] valuesArray = values();
-    public PlayerCreationStageDnD next() {
+    private static final PlayerDnDCreationStage[] valuesArray = values();
+    public PlayerDnDCreationStage next() {
         return valuesArray[(this.ordinal() + 1) % valuesArray.length];
     }
 }
