@@ -83,14 +83,19 @@ public class DataReader {
 
         for (int i = 0; i < filesCount; i++) {
             File presetFile = filesList[i];
-            int linesCount = (int) Files.lines(presetFile.toPath()).count();
+            List<String> lines = Files.lines(presetFile.toPath()).toList();
+            int linesCount = lines.size();
             roomPresets[i] = new MazeGenerator.Tiles[linesCount][];
 
-            BufferedReader br = new BufferedReader(new FileReader(presetFile));
-            String line;
-            for (int j = 0; j < linesCount; j++) {
-                line = br.readLine();
+            int lineSize = -1;
+            int j = 0;
+            for (String line : lines) {
                 int lineLength = line.length();
+                if (lineSize == -1) {
+                    lineSize = lineLength;
+                } else if (lineSize != lineLength) {
+                    throw new RuntimeException("Lines are not the same length.");
+                }
                 roomPresets[i][j] = new MazeGenerator.Tiles[lineLength];
 
                 for (int k = 0; k < lineLength; k++) {
@@ -100,6 +105,7 @@ public class DataReader {
                         default -> MazeGenerator.Tiles.NONE;
                     };
                 }
+                j++;
             }
         }
 
