@@ -976,23 +976,19 @@ public class AbilBot extends AbilityBot {
 
         else if (currentUser.creationOfPlayerDnD && !currentUser.haltCreation) {
             String response;
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                response = update.getMessage().getText();
-                try {
+            try {
+                if (update.hasMessage() && update.getMessage().hasText()) {
+                    response = update.getMessage().getText();
                     playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, response);
-                } catch (Exception e) {
+
+                } else if (update.hasCallbackQuery()) {
+                    response = update.getCallbackQuery().getData();
+                    playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, response);
+
+                } else {
                     patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
                 }
-            }
-            else if (update.hasCallbackQuery()) {
-                response = update.getCallbackQuery().getData();
-                try {
-                    playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, response);
-                } catch (Exception e) {
-                    patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
-                }
-            }
-            else {
+            } catch (Exception e) {
                 patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
             }
         }
