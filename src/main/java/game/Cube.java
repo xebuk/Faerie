@@ -1,8 +1,9 @@
 package game;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class Cube {
+public class Cube implements Serializable {
     // Signs of radius (+/-) in game.Face generation
     private static final int[][][] offsets = {
             {{-1,  1, -1}, { 1,  1, -1}, { 1, -1, -1}, {-1, -1, -1}},       // FRONT

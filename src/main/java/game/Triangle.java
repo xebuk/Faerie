@@ -2,7 +2,9 @@ package game;
 
 import tools.Tools;
 
-public class Triangle {
+import java.io.Serializable;
+
+public class Triangle implements Serializable {
     private final double[][] vertices;      // 3 vertices, each is (x, y, z)
     private final Texture texture;
     private final double[][] textureCoords;

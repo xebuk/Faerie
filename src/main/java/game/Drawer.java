@@ -8,10 +8,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class Drawer {
+public class Drawer implements Serializable {
     private static final int CANVAS_WIDTH = 512;
     private static final int CANVAS_HEIGHT = 288;
 

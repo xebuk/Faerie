@@ -3,9 +3,10 @@ package game;
 import common.DataReader;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
-public class MazeGenerator {
+public class MazeGenerator implements Serializable {
     public enum Tiles {
         NONE,
         FLOOR,

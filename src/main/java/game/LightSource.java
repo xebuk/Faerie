@@ -1,8 +1,9 @@
 package game;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class LightSource {
+public class LightSource implements Serializable {
     private final double x, y, z;
     private final double intensity;
     private Color color;

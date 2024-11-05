@@ -1,11 +1,12 @@
 package game;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class DungeonController {
+public class DungeonController implements Serializable {
     private final MazeGenerator mazeGenerator;
     private final Drawer drawer;
     private List<Cube> sceneObjects;
