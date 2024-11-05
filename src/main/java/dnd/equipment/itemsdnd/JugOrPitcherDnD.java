@@ -4,16 +4,16 @@ import common.Constants;
 import dnd.equipment.ItemDnD;
 import dnd.values.CurrencyDnD;
 
-public class FishingTackleDnD extends ItemDnD {
+public class JugOrPitcherDnD extends ItemDnD {
 
-    public FishingTackleDnD() {
-        this.name = "Комплект для рыбалки";
+    public JugOrPitcherDnD() {
+        this.name = "Кувшин или графин";
         this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
         this.amount = 1;
 
-        this.value = 1;
-        this.currencyGrade = CurrencyDnD.GOLD_COINS;
+        this.value = 2;
+        this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
         this.weight = 4;
     }

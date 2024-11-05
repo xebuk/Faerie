@@ -4,17 +4,17 @@ import common.Constants;
 import dnd.equipment.ItemDnD;
 import dnd.values.CurrencyDnD;
 
-public class FlaskOfAlchemistFireDnD extends ItemDnD {
+public class ReliquaryDnD extends ItemDnD {
 
-    public FlaskOfAlchemistFireDnD() {
-        this.name = "Фляга алхимического огня";
+    public ReliquaryDnD() {
+        this.name = "Реликварий";
         this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
         this.amount = 1;
 
-        this.value = 50;
+        this.value = 5;
         this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-        this.weight = 1;
+        this.weight = 2;
     }
 }

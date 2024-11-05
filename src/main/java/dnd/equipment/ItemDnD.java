@@ -1,5 +1,6 @@
 package dnd.equipment;
 
+import common.Constants;
 import dnd.values.CurrencyDnD;
 
 public class ItemDnD {
@@ -12,6 +13,18 @@ public class ItemDnD {
     public CurrencyDnD currencyGrade;
 
     public double weight;
+
+    public ItemDnD() {
+        this.name = "";
+        this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
+
+        this.amount = 1;
+
+        this.value = 1;
+        this.currencyGrade = CurrencyDnD.GOLD_COINS;
+
+        this.weight = 1;
+    }
 
     public void setName(String name) {
         this.name = name;

@@ -7,7 +7,7 @@ import dnd.values.CurrencyDnD;
 public class VialOfAcidDnD extends ItemDnD {
 
     public VialOfAcidDnD() {
-        this.name = "Пузырек кислоты";
+        this.name = "Флакон кислоты";
         this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
         this.amount = 1;
