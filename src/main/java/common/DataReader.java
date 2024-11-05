@@ -1,5 +1,8 @@
 package common;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import java.io.*;
 import game.MazeGenerator;
 
 import java.io.BufferedReader;
@@ -9,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,19 +31,36 @@ public class DataReader {
     }
 
     public static String searchArticleId(String section, String name) throws IOException {
+        try {
+            int index = Integer.parseInt(name);
+            return name;
+        } catch (NumberFormatException ignored) {}
+
         Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
         List<String> lines = Files.readAllLines(articleIdFilePath);;
         String[] separated;
 
+        LevenshteinDistance env = new LevenshteinDistance();
+        int minSimilarityDistance = 1999999999;
+        String resArticleId = "1";
+
         for (String articleId: lines) {
             separated = articleId.trim().split("~ ");
-            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
-                //System.out.println(separated[0]);
-                //System.out.println(separated[1]);
-                return separated[0];
+            int distance;
+            if ((int) name.charAt(0) < 123 && (int) name.charAt(0) > 96) {
+                distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
+            }
+            else {
+                distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
+            }
+
+            if (distance < minSimilarityDistance) {
+                minSimilarityDistance = distance;
+                resArticleId = separated[0];
             }
         }
-        return name;
+
+        return resArticleId;
     }
 
     public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
@@ -57,6 +79,47 @@ public class DataReader {
         }
 
         return results;
+    }
+
+    public static void saveArticleIdsAsHashMap(String section) throws IOException {
+        HashMap<Integer, String> articleIds = new HashMap<>();
+
+        Path articleIdsFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
+        List<String> lines = Files.readAllLines(articleIdsFilePath);
+        String[] separated;
+
+        File articleIdsHash = new File("../token_dir/searchIDasHashMaps/" + section + ".txt");
+        articleIdsHash.createNewFile();
+
+        for (String articleId: lines) {
+            separated = articleId.trim().split("~ ");
+            articleIds.put(Integer.parseInt(separated[0]), separated[1]);
+        }
+
+        FileOutputStream out = new FileOutputStream(articleIdsHash);
+        ObjectOutputStream output = new ObjectOutputStream(out);
+        output.writeObject(articleIds);
+
+        output.close();
+        out.close();
+    }
+
+    public static HashMap<Integer, String> readArticleIds(String section) {
+        File articleIdsHash = new File("../token_dir/searchIDasHashMaps/" + section + ".txt");
+
+        FileInputStream in;
+        ObjectInputStream input;
+
+        try {
+            in = new FileInputStream(articleIdsHash);
+            input = new ObjectInputStream(in);
+            HashMap<Integer, String> articleIds = (HashMap<Integer, String>) input.readObject();
+            input.close();
+            in.close();
+            return articleIds;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static File frame = new File(Constants.IMAGE_OUTPUT_PATH + "output.png");

@@ -1,0 +1,22 @@
+package dnd.values;
+
+public enum SkillsDnD {
+    ACROBATICS,
+    ANALYSIS,
+    ATHLETICS,
+    PERCEPTION,
+    SURVIVAL,
+    PERFORMANCE,
+    INTIMIDATION,
+    HISTORY,
+    SLEIGHT_OF_HAND,
+    ARCANE,
+    MEDICINE,
+    DECEPTION,
+    NATURE,
+    INSIGHT,
+    RELIGION,
+    STEALTH,
+    PERSUASION,
+    ANIMAL_HANDLING
+}

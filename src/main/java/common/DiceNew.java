@@ -142,6 +142,19 @@ public class DiceNew {
         return diceTable.toString();
     }
 
+    public static int customDiceResult(String dice) {
+        String[] diceInfo = dice.split("d");
+        int numberOfDice = Integer.parseInt(diceInfo[0]);
+        int numberOfSides = Integer.parseInt(diceInfo[1]);
+
+        int luck = 0;
+        for (int i = 0; i < numberOfDice; i++) {
+            luck = luck + random.nextInt(numberOfSides) + 1;
+        }
+
+        return luck;
+    }
+
     public static ArrayList<Integer> D6FourTimesCreation() {
         ArrayList<Integer> luck = new ArrayList<>();
 

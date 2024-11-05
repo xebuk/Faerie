@@ -16,6 +16,12 @@ public interface Constants {
             Для вывода описания команд нажмите или наберите /help
             """;
 
+    String CHANGE_TO_COMMON_KEYBOARD = "Вы перешли на стандартную клавиатуру!";
+    String CHANGE_TO_GAME_KEYBOARD = "Вы перешли на клавиатуру игры!";
+    String CHANGE_TO_DND_KEYBOARD = "Вы перешли на клавиатуру DnD!";
+    String CHANGE_TO_DM_KEYBOARD = "Вы перешли на клавиатуру DM-a!";
+    String CHANGE_TO_CAMPAIGN_KEYBOARD = "Вы перешли на клавиатуру компании!";
+
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
     String SEARCH_MESSAGE_ITEMS = "Введите название предмета.";
@@ -122,6 +128,47 @@ public interface Constants {
             <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
             <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
             """;
+
+    String CAMPAIGN_CREATION_START = """
+            Поздравляю! Вам присуждена роль Мастера Подземелья (ДМ-а) в этом чате!
+            Выберите название для компании (его можно сменить позже).
+            Внимание! Кампания, как и ДМ, может быть только одна на группу.
+            """;
+    String CAMPAIGN_CREATION_CONGRATULATION = """
+            Поздравляю с началом кампании! Теперь игроки могут добавляться к вам в компанию.
+            """;
+    String CAMPAIGN_CREATION_EXISTS = """
+            В этой группе уже существует компания.
+            Для начала новой компании ткните старого DM-а в бок и попросите его распустить компанию.
+            """;
+
+    String PLAYER_CREATION_START = """
+            Пройдите в личные сообщения для начала создания персонажа.
+            Вы можете пользоваться функцией поиска для создания персонажа в случае сомнений.
+            """;
+    String PLAYER_CREATION_WARNING = """
+            Внимание!
+            Перед тем, как начать создание персонажа компании,
+            введите команду /start в личных сообщениях у бота,
+            иначе процесс создания не будет начат.
+            Также, если одновременно создаются несколько персонажей,
+            то рекомендуем при окончании создания (последний этап создания на этот момент: описание волос)
+            держать период в 1 минуту для избежания риска потери данных о персонаже.
+            """;
+    String PLAYER_CREATION_NAME = "Введите имя персонажа.";
+    String PLAYER_CREATION_END = """
+            Создание персонажа было успешно произведено.
+            Если вам не нравится персонаж, то вы можете его либо пересоздать, заново введя команду создания персонажа,
+            либо изменив параметры текущего персонажа с помощью DM-а.
+            """;
+
+    String CAMPAIGN_END_RESTRICTION = "Вы не DM данной компании.";
+    String CAMPAIGN_END_VERIFICATION = "Введите пароль для роспуска компании.";
+    String CAMPAIGN_END_AFFIRMATION = "Вы точно уверены, что хотите закончить данную компанию?";
+    String CAMPAIGN_END = "Компания была распущена.";
+    String CAMPAIGN_END_FALSE_ALARM = "Действия отменены.";
+
+    String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
     String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
     String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
