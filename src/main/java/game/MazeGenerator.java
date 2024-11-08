@@ -7,13 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class MazeGenerator implements Serializable {
-    public enum Tiles {
-        NONE,
-        FLOOR,
-        WALL
-    }
-
-    public enum Mode {
+    public enum Mode implements Serializable {
         RANDOM_ONLY,
         COMBINED,
         PRESETS_ONLY
@@ -76,9 +70,7 @@ public class MazeGenerator implements Serializable {
 
     private void fillWalls() {
         for (int i = 0; i < mazeWidth; i++) {
-            for (int j = 0; j < mazeHeight; j++) {
-                maze[i][j] = Tiles.WALL;
-            }
+            Arrays.fill(maze[i], Tiles.WALL);
         }
     }
 
@@ -95,9 +87,9 @@ public class MazeGenerator implements Serializable {
 
             // FIXME: The heck is this? Can it be optimized?
             Tiles[][] layout = new Tiles[roomHeight][roomWidth];
-            Tiles[] rows = new Tiles[roomWidth];
-            Arrays.fill(rows, Tiles.FLOOR);
-            Arrays.fill(layout, rows);
+            for (int i = 0; i < roomHeight; i++) {
+                Arrays.fill(layout[i], Tiles.FLOOR);
+            }
             Room newRoom = new Room(x, y, roomWidth, roomHeight, layout);
 
             if (canPlaceRoom(newRoom)) {
@@ -321,7 +313,7 @@ public class MazeGenerator implements Serializable {
         }
     }
 
-    public static class Room {
+    public static class Room implements Serializable {
         int x, y, width, height;
         Tiles[][] layout;
 
