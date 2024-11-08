@@ -1,13 +1,14 @@
 package game;
 
+import tools.Tools;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 
-public class Texture implements Serializable {
+public class Texture {
     private final BufferedImage image;
 
     public Texture(String pathToTexture) {
