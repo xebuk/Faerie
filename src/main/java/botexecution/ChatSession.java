@@ -5,6 +5,7 @@ import common.UserDataHandler;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.values.PlayerDnDCreationStage;
 import dnd.mainobjects.PlayerDnD;
+import game.DungeonController;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
@@ -20,19 +21,27 @@ public class ChatSession implements Serializable {
     private final boolean isPM;
     public String username;
 
+    //параметры для поисковика
     public String sectionId = "";
     public boolean searchSuccess = false;
     public String title = "";
 
+    //параметры для дайсроллера
     public boolean rollCustom = false;
     public ArrayDeque<String> dicePresets = new ArrayDeque<>();
 
+    //параметры для игры
     public boolean creationOfPlayerCharacter = false;
     public boolean nameIsChosen = false;
     public HashSet<String> statProgress = new HashSet<>();
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
+    public boolean gameInSession = false;
+    public boolean pauseGame = false;
+    public DungeonController crawler;
+
+    //параметры для менеджера компаний
     public boolean isHavingACampaign = false;
     public boolean isEndingACampaign = false;
     public boolean campaignNameIsChosen = false;
@@ -49,6 +58,7 @@ public class ChatSession implements Serializable {
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
 
+    //функции
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
         this.username = UserDataHandler.findUsername(chatId);
