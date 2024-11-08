@@ -90,6 +90,23 @@ public interface Constants {
     String FEATS = "Sentinel!";
     String BACKGROUNDS = "Criminal!";
 
+    String CLASSES_LIST = """
+            Официальные классы:
+            <a href="https://dnd.su/class/88">Бард [Bard]</a>
+            <a href="https://dnd.su/class/87">Варвар [Barbarian]</a>
+            <a href="https://dnd.su/class/91">Воин [Fighter]</a>
+            <a href="https://dnd.su/class/105">Волшебник [Wizard]</a>
+            <a href="https://dnd.su/class/90">Друид [Druid]</a>
+            <a href="https://dnd.su/class/89">Жрец [Cleric]</a>
+            <a href="https://dnd.su/class/137">Изобретатель [Artificer]</a>
+            <a href="https://dnd.su/class/104">Колдун [Warlock]</a>
+            <a href="https://dnd.su/class/93">Монах [Monk]</a>
+            <a href="https://dnd.su/class/94">Паладин [Paladin]</a>
+            <a href="https://dnd.su/class/99">Плут [Rogue]</a>
+            <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
+            <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
+            """;
+
     String CREATION_MENU_CHOOSE_NAME = "Введите своё имя.";
     String CREATION_MENU_CHOOSE_JOB = "Выберите свой класс: ";
 
@@ -112,21 +129,24 @@ public interface Constants {
     String CREATION_MENU_ARMOR = "Ваш класс брони равен: ";
     String CREATION_MENU_ATTACK = "Ваш кубик атаки: ";
 
-    String CLASSES_LIST = """
-            Официальные классы:
-            <a href="https://dnd.su/class/88">Бард [Bard]</a>
-            <a href="https://dnd.su/class/87">Варвар [Barbarian]</a>
-            <a href="https://dnd.su/class/91">Воин [Fighter]</a>
-            <a href="https://dnd.su/class/105">Волшебник [Wizard]</a>
-            <a href="https://dnd.su/class/90">Друид [Druid]</a>
-            <a href="https://dnd.su/class/89">Жрец [Cleric]</a>
-            <a href="https://dnd.su/class/137">Изобретатель [Artificer]</a>
-            <a href="https://dnd.su/class/104">Колдун [Warlock]</a>
-            <a href="https://dnd.su/class/93">Монах [Monk]</a>
-            <a href="https://dnd.su/class/94">Паладин [Paladin]</a>
-            <a href="https://dnd.su/class/99">Плут [Rogue]</a>
-            <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
-            <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
+    int gameMazeWidth = 50;
+    int gameMazeHeight = 50;
+    int gameRoomMinSize = 3;
+    int gameRoomMaxSize = 7;
+    int gameRoomCount = 30;
+
+    String GAME_START = """
+            Игра запущена!
+            Для паузы введите /pauseagame
+            """;
+    String GAME_RESTRICTED = """
+            Вы не создали персонажа.
+            """;
+    String GAME_PAUSE = """
+            Сеанс приостановлен.
+            """;
+    String GAME_CONTINUE = """
+            Сеанс возобновлен.
             """;
 
     String CAMPAIGN_CREATION_START = """
@@ -170,6 +190,6 @@ public interface Constants {
 
     String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
-    String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
+    String IMAGE_OUTPUT_PATH = "../token_dir/userData/";
     String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
 }
