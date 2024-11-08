@@ -20,7 +20,7 @@ public class Cube implements Serializable {
     private final double radius;
 
     private final Color color;
-    private final Texture texture;
+    private final Tiles tileID;
 
     public Cube(double x, double y, double z, double radius) {
         this.x = x;
@@ -28,7 +28,7 @@ public class Cube implements Serializable {
         this.z = z;
         this.radius = radius;
         this.color = new Color(255, 150, 0);
-        this.texture = null;
+        this.tileID = null;
         generateTriangles();
     }
 
@@ -38,17 +38,17 @@ public class Cube implements Serializable {
         this.z = z;
         this.radius = radius;
         this.color = color;
-        this.texture = null;
+        this.tileID = null;
         generateTriangles();
     }
 
-    public Cube(double x, double y, double z, double radius, Texture texture) {
+    public Cube(double x, double y, double z, double radius, Tiles tileID) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.radius = radius;
         this.color = new Color(255, 255, 255);
-        this.texture = texture;
+        this.tileID = tileID;
         generateTriangles();
     }
 
@@ -62,7 +62,7 @@ public class Cube implements Serializable {
 
             triangles[i] = new Triangle(
                     vertices1,
-                    texture,
+                    tileID,
                     new double[][] {
                             {0, 1, 1},
                             {1, 1, 0}
@@ -77,7 +77,7 @@ public class Cube implements Serializable {
 
             triangles[i + 6] = new Triangle(
                     vertices2,
-                    texture,
+                    tileID,
                     new double[][] {
                             {0, 1, 0},
                             {1, 0, 0}
