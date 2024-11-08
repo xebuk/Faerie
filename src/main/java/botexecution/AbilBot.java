@@ -11,6 +11,8 @@ import dnd.characteristics.backgroundsdnd.*;
 import dnd.characteristics.jobsdnd.*;
 import dnd.characteristics.racesdnd.*;
 import dnd.values.PlayerDnDCreationStage;
+import game.Drawer;
+import game.DungeonController;
 import game.characteristics.Job;
 import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
@@ -19,14 +21,18 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -40,6 +46,8 @@ public class AbilBot extends AbilityBot {
 
     private final HashMap<String, Job> jobAllocatorGame = new HashMap<>();
     private final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocatorGame = new HashMap<>();
+    private final HashMap<String, Consumer<DungeonController>> movementAllocatorGame = new HashMap<>();
+    private final Drawer fieldOfView = new Drawer();
 
     private final HashMap<PlayerDnDCreationStage, BiConsumer<ChatSession, String>> playerDnDGeneratorAllocator = new HashMap<>();
     private final HashMap<String, RaceDnD> raceDnDAllocator = new HashMap<>();
@@ -185,11 +193,25 @@ public class AbilBot extends AbilityBot {
         silent.send("Данная функция пока не работает в данное время. Ожидайте обновлений!", ctx.chatId());
     }
 
-    private void sendPic(MessageContext ctx) {
-        InputFile photo = new InputFile(DataReader.getFrame());
-        SendPhoto pic = new SendPhoto(ctx.chatId().toString(), photo);
+    private void sendPic(ChatSession cs) {
+        InputFile photo = new InputFile(DataReader.getFrame(cs.getChatId().toString()));
+        SendPhoto pic = new SendPhoto(cs.getChatId().toString(), photo);
+        pic.setReplyMarkup(KeyboardFactory.movementBoardGame());
         try {
             telegramClient.execute(pic);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void gamePovUpdater(Update update) {
+        InputMediaPhoto photo = new InputMediaPhoto(DataReader.getFrame(getChatId(update).toString()), "output.png");
+        EditMessageMedia photoEdit = new EditMessageMedia(photo);
+        photoEdit.setChatId(getChatId(update));
+        photoEdit.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+        photoEdit.setReplyMarkup(KeyboardFactory.movementBoardGame());
+        try {
+            telegramClient.execute(photoEdit);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -209,6 +231,49 @@ public class AbilBot extends AbilityBot {
 
         newUser.creationOfPlayerCharacter = true;
         UserDataHandler.saveSession(newUser);
+    }
+
+    private void startGame(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        if (currentUser.playerCharacter == null) {
+            silent.send(Constants.GAME_RESTRICTED, currentUser.getChatId());
+            return;
+        }
+
+        currentUser.crawler = new DungeonController(Constants.gameMazeWidth, Constants.gameMazeHeight,
+                            Constants.gameRoomMinSize, Constants.gameRoomMaxSize, Constants.gameRoomCount);
+
+        fieldOfView.setMaze(currentUser);
+        fieldOfView.startDrawing(Color.BLACK, currentUser.crawler.getSceneObjects(),
+                currentUser.crawler.getLights(), currentUser.crawler.getVisionLight());
+        fieldOfView.drawScene();
+        fieldOfView.endDrawing();
+
+        patternExecute(currentUser, Constants.GAME_START, null, false);
+        sendPic(currentUser);
+
+        currentUser.gameInSession = true;
+
+        UserDataHandler.saveSession(currentUser);
+    }
+
+    private void pauseGame(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        currentUser.pauseGame = !currentUser.pauseGame;
+
+        if (currentUser.pauseGame) {
+            silent.send(Constants.GAME_PAUSE, currentUser.getChatId());
+        }
+        else {
+            silent.send(Constants.GAME_CONTINUE, currentUser.getChatId());
+            fieldOfView.setMaze(currentUser);
+            fieldOfView.startDrawing(Color.BLACK, currentUser.crawler.getSceneObjects(),
+                    currentUser.crawler.getLights(), currentUser.crawler.getVisionLight());
+            fieldOfView.drawScene();
+            fieldOfView.endDrawing();
+            sendPic(currentUser);
+        }
+        UserDataHandler.saveSession(currentUser);
     }
 
     private void createCampaign(MessageContext ctx) {
@@ -468,6 +533,13 @@ public class AbilBot extends AbilityBot {
         statAllocatorGame.put(Constants.CREATION_MENU_INTELLIGENCE, PlayerCharacter::initIntelligence);
         statAllocatorGame.put(Constants.CREATION_MENU_WISDOM, PlayerCharacter::initWisdom);
         statAllocatorGame.put(Constants.CREATION_MENU_CHARISMA, PlayerCharacter::initCharisma);
+
+        movementAllocatorGame.put("Вперед", DungeonController::stepForward);
+        movementAllocatorGame.put("Влево", DungeonController::stepLeft);
+        movementAllocatorGame.put("Вправо", DungeonController::stepRight);
+        movementAllocatorGame.put("Назад", DungeonController::stepBackward);
+        movementAllocatorGame.put("Повернуться налево", DungeonController::turnLeft);
+        movementAllocatorGame.put("Повернуться направо", DungeonController::turnRight);
 
         // Аллокаторы для менеджера компаний ДнД
 
@@ -786,7 +858,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability startAGame() {
-        Consumer<MessageContext> game = this::placeholder;
+        Consumer<MessageContext> game = this::startGame;
 
         return Ability
                 .builder()
@@ -795,20 +867,21 @@ public class AbilBot extends AbilityBot {
                 .input(0)
                 .locality(ALL)
                 .privacy(PUBLIC)
+                .action(game)
                 .build();
     }
 
-    public Ability sendPhotoOnDemand() {
-        Consumer<MessageContext> pic = this::sendPic;
+    public Ability pauseGame() {
+        Consumer<MessageContext> pause = this::pauseGame;
 
         return Ability
                 .builder()
-                .name("photoondemand")
-                .info("sends a photo")
+                .name("pauseagame")
+                .info("pauses a game")
                 .input(0)
                 .locality(ALL)
                 .privacy(PUBLIC)
-                .action(pic)
+                .action(pause)
                 .build();
     }
 
@@ -864,6 +937,7 @@ public class AbilBot extends AbilityBot {
                 .input(1)
                 .locality(USER)
                 .privacy(PUBLIC)
+                .action(campaign)
                 .build();
     }
 
@@ -971,6 +1045,23 @@ public class AbilBot extends AbilityBot {
                     patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoardGame(currentUser.statProgress), false);
                     UserDataHandler.saveSession(currentUser);
                 }
+            }
+        }
+
+        else if (currentUser.gameInSession && !currentUser.pauseGame && update.hasCallbackQuery()) {
+            try {
+                movementAllocatorGame.get(update.getCallbackQuery().getData()).accept(currentUser.crawler);
+                fieldOfView.setMaze(currentUser);
+                fieldOfView.startDrawing(Color.BLACK, currentUser.crawler.getSceneObjects(),
+                        currentUser.crawler.getLights(), currentUser.crawler.getVisionLight());
+                fieldOfView.drawScene();
+                fieldOfView.endDrawing();
+                gamePovUpdater(update);
+            } catch (Exception e) {
+                silent.send("Попробуйте ещё раз.", currentUser.getChatId());
+            }
+            finally {
+                UserDataHandler.saveSession(currentUser);
             }
         }
 
