@@ -1,4 +1,8 @@
-package game;
+package game.environment;
+
+import game.objects.Cube;
+import game.objects.LightSource;
+import game.objects.Tiles;
 
 import java.awt.*;
 import java.io.Serializable;

@@ -1,6 +1,7 @@
-package game;
+package game.environment;
 
 import common.DataReader;
+import game.objects.Tiles;
 
 import java.io.IOException;
 import java.io.Serializable;

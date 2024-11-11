@@ -1,4 +1,4 @@
-package game;
+package game.objects;
 
 import tools.Tools;
 

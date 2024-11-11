@@ -1,7 +1,8 @@
-package game;
+package game.environment;
 
 import botexecution.ChatSession;
 import common.Constants;
+import game.objects.*;
 import tools.Tools;
 
 import javax.imageio.ImageIO;
