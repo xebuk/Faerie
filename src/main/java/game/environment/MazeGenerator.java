@@ -308,6 +308,7 @@ public class MazeGenerator implements Serializable {
                         switch (maze[i][j]) {
                             case FLOOR -> "   ";
                             case WALL, NONE -> "###";
+                            case PORTAL -> "...";
                         });
             }
             System.out.println();
