@@ -34,4 +34,7 @@ public enum PlayerDnDCreationStage {
     public PlayerDnDCreationStage next() {
         return valuesArray[(this.ordinal() + 1) % valuesArray.length];
     }
+    public PlayerDnDCreationStage previous() {
+        return valuesArray[(this.ordinal() - 1) % valuesArray.length];
+    }
 }

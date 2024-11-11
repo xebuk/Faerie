@@ -1,6 +1,8 @@
 package dnd.mainobjects;
 
-public class NonPlayerDnD {
+import java.io.Serializable;
+
+public class NonPlayerDnD implements Serializable {
     public String name;
     public String summary;
 }

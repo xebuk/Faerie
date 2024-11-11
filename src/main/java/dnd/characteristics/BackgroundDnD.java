@@ -1,14 +1,14 @@
 package dnd.characteristics;
 
-import dnd.equipment.ItemDnD;
 import dnd.values.InstrumentsDnD;
 import dnd.values.LanguagesDnD;
 import dnd.values.ScriptsDnD;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public class BackgroundDnD {
+public class BackgroundDnD implements Serializable {
     public String name = "";
     public String summary = "";
 

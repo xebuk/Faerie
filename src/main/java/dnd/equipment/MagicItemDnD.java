@@ -1,6 +1,8 @@
 package dnd.equipment;
 
-public class MagicItemDnD extends ItemDnD {
+import java.io.Serializable;
+
+public class MagicItemDnD extends ItemDnD implements Serializable {
     public String name;
     public String summary;
 

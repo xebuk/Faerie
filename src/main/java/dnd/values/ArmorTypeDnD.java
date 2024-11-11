@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum ArmorTypeDnD {
+import java.io.Serializable;
+
+public enum ArmorTypeDnD implements Serializable {
     LIGHT,
     MEDIUM,
     HEAVY,
