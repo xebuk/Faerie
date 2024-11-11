@@ -5,7 +5,7 @@ import common.UserDataHandler;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.values.PlayerDnDCreationStage;
 import dnd.mainobjects.PlayerDnD;
-import game.DungeonController;
+import game.environment.DungeonController;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;

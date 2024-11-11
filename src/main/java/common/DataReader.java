@@ -1,6 +1,6 @@
 package common;
 
-import game.Tiles;
+import game.objects.Tiles;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.io.*;
