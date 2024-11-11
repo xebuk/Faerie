@@ -1,6 +1,7 @@
 package botexecution;
 
 import common.Constants;
+import common.SearchCategories;
 import common.UserDataHandler;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.values.PlayerDnDCreationStage;
@@ -10,6 +11,7 @@ import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,7 +24,7 @@ public class ChatSession implements Serializable {
     public String username;
 
     //параметры для поисковика
-    public String sectionId = "";
+    public SearchCategories sectionId = SearchCategories.NONE;
     public boolean searchSuccess = false;
     public String title = "";
 
@@ -47,7 +49,7 @@ public class ChatSession implements Serializable {
     public boolean campaignNameIsChosen = false;
 
     public boolean creationOfPlayerDnD = false;
-    public boolean haltCreation = true;
+    public boolean haltCreation = false;
     public PlayerDnDCreationStage creationStage = NAME;
 
     public HashMap<String, Long> campaigns = new HashMap<>();
