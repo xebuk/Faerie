@@ -432,7 +432,6 @@ public class AbilBot extends AbilityBot {
                     silent.send(currentUser.playerCharacter.statWindow(), currentUser.getChatId());
                     UserDataHandler.savePlayerCharacter(currentUser.playerCharacter, update);
 
-                    currentUser.playerCharacter = null;
                     currentUser.statProgress.clear();
                     currentUser.creationOfPlayerCharacter = false;
                     currentUser.nameIsChosen = false;
@@ -610,5 +609,6 @@ public class AbilBot extends AbilityBot {
                 UserDataHandler.saveSession(currentUser);
             }
         }
+    UserDataHandler.saveSession(currentUser);
     }
 }
