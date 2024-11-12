@@ -17,7 +17,7 @@ public class SiteParser {
     public static ArrayList<String> SpellsGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("spells", id);
 
-        Connection link = Jsoup.connect(URL + "spells" + "/" + article);
+        Connection link = Jsoup.connect(URL + "spells/" + article);
         Document page;
         do {
             page = link.get();
@@ -52,14 +52,14 @@ public class SiteParser {
             result.add(i.text() + "\n" + "\n");
         }
 
-        result.add("Информация взята с " + URL + "spells" + "/" + article);
+        result.add("Информация взята с " + URL + "spells/" + article);
         return result;
     }
 
     public static ArrayList<String> ItemsGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("items", id);;
 
-        Connection link = Jsoup.connect(URL + "items" + "/" + article);
+        Connection link = Jsoup.connect(URL + "items/" + article);
         Document page;
         do {
             page = link.get();
@@ -89,14 +89,14 @@ public class SiteParser {
             result.add(i.text() + "\n" + "\n");
         }
 
-        result.add("Информация взята с " + URL + "items" + "/" + article);
+        result.add("Информация взята с " + URL + "items/" + article);
         return result;
     }
 
     public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("bestiary", id);
 
-        Connection link = Jsoup.connect(URL + "bestiary" + "/" + article);
+        Connection link = Jsoup.connect(URL + "bestiary/" + article);
         Document page;
         do {
             page = link.get();
@@ -110,7 +110,10 @@ public class SiteParser {
 
         if (check.hasText()) {
             html = page.select("div.card__group-classic");
-            result.add("Классическая версия:" + "\n" + "\n");
+            result.add("""
+                    Классическая версия:
+                    
+                    """);
         }
 
         Elements name = html.select("h2.card-title[itemprop=name]");
@@ -138,7 +141,7 @@ public class SiteParser {
 
         for (Element i : liDescBody) {
             //System.out.println(i.text() + "\n" + "\n");
-            result.add(i.text() + "\n" + "\n");
+            result.add(i.text() + "\n\n");
         }
 
         if (check.hasText()) {
@@ -152,7 +155,10 @@ public class SiteParser {
             li = body.select("li:not(.subsection.desc)");
             liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
 
-            result.add("Версия Мультивселенной:" + "\n" + "\n");
+            result.add("""
+                    Версия Мультивселенной:
+                    
+                    """);
 
             for (Element i : name) {
                 result.add(i.text() + "\n");
@@ -173,18 +179,18 @@ public class SiteParser {
 
             for (Element i : liDescBody) {
                 //System.out.println(i.text() + "\n" + "\n");
-                result.add(i.text() + "\n" + "\n");
+                result.add(i.text() + "\n\n");
             }
         }
 
-        result.add("Информация взята с " + URL + "bestiary" + "/" + article);
+        result.add("Информация взята с " + URL + "bestiary/" + article);
         return result;
     }
 
     public static ArrayList<String> RacesGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("race", id);
 
-        Connection link = Jsoup.connect(URL + "race" + "/" + article);
+        Connection link = Jsoup.connect(URL + "race/" + article);
         Document page;
         do {
             page = link.get();
@@ -207,7 +213,7 @@ public class SiteParser {
             result.add(i.text() + "\n" + "\n");
         }
 
-        result.add("Информация взята с " + URL + "race" + "/" + article);
+        result.add("Информация взята с " + URL + "race/" + article);
         return result;
     }
 
@@ -216,7 +222,7 @@ public class SiteParser {
     public static ArrayList<String> ClassesGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("class", id);
 
-        Connection link = Jsoup.connect(URL + "class" + "/" + article);
+        Connection link = Jsoup.connect(URL + "class/" + article);
         Document page;
         do {
             page = link.get();
@@ -244,14 +250,14 @@ public class SiteParser {
             System.out.println(i.text() + "\n");
             result.add(i.text() + "\n");
         }
-        result.add("Информация взята с " + URL + "class" + "/" + article);
+        result.add("Информация взята с " + URL + "class/" + article);
         return result;
     }
 
     public static ArrayList<String> FeatsGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("feats", id);
 
-        Connection link = Jsoup.connect(URL + "feats" + "/" + article);
+        Connection link = Jsoup.connect(URL + "feats/" + article);
         Document page;
         do {
             page = link.get();
@@ -271,14 +277,14 @@ public class SiteParser {
             //System.out.println(i.text());
             result.add("  -  " + i.text() + "\n");
         }
-        result.add("Информация взята с " + URL + "feats" + "/" + article);
+        result.add("Информация взята с " + URL + "feats/" + article);
         return result;
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("backgrounds", id);
 
-        Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
+        Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
         do {
             page = link.get();
@@ -295,14 +301,14 @@ public class SiteParser {
         for (Element i: descBody) {
             result.add(i.text() + "\n" + "\n");
         }
-        result.add("Информация взята с " + URL + "feats" + "/" + article);
+        result.add("Информация взята с " + URL + "feats/" + article);
         return result;
     }
 
     public static void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("backgrounds", id);
 
-        Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
+        Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
         do {
             page = link.get();
@@ -321,7 +327,7 @@ public class SiteParser {
     public static void BackgroundSpecialAbilityGrabber(String id) throws IOException {
         String article = DataReader.searchArticleId("backgrounds", id);
 
-        Connection link = Jsoup.connect(URL + "backgrounds" + "/" + article);
+        Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
         do {
             page = link.get();

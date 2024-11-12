@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum LanguagesDnD {
+import java.io.Serializable;
+
+public enum LanguagesDnD implements Serializable {
     GIANTS,
     GNOMISH,
     GOBLIN,

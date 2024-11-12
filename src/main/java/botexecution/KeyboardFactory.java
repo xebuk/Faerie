@@ -194,6 +194,42 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup movementBoardGame() {
+        InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
+        InlineKeyboardButton forward = new InlineKeyboardButton("Вперед");
+        forward.setCallbackData("Вперед");
+        inlineKeyRow1.add(forward);
+
+        InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
+        InlineKeyboardButton left = new InlineKeyboardButton("Влево");
+        left.setCallbackData("Влево");
+        inlineKeyRow2.add(left);
+        InlineKeyboardButton right = new InlineKeyboardButton("Вправо");
+        right.setCallbackData("Вправо");
+        inlineKeyRow2.add(right);
+
+        InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
+        InlineKeyboardButton backward = new InlineKeyboardButton("Назад");
+        backward.setCallbackData("Назад");
+        inlineKeyRow3.add(backward);
+
+        InlineKeyboardRow inlineKeyRow4 = new InlineKeyboardRow();
+        InlineKeyboardButton rotateLeft = new InlineKeyboardButton("Повернуться налево");
+        rotateLeft.setCallbackData("Повернуться налево");
+        inlineKeyRow4.add(rotateLeft);
+        InlineKeyboardButton rotateRight = new InlineKeyboardButton("Повернуться направо");
+        rotateRight.setCallbackData("Повернуться направо");
+        inlineKeyRow4.add(rotateRight);
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow1);
+        inlineKeyboardRows.add(inlineKeyRow2);
+        inlineKeyboardRows.add(inlineKeyRow3);
+        inlineKeyboardRows.add(inlineKeyRow4);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
     public static InlineKeyboardMarkup raceDnDSelectionBoard() {
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
         inlineKeyRow.add(new InlineKeyboardButton("Гном"));

@@ -1,6 +1,8 @@
-package game;
+package game.environment;
 
+import botexecution.ChatSession;
 import common.Constants;
+import game.objects.*;
 import tools.Tools;
 
 import javax.imageio.ImageIO;
@@ -8,13 +10,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-public class Drawer implements Serializable {
-    private static final int CANVAS_WIDTH = 512;
-    private static final int CANVAS_HEIGHT = 288;
+public class Drawer {
+    private static final int CANVAS_WIDTH = 1024;
+    private static final int CANVAS_HEIGHT = 576;
 
     private static final double FOV = Math.toRadians(60);
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
@@ -25,44 +28,59 @@ public class Drawer implements Serializable {
 
     private static final double LIGHT_ATTENUATION_FACTOR = 1.0;
 
+    private String chatId = "chatId";
+
     private double cameraX, cameraY, cameraZ;
     private double yaw, pitch;
-    private final double[][] depthBuffer;
+    private double[][] depthBuffer = new double[CANVAS_WIDTH][CANVAS_HEIGHT];
 
     // TODO: Create base class/interface GameObject with getVertices() and etc. methods,
     //       replace -> List<GameObject>
     private List<Cube> sceneObjects;
     private List<LightSource> lights;
-    private final MazeGenerator mazeGenerator;        // For hitboxes checks
+
+    private HashMap<Tiles, Texture> textures = new HashMap<>();
 
     private Graphics2D g2d;
     private BufferedImage image;
 
     private static final boolean DEBUG_SAVE = true;
 
-    public Drawer(double cameraX, double cameraY, double cameraZ, MazeGenerator mazeGenerator) {
-        this.cameraX = cameraX;
-        this.cameraY = cameraY;
-        this.cameraZ = cameraZ;
-        this.mazeGenerator = mazeGenerator;
-        this.depthBuffer = new double[CANVAS_WIDTH][CANVAS_HEIGHT];
+    public Drawer() {
+        textures.put(Tiles.NONE, new Texture("wall_revamped.png"));
+        textures.put(Tiles.WALL, new Texture("wall_revamped.png"));
+        textures.put(Tiles.FLOOR, new Texture("floor.png"));
+    }
+
+    public Drawer(DungeonController dungeonController) {
+        textures.put(Tiles.NONE, new Texture("wall_revamped.png"));
+        textures.put(Tiles.WALL, new Texture("wall_revamped.png"));
+        textures.put(Tiles.FLOOR, new Texture("floor.png"));
+
+        this.cameraX = dungeonController.getCameraX();
+        this.cameraY = dungeonController.getCameraY();
+        this.cameraZ = dungeonController.getCameraZ();
+
+        this.yaw = dungeonController.getYaw();
+        this.pitch = dungeonController.getPitch();
 
         resetDepthBuffer();
     }
 
-    public void startDrawing(Color backgroundColor, List<Cube> sceneObjects, List<LightSource> lights) {
+    public void startDrawing(Color backgroundColor, List<Cube> sceneObjects, List<LightSource> lights, LightSource visionLight) {
         image = new BufferedImage(CANVAS_WIDTH, CANVAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         g2d = image.createGraphics();
 
         fillBackground(backgroundColor);
         this.sceneObjects = sceneObjects;
         this.lights = lights;
+        lights.add(visionLight);
     }
 
     public void endDrawing() {
         g2d.dispose();
         try {
-            String path = Paths.get(Constants.IMAGE_OUTPUT_PATH, "output.png").toString();
+            String path = Paths.get(Constants.IMAGE_OUTPUT_PATH + chatId, "output.png").toString();
             ImageIO.write(image, "png", new File(path));
 
             if (DEBUG_SAVE) {
@@ -77,9 +95,7 @@ public class Drawer implements Serializable {
     private void resetDepthBuffer() {
         // Fill depth buffer with "very far away" coords
         for (int i = 0; i < CANVAS_WIDTH; i++) {
-            for (int j = 0; j < CANVAS_HEIGHT; j++) {
-                depthBuffer[i][j] = Double.MAX_VALUE;
-            }
+            Arrays.fill(depthBuffer[i], Double.MAX_VALUE);
         }
     }
 
@@ -190,13 +206,13 @@ public class Drawer implements Serializable {
                     if (interpolatedZ < depthBuffer[x][y]) {
                         depthBuffer[x][y] = interpolatedZ;      // Update depth buffer
 
-                        Texture triangleTexture = triangle.getTexture();
-                        if (triangleTexture == null) {
+                        Tiles tileID = triangle.getTileID();
+                        if (tileID == null) {
                             throw new RuntimeException("triangleTexture == null");
 //                            g2d.setColor(triangle.getCurrentColor());
                         } else {
                             double[] interpolatedUV = interpolateUV(x, y, projectedCoords, zValues, triangle.getTextureCoords());
-                            Color textureColor = triangleTexture.getColorAt(interpolatedUV[0], interpolatedUV[1]);
+                            Color textureColor = textures.get(tileID).getColorAt(interpolatedUV[0], interpolatedUV[1]);
 
                             Color light = calculateLightning(triangle, x, y, interpolatedZ);
                             Color finalColor = Tools.multiplyColors(textureColor, light);
@@ -320,21 +336,27 @@ public class Drawer implements Serializable {
         g2d.fillPolygon(xBackground, yBackground, xBackground.length);
     }
 
-    public void rotateCamera(double dYaw, double dPitch) {
-        yaw += dYaw;
-        pitch += dPitch;
+    public void setMaze(ChatSession cs) {
+        this.chatId = cs.getChatId().toString();
 
-        // Clamp the pitch to avoid gimbal lock
-        pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+        this.cameraX = cs.crawler.getCameraX();
+        this.cameraY = cs.crawler.getCameraY();
+        this.cameraZ = cs.crawler.getCameraZ();
+
+        this.yaw = cs.crawler.getYaw();
+        this.pitch = cs.crawler.getPitch();
+
+        resetDepthBuffer();
     }
 
-    public void moveCamera(double dx, double dz) {
-        double moveX =  dx * Math.cos(yaw) + dz * Math.sin(yaw);
-        double moveZ = -dx * Math.sin(yaw) + dz * Math.cos(yaw);
+    public void setMaze(DungeonController dc) {
+        this.cameraX = dc.getCameraX();
+        this.cameraY = dc.getCameraY();
+        this.cameraZ = dc.getCameraZ();
 
-        if (mazeGenerator.getTile((int) (cameraX + moveX), (int) (cameraZ + moveZ)) == MazeGenerator.Tiles.FLOOR) {
-            cameraX += moveX;
-            cameraZ += moveZ;
-        }
+        this.yaw = dc.getYaw();
+        this.pitch = dc.getPitch();
+
+        resetDepthBuffer();
     }
 }

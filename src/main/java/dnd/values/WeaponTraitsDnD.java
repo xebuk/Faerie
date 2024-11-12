@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum WeaponTraitsDnD {
+import java.io.Serializable;
+
+public enum WeaponTraitsDnD implements Serializable {
     AMMO,
     TWOHANDED,
     REACH,

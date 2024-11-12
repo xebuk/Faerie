@@ -1,5 +1,9 @@
 package common;
 
+import botexecution.ChatSession;
+
+import java.util.function.Consumer;
+
 public interface Constants {
     String URL = "https://dnd.su/";
     String CREDITS = "Сделано на коленке @LartsAL и @esb_bbdl за 3 недели";
@@ -90,6 +94,23 @@ public interface Constants {
     String FEATS = "Sentinel!";
     String BACKGROUNDS = "Criminal!";
 
+    String CLASSES_LIST = """
+            Официальные классы:
+            <a href="https://dnd.su/class/88">Бард [Bard]</a>
+            <a href="https://dnd.su/class/87">Варвар [Barbarian]</a>
+            <a href="https://dnd.su/class/91">Воин [Fighter]</a>
+            <a href="https://dnd.su/class/105">Волшебник [Wizard]</a>
+            <a href="https://dnd.su/class/90">Друид [Druid]</a>
+            <a href="https://dnd.su/class/89">Жрец [Cleric]</a>
+            <a href="https://dnd.su/class/137">Изобретатель [Artificer]</a>
+            <a href="https://dnd.su/class/104">Колдун [Warlock]</a>
+            <a href="https://dnd.su/class/93">Монах [Monk]</a>
+            <a href="https://dnd.su/class/94">Паладин [Paladin]</a>
+            <a href="https://dnd.su/class/99">Плут [Rogue]</a>
+            <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
+            <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
+            """;
+
     String CREATION_MENU_CHOOSE_NAME = "Введите своё имя.";
     String CREATION_MENU_CHOOSE_JOB = "Выберите свой класс: ";
 
@@ -112,21 +133,24 @@ public interface Constants {
     String CREATION_MENU_ARMOR = "Ваш класс брони равен: ";
     String CREATION_MENU_ATTACK = "Ваш кубик атаки: ";
 
-    String CLASSES_LIST = """
-            Официальные классы:
-            <a href="https://dnd.su/class/88">Бард [Bard]</a>
-            <a href="https://dnd.su/class/87">Варвар [Barbarian]</a>
-            <a href="https://dnd.su/class/91">Воин [Fighter]</a>
-            <a href="https://dnd.su/class/105">Волшебник [Wizard]</a>
-            <a href="https://dnd.su/class/90">Друид [Druid]</a>
-            <a href="https://dnd.su/class/89">Жрец [Cleric]</a>
-            <a href="https://dnd.su/class/137">Изобретатель [Artificer]</a>
-            <a href="https://dnd.su/class/104">Колдун [Warlock]</a>
-            <a href="https://dnd.su/class/93">Монах [Monk]</a>
-            <a href="https://dnd.su/class/94">Паладин [Paladin]</a>
-            <a href="https://dnd.su/class/99">Плут [Rogue]</a>
-            <a href="https://dnd.su/class/97">Следопыт [Ranger]</a>
-            <a href="https://dnd.su/class/101">Чародей [Sorcerer]</a>
+    int gameMazeWidth = 50;
+    int gameMazeHeight = 50;
+    int gameRoomMinSize = 3;
+    int gameRoomMaxSize = 7;
+    int gameRoomCount = 30;
+
+    String GAME_START = """
+            Игра запущена!
+            Для паузы введите /pauseagame
+            """;
+    String GAME_RESTRICTED = """
+            Вы не создали персонажа.
+            """;
+    String GAME_PAUSE = """
+            Сеанс приостановлен.
+            """;
+    String GAME_CONTINUE = """
+            Сеанс возобновлен.
             """;
 
     String CAMPAIGN_CREATION_START = """
@@ -146,6 +170,8 @@ public interface Constants {
             Пройдите в личные сообщения для начала создания персонажа.
             Вы можете пользоваться функцией поиска для создания персонажа в случае сомнений.
             """;
+    String PLAYER_CREATION_PAUSE = "Процесс создания персонажа ДнД был поставлен на паузу.";
+    String PLAYER_CREATION_CONTINUE = "Процесс создания персонажа ДнД был возобновлен.";
     String PLAYER_CREATION_WARNING = """
             Внимание!
             Перед тем, как начать создание персонажа компании,
@@ -155,12 +181,24 @@ public interface Constants {
             то рекомендуем при окончании создания (последний этап создания на этот момент: описание волос)
             держать период в 1 минуту для избежания риска потери данных о персонаже.
             """;
-    String PLAYER_CREATION_NAME = "Введите имя персонажа.";
     String PLAYER_CREATION_END = """
             Создание персонажа было успешно произведено.
             Если вам не нравится персонаж, то вы можете его либо пересоздать, заново введя команду создания персонажа,
             либо изменив параметры текущего персонажа с помощью DM-а.
             """;
+
+    String PLAYER_CREATION_NAME = "Введите имя персонажа.";
+
+    String SHOW_CAMPAIGNS_NOTHING = "На данный момент вы не ведете никаких компаний.";
+
+    String SET_CAMPAIGN_NOT_FOUND = "Такой компании не найдено. Попробуйте ещё раз.";
+    String SET_CAMPAIGN_NULL = "Текущая компания не была указана. Для начала укажите текущую компанию.";
+    String SET_CAMPAIGN_SUCCESS = "Название компании было изменено.";
+
+    String SET_PASSWORD_SUCCESS = "Пароль для удаления компании был указан. При удалении компании он отправится к вам в личные сообщения.";
+
+    String SET_MULTICLASS_LIMIT_NOT_INTEGER = "Пожалуйста, введите корректное число.";
+    String SET_MULTICLASS_LIMIT_ZERO = "При установке лимита классов на персонажа на 0, вы снимаете ограничение на количество классов.";
 
     String CAMPAIGN_END_RESTRICTION = "Вы не DM данной компании.";
     String CAMPAIGN_END_VERIFICATION = "Введите пароль для роспуска компании.";
@@ -170,6 +208,6 @@ public interface Constants {
 
     String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
-    String IMAGE_OUTPUT_PATH = "../token_dir/firstPersonView/";
+    String IMAGE_OUTPUT_PATH = "../token_dir/userData/";
     String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
 }

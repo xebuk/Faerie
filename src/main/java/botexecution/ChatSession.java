@@ -1,14 +1,17 @@
 package botexecution;
 
 import common.Constants;
+import common.SearchCategories;
 import common.UserDataHandler;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.values.PlayerDnDCreationStage;
 import dnd.mainobjects.PlayerDnD;
+import game.environment.DungeonController;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,25 +23,33 @@ public class ChatSession implements Serializable {
     private final boolean isPM;
     public String username;
 
-    public String sectionId = "";
+    //параметры для поисковика
+    public SearchCategories sectionId = SearchCategories.NONE;
     public boolean searchSuccess = false;
     public String title = "";
 
+    //параметры для дайсроллера
     public boolean rollCustom = false;
     public ArrayDeque<String> dicePresets = new ArrayDeque<>();
 
+    //параметры для игры
     public boolean creationOfPlayerCharacter = false;
     public boolean nameIsChosen = false;
     public HashSet<String> statProgress = new HashSet<>();
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
+    public boolean gameInSession = false;
+    public boolean pauseGame = false;
+    public DungeonController crawler;
+
+    //параметры для менеджера компаний
     public boolean isHavingACampaign = false;
     public boolean isEndingACampaign = false;
     public boolean campaignNameIsChosen = false;
 
     public boolean creationOfPlayerDnD = false;
-    public boolean haltCreation = true;
+    public boolean haltCreation = false;
     public PlayerDnDCreationStage creationStage = NAME;
 
     public HashMap<String, Long> campaigns = new HashMap<>();
@@ -49,6 +60,7 @@ public class ChatSession implements Serializable {
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
 
+    //функции
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
         this.username = UserDataHandler.findUsername(chatId);

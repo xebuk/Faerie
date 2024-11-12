@@ -1,13 +1,12 @@
 package common;
 
 import botexecution.ChatSession;
+import dnd.mainobjects.PlayerDnD;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.*;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
@@ -127,6 +126,55 @@ public class UserDataHandler {
             input.close();
             in.close();
             return pc;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void savePlayerDnD(ChatSession currentUser, ChatSession currentGroup) {
+        File pcFile = new File("../token_dir/userData/" + currentGroup.getChatId()
+                + "/" + currentUser.username + ".txt");
+        if (!pcFile.exists()) {
+            try {
+                pcFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        FileOutputStream out;
+        ObjectOutputStream output;
+        try {
+            out = new FileOutputStream(pcFile);
+            output = new ObjectOutputStream(out);
+            output.writeObject(currentUser.activePc);
+            output.close();
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static PlayerDnD readPlayerDnD(ChatSession currentGroup, String username) {
+        File pcFile = new File("../token_dir/userData/" + currentGroup.getChatId()
+                + "/" + username + ".txt");
+        if (!pcFile.exists()) {
+            try {
+                pcFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        FileInputStream in;
+        ObjectInputStream input;
+        try {
+            in = new FileInputStream(pcFile);
+            input = new ObjectInputStream(in);
+            PlayerDnD playerDnD = (PlayerDnD) input.readObject();
+            input.close();
+            in.close();
+            return playerDnD;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

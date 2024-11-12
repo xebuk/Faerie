@@ -1,4 +1,4 @@
-package game;
+package game.objects;
 
 import tools.Tools;
 
@@ -6,15 +6,15 @@ import java.io.Serializable;
 
 public class Triangle implements Serializable {
     private final double[][] vertices;      // 3 vertices, each is (x, y, z)
-    private final Texture texture;
+    private final Tiles tileID;
     private final double[][] textureCoords;
 
     private double[] cashedNormal;
     private double[] cashedCenter;
 
-    public Triangle(double[][] vertices, Texture texture, double[][] textureCoords) {
+    public Triangle(double[][] vertices, Tiles tileID, double[][] textureCoords) {
         this.vertices = vertices;
-        this.texture = texture;
+        this.tileID = tileID;
         this.textureCoords = textureCoords;
 
         this.cashedNormal = null;
@@ -78,8 +78,8 @@ public class Triangle implements Serializable {
         return vertices;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public Tiles getTileID() {
+        return tileID;
     }
 
     public double[][] getTextureCoords() {

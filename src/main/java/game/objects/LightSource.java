@@ -1,11 +1,11 @@
-package game;
+package game.objects;
 
 import java.awt.*;
 import java.io.Serializable;
 
 public class LightSource implements Serializable {
-    private final double x, y, z;
-    private final double intensity;
+    private double x, y, z;
+    private double intensity;
     private Color color;
 
     private final double constant, linear, quadratic;
@@ -30,6 +30,11 @@ public class LightSource implements Serializable {
         this.constant = 1.0;
         this.linear = 0.7;
         this.quadratic = 1.8;
+    }
+
+    public void moveVisionLight(double dx, double dz) {
+        x = x + dx;
+        z = z + dz;
     }
 
     public double[] getPosition() {

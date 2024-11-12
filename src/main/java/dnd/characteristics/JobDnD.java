@@ -6,11 +6,12 @@ import dnd.values.InstrumentsDnD;
 import dnd.values.StatsTypeDnD;
 import dnd.values.WeaponTraitsDnD;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class JobDnD {
+public class JobDnD implements Serializable {
     public String title;
     public String advancedTitle;
     public boolean usesMagic;

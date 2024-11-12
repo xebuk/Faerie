@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum InstrumentsDnD {
+import java.io.Serializable;
+
+public enum InstrumentsDnD implements Serializable {
     THIEF_TOOLS,
     NAVIGATOR_TOOLS,
     POISONER_KIT,

@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum SkillsDnD {
+import java.io.Serializable;
+
+public enum SkillsDnD implements Serializable {
     ACROBATICS,
     ANALYSIS,
     ATHLETICS,

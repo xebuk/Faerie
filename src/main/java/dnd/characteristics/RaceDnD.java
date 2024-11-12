@@ -4,11 +4,12 @@ import dnd.values.LanguagesDnD;
 import dnd.values.RacesSizeDnD;
 import dnd.values.ScriptsDnD;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class RaceDnD {
+public class RaceDnD implements Serializable {
     public String name;
     public String subspeciesName;
     public RacesSizeDnD size;

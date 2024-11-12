@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum RacesSizeDnD {
+import java.io.Serializable;
+
+public enum RacesSizeDnD implements Serializable {
     TINY,
     SMALL,
     MEDIUM,

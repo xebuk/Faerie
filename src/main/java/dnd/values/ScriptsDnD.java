@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum ScriptsDnD {
+import java.io.Serializable;
+
+public enum ScriptsDnD implements Serializable {
     COMMON,
     DWARVISH,
     ELVISH,

@@ -3,7 +3,9 @@ package dnd.equipment;
 import common.Constants;
 import dnd.values.CurrencyDnD;
 
-public class ItemDnD {
+import java.io.Serializable;
+
+public class ItemDnD implements Serializable {
     public String name;
     public String summary;
 

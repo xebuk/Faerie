@@ -1,6 +1,8 @@
 package dnd.characteristics;
 
-public class FeatDnD {
+import java.io.Serializable;
+
+public class FeatDnD implements Serializable {
     public String title;
     public String summary;
 }

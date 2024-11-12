@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum StatsTypeDnD {
+import java.io.Serializable;
+
+public enum StatsTypeDnD implements Serializable {
     STRENGTH,
     DEXTERITY,
     CONSTITUTION,
