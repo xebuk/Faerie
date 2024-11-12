@@ -258,6 +258,20 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability expungeGame() {
+        Consumer<MessageContext> expunge = dungeonCrawl::expungeGame;
+
+        return Ability
+                .builder()
+                .name("endagame")
+                .info("ends a game prematurely")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(expunge)
+                .build();
+    }
+
     public Ability createCampaign() {
         Consumer<MessageContext> campaign = tableTop::createCampaign;
 

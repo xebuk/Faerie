@@ -39,7 +39,7 @@ public class DungeonController implements Serializable {
         cameraY = 0.5;
         cameraZ = cameraXZ[1];
 
-        visionLight = new LightSource(cameraX, cameraY, cameraZ, 1, Color.PINK);
+        visionLight = new LightSource(cameraX, cameraY, cameraZ, 3, Color.PINK);
 
 //        lights.add(new LightSource(cameraXZ[0], 0.5, cameraXZ[1], 3));
         for (MazeGenerator.Room room : mazeGenerator.getRooms()) {

@@ -152,6 +152,9 @@ public interface Constants {
     String GAME_CONTINUE = """
             Сеанс возобновлен.
             """;
+    String GAME_EXPUNGE = """
+            Сеанс удален.
+            """;
 
     String CAMPAIGN_CREATION_START = """
             Поздравляю! Вам присуждена роль Мастера Подземелья (ДМ-а) в этом чате!

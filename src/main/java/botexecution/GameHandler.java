@@ -98,4 +98,14 @@ public class GameHandler {
         }
         UserDataHandler.saveSession(currentUser);
     }
+
+    public void expungeGame(MessageContext ctx) {
+        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        currentUser.pauseGame = true;
+        currentUser.gameInSession = false;
+        currentUser.crawler = null;
+
+        walkieTalkie.patternExecute(currentUser, Constants.GAME_EXPUNGE, null, false);
+
+    }
 }
