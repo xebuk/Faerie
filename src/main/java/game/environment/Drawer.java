@@ -1,6 +1,6 @@
 package game.environment;
 
-import botexecution.ChatSession;
+import botexecution.mainobjects.ChatSession;
 import common.Constants;
 import game.objects.*;
 import tools.Tools;

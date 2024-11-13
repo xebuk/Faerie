@@ -1,9 +1,5 @@
 package common;
 
-import botexecution.ChatSession;
-
-import java.util.function.Consumer;
-
 public interface Constants {
     String URL = "https://dnd.su/";
     String CREDITS = "Сделано на коленке @LartsAL и @esb_bbdl за 3 недели";
@@ -161,6 +157,9 @@ public interface Constants {
             Выберите название для компании (его можно сменить позже).
             Внимание! Кампания, как и ДМ, может быть только одна на группу.
             """;
+    String CAMPAIGN_CREATION_NOTIFICATION = """
+            Вы создали компанию. Вы можете просмотреть свои компании через /showcampaigns
+            """;
     String CAMPAIGN_CREATION_CONGRATULATION = """
             Поздравляю с началом кампании! Теперь игроки могут добавляться к вам в компанию.
             """;
@@ -193,6 +192,8 @@ public interface Constants {
     String PLAYER_CREATION_NAME = "Введите имя персонажа.";
 
     String SHOW_CAMPAIGNS_NOTHING = "На данный момент вы не ведете никаких компаний.";
+
+    String SHOW_CAMPAIGN_GROUP_NOTHING = "В данной группе нет группы.";
 
     String SET_CAMPAIGN_NOT_FOUND = "Такой компании не найдено. Попробуйте ещё раз.";
     String SET_CAMPAIGN_NULL = "Текущая компания не была указана. Для начала укажите текущую компанию.";
