@@ -47,7 +47,11 @@ public class DataReader {
                 distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
             }
             else {
-                distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
+                try {
+                    distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
+                } catch (StringIndexOutOfBoundsException e) {
+                    distance = env.apply(separated[1].substring(0, name.length()), name);
+                }
             }
 
             if (distance < minSimilarityDistance) {
