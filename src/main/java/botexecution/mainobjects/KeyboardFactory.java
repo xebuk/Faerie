@@ -1,7 +1,6 @@
-package botexecution;
+package botexecution.mainobjects;
 
 import common.Constants;
-import dnd.mainobjects.PlayerDnD;
 import dnd.values.LanguagesDnD;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -534,18 +533,23 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
-    public static InlineKeyboardMarkup variantsBoard(List<String> variants) {
+    public static InlineKeyboardMarkup variantsBoard(int size) {
+        ArrayList<InlineKeyboardRow> inlineKeyRows = new ArrayList<>();
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
 
-        for (int i = 1; i < variants.size() + 1; i++) {
-            inlineKeyRow.add(new InlineKeyboardButton(String.valueOf(i)));
-            inlineKeyRow.get(i - 1).setCallbackData(variants.get(i - 1));
+        for (int i = 1; i < size + 1; i++) {
+            if (inlineKeyRow.size() == 4) {
+                inlineKeyRows.add(inlineKeyRow);
+                inlineKeyRow = new InlineKeyboardRow();
+            }
+            InlineKeyboardButton variant = new InlineKeyboardButton(String.valueOf(i));
+            variant.setCallbackData(String.valueOf(i - 1));
+            inlineKeyRow.add(variant);
         }
 
-        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
-        inlineKeyboardRows.add(inlineKeyRow);
+        inlineKeyRows.add(inlineKeyRow);
 
-        return new InlineKeyboardMarkup(inlineKeyboardRows);
+        return new InlineKeyboardMarkup(inlineKeyRows);
     }
 
     public static ReplyKeyboardMarkup commonSetOfCommandsBoard() {
@@ -658,18 +662,23 @@ public class KeyboardFactory {
     public static ReplyKeyboardMarkup gameSetOfCommandsBoard() {
         KeyboardRow keyRow1 = new KeyboardRow();
         keyRow1.add(new KeyboardButton("/startagame"));
+        keyRow1.add(new KeyboardButton("/pauseagame"));
 
         KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/createacharacter"));
+        keyRow2.add(new KeyboardButton("/endagame"));
 
         KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/dnd"));
-        keyRow3.add(new KeyboardButton("/common"));
+        keyRow3.add(new KeyboardButton("/createacharacter"));
+
+        KeyboardRow keyRow4 = new KeyboardRow();
+        keyRow4.add(new KeyboardButton("/dnd"));
+        keyRow4.add(new KeyboardButton("/common"));
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
         keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);

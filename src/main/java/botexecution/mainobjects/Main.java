@@ -1,4 +1,4 @@
-package botexecution;
+package botexecution.mainobjects;
 
 import common.DataReader;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;

@@ -1,8 +1,8 @@
-package botexecution;
+package botexecution.mainobjects;
 
+import botexecution.handlers.DataHandler;
 import common.Constants;
 import common.SearchCategories;
-import common.UserDataHandler;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.values.PlayerDnDCreationStage;
 import dnd.mainobjects.PlayerDnD;
@@ -11,7 +11,6 @@ import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,9 +18,10 @@ import java.util.*;
 import static dnd.values.PlayerDnDCreationStage.*;
 
 public class ChatSession implements Serializable {
+    public String chatTitle;
     private final long chatId;
     private final boolean isPM;
-    public String username;
+    public String username = "";
 
     //параметры для поисковика
     public SearchCategories sectionId = SearchCategories.NONE;
@@ -42,6 +42,7 @@ public class ChatSession implements Serializable {
     public boolean gameInSession = false;
     public boolean pauseGame = false;
     public DungeonController crawler;
+    public int lastDungeonMessageId;
 
     //параметры для менеджера компаний
     public boolean isHavingACampaign = false;
@@ -63,18 +64,15 @@ public class ChatSession implements Serializable {
     //функции
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
-        this.username = UserDataHandler.findUsername(chatId);
         this.isPM = !(this.chatId < 0);
-        UserDataHandler.createChatFile(String.valueOf(chatId));
+        DataHandler.createChatFile(String.valueOf(chatId));
     }
 
     public ChatSession(MessageContext ctx) {
         this.chatId = ctx.chatId();
         this.username = "@" + ctx.user().getUserName();
         this.isPM = !(this.chatId < 0);
-
-        UserDataHandler.addUsernameToChatIdEntry(username, chatId);
-        UserDataHandler.createChatFile(String.valueOf(chatId));
+        DataHandler.createChatFile(String.valueOf(chatId));
     }
 
     public Long getChatId() {
@@ -85,9 +83,9 @@ public class ChatSession implements Serializable {
         return isPM;
     }
 
-    public void setUsername(String usernameGetter) {
+    public void setUsername(String username) {
         try {
-            this.username = "@" + usernameGetter;
+            this.username = "@" + username;
         } catch (Exception e) {
             this.username = "@[ДАННЫЕ УДАЛЕНЫ]";
         }

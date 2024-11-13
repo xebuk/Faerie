@@ -1,15 +1,14 @@
-package botexecution;
+package botexecution.mainobjects;
 
+import botexecution.handlers.*;
 import common.*;
 
-import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -21,6 +20,7 @@ import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getCha
 public class AbilBot extends AbilityBot {
     private final TextHandler walkieTalkie;
     private final MediaHandler pager;
+    private final DataHandler knowledge;
     private final CommonMethodsHandler jackOfAllTrades;
     private final GameHandler dungeonCrawl;
     private final DnDHandler tableTop;
@@ -29,9 +29,11 @@ public class AbilBot extends AbilityBot {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
         this.walkieTalkie = new TextHandler(this.getSilent());
         this.pager = new MediaHandler(this.getTelegramClient());
-        this.jackOfAllTrades = new CommonMethodsHandler(walkieTalkie);
-        this.dungeonCrawl = new GameHandler(walkieTalkie, pager);
-        this.tableTop = new DnDHandler(walkieTalkie);
+        this.knowledge = new DataHandler(false);
+
+        this.jackOfAllTrades = new CommonMethodsHandler(knowledge, walkieTalkie);
+        this.dungeonCrawl = new GameHandler(knowledge, walkieTalkie, pager);
+        this.tableTop = new DnDHandler(knowledge, walkieTalkie);
         super.onRegister();
     }
 
@@ -314,6 +316,20 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability showCampaignsGroup() {
+        Consumer<MessageContext> campaign = tableTop::showCampaignGroup;
+
+        return Ability
+                .builder()
+                .name("showcampaign")
+                .info("shows chat's campaign")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaign)
+                .build();
+    }
+
     public Ability setCampaign() {
         Consumer<MessageContext> campaign = tableTop::setCurrentCampaign;
 
@@ -416,67 +432,22 @@ public class AbilBot extends AbilityBot {
     public void consume(Update update) {
         super.consume(update);
 
-        ChatSession currentUser;
-        try {
-            currentUser = UserDataHandler.readSession(update);
-        } catch (Exception e) {
-            UserDataHandler.createChatFile(getChatId(update).toString());
+        ChatSession currentUser = knowledge.getSession(getChatId(update).toString());
+        if (currentUser == null) {
+            knowledge.readSessionToList(getChatId(update).toString());
+            currentUser = knowledge.getSession(getChatId(update).toString());
+        }
+        if (currentUser == null) {
             currentUser = new ChatSession(update);
+            knowledge.renewListChat(currentUser);
         }
 
         if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-            if (currentUser.statProgress.isEmpty()) {
-                currentUser.playerCharacter.setJob(dungeonCrawl.jobAllocatorGame.get(update.getCallbackQuery().getData()));
-                silent.send(Constants.CREATION_MENU_SET_STATS, currentUser.getChatId());
-
-                currentUser.statProgress.add(update.getCallbackQuery().getData());
-                currentUser.luck = DiceNew.D6FourTimesCreation();
-
-                walkieTalkie.patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoardGame(currentUser.statProgress), false);
-                UserDataHandler.saveSession(currentUser);
-            }
-            else {
-                if (currentUser.statProgress.size() == 6) {
-                    dungeonCrawl.statAllocatorGame.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
-
-                    currentUser.playerCharacter.initHealth();
-                    currentUser.playerCharacter.setArmorClass();
-                    currentUser.playerCharacter.setAttackDice();
-
-                    silent.send(currentUser.playerCharacter.statWindow(), currentUser.getChatId());
-                    UserDataHandler.savePlayerCharacter(currentUser.playerCharacter, update);
-
-                    currentUser.statProgress.clear();
-                    currentUser.creationOfPlayerCharacter = false;
-                    currentUser.nameIsChosen = false;
-                    UserDataHandler.saveSession(currentUser);
-                }
-                else {
-                    dungeonCrawl.statAllocatorGame.get(update.getCallbackQuery().getData()).accept(currentUser.playerCharacter, currentUser.luck.get(4));
-                    currentUser.statProgress.add(update.getCallbackQuery().getData());
-                    currentUser.luck = DiceNew.D6FourTimesCreation();
-
-                    walkieTalkie.patternExecute(currentUser, DiceNew.D6FourTimes(currentUser.luck), KeyboardFactory.assignStatsBoardGame(currentUser.statProgress), false);
-                    UserDataHandler.saveSession(currentUser);
-                }
-            }
+            dungeonCrawl.characterCreationMainLoop(currentUser, update);
         }
 
         else if (currentUser.gameInSession && !currentUser.pauseGame && update.hasCallbackQuery()) {
-            try {
-                dungeonCrawl.movementAllocatorGame.get(update.getCallbackQuery().getData()).accept(currentUser.crawler);
-                dungeonCrawl.fieldOfView.setMaze(currentUser);
-                dungeonCrawl.fieldOfView.startDrawing(Color.BLACK, currentUser.crawler.getSceneObjects(),
-                        currentUser.crawler.getLights(), currentUser.crawler.getVisionLight());
-                dungeonCrawl.fieldOfView.drawScene();
-                dungeonCrawl.fieldOfView.endDrawing();
-                pager.gamePovUpdater(currentUser, update.getCallbackQuery().getMessage().getMessageId());
-            } catch (Exception e) {
-                silent.send("Попробуйте ещё раз.", currentUser.getChatId());
-            }
-            finally {
-                UserDataHandler.saveSession(currentUser);
-            }
+            dungeonCrawl.gameMainLoop(currentUser, update);
         }
 
         else if (currentUser.creationOfPlayerDnD) {
@@ -494,24 +465,18 @@ public class AbilBot extends AbilityBot {
                     walkieTalkie.patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
                 }
             } catch (Exception e) {
+                System.out.println(e);
                 walkieTalkie.patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
             }
+            knowledge.renewListChat(currentUser);
         }
 
         else if (update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            currentUser.setUsername(query.getFrom().getUserName());
-
             if (currentUser.rollCustom) {
-                String[] dices = responseQuery.trim().split("d");
-                try {
-                    walkieTalkie.patternExecute(currentUser, DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
-                } catch (NumberFormatException e) {
-                    silent.send(Constants.CUSTOM_DICE_ERROR, currentUser.getChatId());
-                }
-                currentUser.rollCustom = false;
+                jackOfAllTrades.onRollCustomPreset(currentUser, responseQuery);
             }
             else if (currentUser.isEndingACampaign) {
                 if (!Objects.equals(currentUser.activeDm.username, currentUser.username)) {
@@ -538,91 +503,40 @@ public class AbilBot extends AbilityBot {
             else {
                 jackOfAllTrades.methodsAllocator.get(responseQuery).accept(currentUser);
             }
-            UserDataHandler.saveSession(currentUser);
+            knowledge.renewListChat(currentUser);
         }
 
         else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-            currentUser.setUsername(update.getMessage().getForwardSenderName());
 
             if (currentUser.campaignNameIsChosen) {
                 currentUser.activeDm.campaignName = update.getMessage().getText();
                 currentUser.campaignNameIsChosen = false;
 
-                ChatSession dungeonMaster = UserDataHandler.readSession(currentUser.activeDm.chatId);
+                ChatSession dungeonMaster = knowledge.getSession(String.valueOf(currentUser.activeDm.chatId));
                 dungeonMaster.campaigns.put(currentUser.activeDm.campaignName, currentUser.activeDm.chatId);
-                UserDataHandler.saveSession(dungeonMaster);
+                knowledge.renewListChat(dungeonMaster);
 
                 silent.send(Constants.CAMPAIGN_CREATION_CONGRATULATION, currentUser.getChatId());
                 silent.send(Constants.PLAYER_CREATION_WARNING, currentUser.getChatId());
             }
 
             else if (currentUser.creationOfPlayerCharacter && !currentUser.nameIsChosen) {
-                currentUser.playerCharacter = new PlayerCharacter();
-                currentUser.playerCharacter.setName(update.getMessage().getText());
-                currentUser.nameIsChosen = true;
-
-                walkieTalkie.patternExecute(currentUser, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard(), false);
-
-                UserDataHandler.saveSession(currentUser);
+                dungeonCrawl.characterCreationStart(currentUser, update);
             }
 
             else if (currentUser.rollCustom) {
-                try {
-                    currentUser.dicePresets = UserDataHandler.readDicePresets(update);
-                } catch (Exception ignored) {}
-
-                if (!currentUser.dicePresets.contains(update.getMessage().getText())) {
-                    currentUser.dicePresets.add(update.getMessage().getText());
-                }
-                UserDataHandler.saveDicePresets(currentUser.dicePresets, update);
-
-                String[] dices = update.getMessage().getText().trim().split("d");
-                walkieTalkie.patternExecute(currentUser, DiceNew.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
-
-                currentUser.rollCustom = false;
-                UserDataHandler.saveSession(currentUser);
+                jackOfAllTrades.onRollCustom(currentUser, update);
             }
 
             else if (currentUser.searchSuccess) {
-                currentUser.title = update.getMessage().getText();
-                try {
-                    switch (currentUser.sectionId) {
-                        case SPELLS:
-                            walkieTalkie.articleMessaging(SiteParser.SpellsGrabber(currentUser.title), currentUser);
-                            break;
-                        case ITEMS:
-                            walkieTalkie.articleMessaging(SiteParser.ItemsGrabber(currentUser.title), currentUser);
-                            break;
-                        case BESTIARY:
-                            walkieTalkie.articleMessaging(SiteParser.BestiaryGrabber(currentUser.title), currentUser);
-                            break;
-                        case RACES:
-                            walkieTalkie.articleMessaging(SiteParser.RacesGrabber(currentUser.title), currentUser);
-                            break;
-                        case FEATS:
-                            walkieTalkie.articleMessaging(SiteParser.FeatsGrabber(currentUser.title), currentUser);
-                            break;
-                        case BACKGROUNDS:
-                            walkieTalkie.articleMessaging(SiteParser.BackgroundsGrabber(currentUser.title), currentUser);
-                            break;
-                        default:
-                            walkieTalkie.reportImpossible(currentUser);
-                            break;
-                    }
-                    currentUser.sectionId = SearchCategories.NONE;
-                    currentUser.searchSuccess = false;
-                    currentUser.title = "";
-                } catch (IOException e) {
-                    silent.send(Constants.SEARCH_MESSAGE_FAIL_SECOND_STAGE, currentUser.getChatId());
-                }
-                UserDataHandler.saveSession(currentUser);
+                jackOfAllTrades.onSearchSuccess(currentUser, update);
             }
 
             else if (!currentUser.sectionId.isEmpty()) {
-                currentUser.searchSuccess = walkieTalkie.searchEngine(currentUser, update.getMessage().getText());
-                UserDataHandler.saveSession(currentUser);
+                currentUser.searchSuccess = jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
+                knowledge.renewListChat(currentUser);
             }
         }
-    UserDataHandler.saveSession(currentUser);
+    knowledge.renewListChat(currentUser);
     }
 }
