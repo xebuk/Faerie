@@ -1,13 +1,17 @@
-package botexecution;
+package botexecution.handlers;
 
+import botexecution.mainobjects.ChatSession;
+import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
-import common.UserDataHandler;
+import common.DiceNew;
 import game.characteristics.Job;
 import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
 import game.environment.Drawer;
 import game.environment.DungeonController;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -15,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class GameHandler {
+    private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final MediaHandler pager;
 
@@ -23,7 +28,8 @@ public class GameHandler {
     public final HashMap<String, Consumer<DungeonController>> movementAllocatorGame = new HashMap<>();
     public final Drawer fieldOfView = new Drawer();
 
-    public GameHandler(TextHandler walkieTalkie, MediaHandler pager) {
+    public GameHandler(DataHandler knowledge, TextHandler walkieTalkie, MediaHandler pager) {
+        this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
         this.pager = pager;
 
@@ -49,15 +55,15 @@ public class GameHandler {
     }
 
     public void createPlayer(MessageContext ctx) {
-        ChatSession newUser = UserDataHandler.readSession(ctx.update());
+        ChatSession newUser = knowledge.getSession(ctx.chatId().toString());
         walkieTalkie.patternExecute(newUser, Constants.CREATION_MENU_CHOOSE_NAME, null, false);
 
         newUser.creationOfPlayerCharacter = true;
-        UserDataHandler.saveSession(newUser);
+        knowledge.renewListChat(newUser);
     }
 
     public void startGame(MessageContext ctx) {
-        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         if (currentUser.playerCharacter == null) {
             walkieTalkie.patternExecute(currentUser, Constants.GAME_RESTRICTED, null, false);
             return;
@@ -73,18 +79,20 @@ public class GameHandler {
         fieldOfView.endDrawing();
 
         walkieTalkie.patternExecute(currentUser, Constants.GAME_START, null, false);
-        pager.sendPic(currentUser);
+        currentUser.lastDungeonMessageId = pager.sendPic(currentUser);
 
         currentUser.gameInSession = true;
 
-        UserDataHandler.saveSession(currentUser);
+        knowledge.renewListChat(currentUser);
     }
 
     public void pauseGame(MessageContext ctx) {
-        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         currentUser.pauseGame = !currentUser.pauseGame;
 
         if (currentUser.pauseGame) {
+            DeleteMessage del = new DeleteMessage(currentUser.getChatId().toString(), currentUser.lastDungeonMessageId);
+            walkieTalkie.getSilent().execute(del);
             walkieTalkie.patternExecute(currentUser, Constants.GAME_PAUSE, null, false);
         }
         else {
@@ -94,18 +102,81 @@ public class GameHandler {
                     currentUser.crawler.getLights(), currentUser.crawler.getVisionLight());
             fieldOfView.drawScene();
             fieldOfView.endDrawing();
-            pager.sendPic(currentUser);
+            currentUser.lastDungeonMessageId = pager.sendPic(currentUser);
         }
-        UserDataHandler.saveSession(currentUser);
+        knowledge.renewListChat(currentUser);
     }
 
     public void expungeGame(MessageContext ctx) {
-        ChatSession currentUser = UserDataHandler.readSession(ctx.update());
-        currentUser.pauseGame = true;
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        currentUser.pauseGame = false;
         currentUser.gameInSession = false;
         currentUser.crawler = null;
 
         walkieTalkie.patternExecute(currentUser, Constants.GAME_EXPUNGE, null, false);
+        knowledge.renewListChat(currentUser);
+    }
 
+    public void gameMainLoop(ChatSession cs, Update update) {
+        try {
+            movementAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.crawler);
+            fieldOfView.setMaze(cs);
+            fieldOfView.startDrawing(Color.BLACK, cs.crawler.getSceneObjects(),
+                    cs.crawler.getLights(), cs.crawler.getVisionLight());
+            fieldOfView.drawScene();
+            fieldOfView.endDrawing();
+            pager.gamePovUpdater(cs, update.getCallbackQuery().getMessage().getMessageId());
+        } catch (Exception e) {
+            walkieTalkie.patternExecute(cs, "Попробуйте ещё раз.", null, false);
+        } finally {
+            knowledge.renewListChat(cs);
+        }
+    }
+
+    public void characterCreationStart(ChatSession cs, Update update) {
+        cs.playerCharacter = new PlayerCharacter();
+        cs.playerCharacter.setName(update.getMessage().getText());
+        cs.nameIsChosen = true;
+
+        walkieTalkie.patternExecute(cs, Constants.CREATION_MENU_CHOOSE_JOB, KeyboardFactory.jobSelectionBoard(), false);
+
+        knowledge.renewListChat(cs);
+    }
+
+    public void characterCreationMainLoop(ChatSession cs, Update update) {
+        if (cs.statProgress.isEmpty()) {
+                cs.playerCharacter.setJob(jobAllocatorGame.get(update.getCallbackQuery().getData()));
+                walkieTalkie.patternExecute(cs, Constants.CREATION_MENU_SET_STATS, null, false);
+
+                cs.statProgress.add(update.getCallbackQuery().getData());
+                cs.luck = DiceNew.D6FourTimesCreation();
+
+                walkieTalkie.patternExecute(cs, DiceNew.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
+                knowledge.renewListChat(cs);
+            }
+            else {
+                if (cs.statProgress.size() == 6) {
+                    statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
+
+                    cs.playerCharacter.initHealth();
+                    cs.playerCharacter.setArmorClass();
+                    cs.playerCharacter.setAttackDice();
+
+                    walkieTalkie.patternExecute(cs, cs.playerCharacter.statWindow(), null, false);
+
+                    cs.statProgress.clear();
+                    cs.creationOfPlayerCharacter = false;
+                    cs.nameIsChosen = false;
+                    knowledge.renewListChat(cs);
+                }
+                else {
+                    statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
+                    cs.statProgress.add(update.getCallbackQuery().getData());
+                    cs.luck = DiceNew.D6FourTimesCreation();
+
+                    walkieTalkie.patternExecute(cs, DiceNew.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
+                    knowledge.renewListChat(cs);
+                }
+            }
     }
 }

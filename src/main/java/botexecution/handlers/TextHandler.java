@@ -1,15 +1,11 @@
-package botexecution;
+package botexecution.handlers;
 
+import botexecution.mainobjects.ChatSession;
 import common.Constants;
-import common.DataReader;
-import common.SearchCategories;
-import common.SiteParser;
 import org.telegram.telegrambots.abilitybots.api.sender.SilentSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TextHandler  {
@@ -44,20 +40,6 @@ public class TextHandler  {
         return false;
     }
 
-    public void rollCustom(ChatSession cs) {
-        SendMessage rollVar;
-        if (!cs.dicePresets.isEmpty()) {
-            cs.checkPresetsSize();
-            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE_WITH_PRESETS);
-            rollVar.setReplyMarkup(KeyboardFactory.rollCustomBoard(cs));
-        }
-        else {
-            rollVar = new SendMessage(cs.getChatId().toString(), Constants.CUSTOM_DICE_MESSAGE);
-        }
-        silent.execute(rollVar);
-        cs.rollCustom = true;
-    }
-
     public void articleMessaging(List<String> article, ChatSession cs) {
         StringBuilder partOfArticle = new StringBuilder();
         int lengthOfMessage = 0;
@@ -75,6 +57,26 @@ public class TextHandler  {
             }
         }
         silent.send(partOfArticle.toString(), cs.getChatId());
+    }
+
+    public void articleMessaging(String article, ChatSession cs, ReplyKeyboard function) {
+        List<String> slicedArticle = List.of(article.split("\n"));
+        StringBuilder partOfArticle = new StringBuilder();
+        int lengthOfMessage = 0;
+
+        for (String paragraph: slicedArticle) {
+            if (lengthOfMessage + paragraph.length() + 1 < MAX_MESSAGE_SIZE) {
+                partOfArticle.append(paragraph).append("\n");
+                lengthOfMessage = lengthOfMessage + paragraph.length() + 1;
+            }
+            else {
+                silent.send(partOfArticle.toString(), cs.getChatId());
+                partOfArticle.setLength(0);
+                lengthOfMessage = paragraph.length();
+                partOfArticle.append(paragraph);
+            }
+        }
+        patternExecute(cs, partOfArticle.toString(), function, false);
     }
 
     public void patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
@@ -102,59 +104,5 @@ public class TextHandler  {
         }
 
         return text.toString();
-    }
-
-    public boolean searchEngine(ChatSession cs, String entry) {
-        ArrayList<String> matches;
-
-        try {
-            matches = DataReader.searchArticleIds(cs.sectionId.toString(), entry);
-        } catch (IOException e) {
-            return reportIncorrect(cs);
-        }
-
-        if (matches.isEmpty()) {
-            reportFail(cs);
-        }
-
-        else if (matches.size() == 2) {
-            ArrayList<String> article;
-            try {
-                switch (cs.sectionId) {
-                    case SPELLS:
-                        article = SiteParser.SpellsGrabber(matches.getFirst());
-                        break;
-                    case ITEMS:
-                        article = SiteParser.ItemsGrabber(matches.getFirst());
-                        break;
-                    case BESTIARY:
-                        article = SiteParser.BestiaryGrabber(matches.getFirst());
-                        break;
-                    case RACES:
-                        article = SiteParser.RacesGrabber(matches.getFirst());
-                        break;
-                    case FEATS:
-                        article = SiteParser.FeatsGrabber(matches.getFirst());
-                        break;
-                    case BACKGROUNDS:
-                        article = SiteParser.BackgroundsGrabber(matches.getFirst());
-                        break;
-                    default:
-                        reportImpossible(cs);
-                        return false;
-                }
-            } catch (Exception e) {
-                return reportIncorrect(cs);
-            }
-
-            articleMessaging(article, cs);
-            cs.sectionId = SearchCategories.NONE;
-            cs.searchSuccess = false;
-            cs.title = "";
-            return false;
-        }
-
-        patternExecute(cs, SiteParser.addressWriter(matches, cs.sectionId.toString()), null, true);
-        return true;
     }
 }
