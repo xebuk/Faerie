@@ -28,4 +28,12 @@ public class DungeonMasterDnD implements Serializable {
     public HashMap<String, String> settingNotes = new HashMap<>();
 
     public DungeonMasterDnD() {}
+
+    public String campaignStatus() {
+        StringBuilder campaign = new StringBuilder();
+
+        campaign.append("Имя компании: ").append(campaignName).append("\n");
+        campaign.append("Количество игроков:").append(playerDnDHashMap.size());
+        return campaign.toString();
+    }
 }

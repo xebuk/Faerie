@@ -21,8 +21,7 @@ public class PlayerDnD implements Serializable {
     public String playerName;
     public Long campaignChatId;
 
-
-    public ArrayList<JobDnD> secondaryJobs;
+    public ArrayList<JobDnD> secondaryJobs = new ArrayList<>();
     public int experience = 0;
     public int totalLevel = 1;
 
@@ -45,18 +44,18 @@ public class PlayerDnD implements Serializable {
     public int deathThrowsFailure = 0;
 
     public String specialBackgroundQuality = "Нет";
-    public HashMap<String, String> personality;
-    public HashMap<String, String> ideals;
-    public HashMap<String, String> bonds;
-    public HashMap<String, String> flaws;
+    public HashMap<String, String> personality = new HashMap<>();
+    public HashMap<String, String> ideals = new HashMap<>();
+    public HashMap<String, String> bonds = new HashMap<>();
+    public HashMap<String, String> flaws = new HashMap<>();
 
     public HashSet<String> allocatedStats = new HashSet<>();
     public ArrayList<Integer> luck = new ArrayList<>();
 
     public int bonusSkills = 0;
-    public HashSet<String> learnedSkills;
-    public HashSet<SkillsDnD> learnedSkillsMastery;
-    public HashSet<String> saveThrowMastery;
+    public HashSet<String> learnedSkills = new HashSet<>();
+    public HashSet<SkillsDnD> learnedSkillsMastery = new HashSet<>();
+    public HashSet<String> saveThrowMastery = new HashSet<>();
 
     public int strength;
     public int strengthModifier;
@@ -102,7 +101,7 @@ public class PlayerDnD implements Serializable {
     public HashSet<String> disadvantages = new HashSet<>();
 
     public ArrayList<AbilityDnD> attacksAndSpells = new ArrayList<>();
-    public ArrayList<MagicItemDnD> equipment;
+    public ArrayList<MagicItemDnD> equipment = new ArrayList<>();
     public HashSet<String> proficiencies = new HashSet<>();
     public ArrayList<FeatDnD> traits = new ArrayList<>();
     public ArrayList<FeatDnD> feats = new ArrayList<>();

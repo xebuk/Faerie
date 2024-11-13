@@ -1,8 +1,9 @@
 package dnd.characteristics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BookOfSpellsDnD {
+public class BookOfSpellsDnD implements Serializable {
     public int spellsBaseStat;
     public int saveDc;
     public int attackBonus;
