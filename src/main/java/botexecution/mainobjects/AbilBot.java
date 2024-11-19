@@ -1,5 +1,7 @@
 package botexecution.mainobjects;
 
+import botexecution.commands.Commands;
+import botexecution.commands.KeyboardValues;
 import botexecution.handlers.*;
 import common.*;
 
@@ -48,6 +50,7 @@ public class AbilBot extends AbilityBot {
         return id;
     }
 
+    //основные функции
     public Ability startOut() {
         Consumer<MessageContext> start = jackOfAllTrades::startNewUser;
 
@@ -63,8 +66,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showHelp() {
-        Consumer<MessageContext> helpHand =
-                ctx -> silent.send(Constants.HELP_MESSAGE, ctx.chatId());
+        Consumer<MessageContext> helpHand = jackOfAllTrades::sendHelp;
 
         return Ability.builder()
                 .name("help")
@@ -91,10 +93,10 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    //команды для вызова клавиатур
     public Ability moveToCommonKeyboard() {
-        Consumer<MessageContext> commonKeyboard =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_COMMON_KEYBOARD,
-                        KeyboardFactory.commonSetOfCommandsBoard(), false);
+        Consumer<MessageContext> commonKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
+                KeyboardValues.COMMON, KeyboardFactory.commonSetOfCommandsBoard(), Constants.CHANGE_TO_COMMON_KEYBOARD);
 
         return Ability
                 .builder()
@@ -108,9 +110,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability moveToGameKeyboard() {
-        Consumer<MessageContext> gameKeyboard =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_GAME_KEYBOARD,
-                        KeyboardFactory.gameSetOfCommandsBoard(), false);
+        Consumer<MessageContext> gameKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
+                KeyboardValues.GAME, KeyboardFactory.gameSetOfCommandsBoard(), Constants.CHANGE_TO_GAME_KEYBOARD);
 
         return Ability
                 .builder()
@@ -124,9 +125,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability moveToDndKeyboard() {
-        Consumer<MessageContext> dndKeyboard =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_DND_KEYBOARD,
-                        KeyboardFactory.dndSetOfCommandsBoard(), false);
+        Consumer<MessageContext> dndKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
+                KeyboardValues.DND, KeyboardFactory.dndSetOfCommandsBoard(), Constants.CHANGE_TO_DND_KEYBOARD);
 
         return Ability
                 .builder()
@@ -140,9 +140,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability moveToDMBoard() {
-        Consumer<MessageContext> dmKeyboard =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_DM_KEYBOARD,
-                        KeyboardFactory.dmSetOfCommandsBoard(), false);
+        Consumer<MessageContext> dmKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
+                KeyboardValues.DM, KeyboardFactory.dmSetOfCommandsBoard(), Constants.CHANGE_TO_DM_KEYBOARD);
 
         return Ability
                 .builder()
@@ -156,13 +155,12 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability moveToCampaignBoard() {
-        Consumer<MessageContext> campaignKeyboard =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.CHANGE_TO_CAMPAIGN_KEYBOARD,
-                        KeyboardFactory.campaignSettingsBoard(), false);
+        Consumer<MessageContext> campaignKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
+                KeyboardValues.CAMPAIGN, KeyboardFactory.campaignSetOfCommandsBoard(), Constants.CHANGE_TO_CAMPAIGN_KEYBOARD);
 
         return Ability
                 .builder()
-                .name("campaignsettings")
+                .name("campaignboard")
                 .info("shows a campaign board")
                 .input(0)
                 .locality(USER)
@@ -171,6 +169,7 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    //основной функционал
     public Ability sayMofu() {
         Consumer<MessageContext> mofu =
                 ctx -> silent.send("Mofu Mofu!", ctx.chatId());
@@ -187,9 +186,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability requestArticle() {
-        Consumer<MessageContext> search =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.SEARCH_MESSAGE,
-                        KeyboardFactory.searchBoard(), false);
+        Consumer<MessageContext> search = ctx -> walkieTalkie.patternExecute(ctx,
+                Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard(), false);
 
         return Ability
                 .builder()
@@ -203,9 +201,8 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability diceRoll() {
-        Consumer<MessageContext> roll =
-                ctx -> walkieTalkie.patternExecute(new ChatSession(ctx), Constants.ROLL_MESSAGE,
-                        KeyboardFactory.rollVariantsBoard(), false);
+        Consumer<MessageContext> roll = ctx -> walkieTalkie.patternExecute(ctx,
+                Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard(), false);
 
         return Ability
                 .builder()
@@ -218,6 +215,7 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    //функции для игры
     public Ability createPlayerCharacter() {
         Consumer<MessageContext> createNewPc = dungeonCrawl::createPlayer;
 
@@ -274,6 +272,7 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    //функции для менеджера компаний
     public Ability createCampaign() {
         Consumer<MessageContext> campaign = tableTop::createCampaign;
 
@@ -392,11 +391,53 @@ public class AbilBot extends AbilityBot {
         return Ability
                 .builder()
                 .name("showplayers")
-                .info("show")
+                .info("show a players list")
                 .input(0)
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(playersList)
+                .build();
+    }
+
+    public Ability showPlayerProfile() {
+        Consumer<MessageContext> profile = tableTop::showPlayerProfile;
+
+        return Ability
+                .builder()
+                .name("showplayerprofile")
+                .info("show a players list")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(profile)
+                .build();
+    }
+
+    public Ability requestARoll() {
+        Consumer<MessageContext> rollRequest = tableTop::requestARoll;
+
+        return Ability
+                .builder()
+                .name("requestaroll")
+                .info("request a roll from a player")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(rollRequest)
+                .build();
+    }
+
+    public Ability addAnItem() {
+        Consumer<MessageContext> addAnItem = tableTop::addItem;
+
+        return Ability
+                .builder()
+                .name("addanitem")
+                .info("adds an item to dm's roster")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(addAnItem)
                 .build();
     }
 
@@ -440,6 +481,10 @@ public class AbilBot extends AbilityBot {
         if (currentUser == null) {
             currentUser = new ChatSession(update);
             knowledge.renewListChat(currentUser);
+        }
+
+        if (currentUser.addingAnItem && update.hasMessage() && update.getMessage().hasText()) {
+            tableTop.addItemSecondStage(currentUser, update.getMessage().getText());
         }
 
         if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery() && Objects.equals(currentUser.getChatId(), getChatId(update))) {
@@ -539,4 +584,6 @@ public class AbilBot extends AbilityBot {
         }
     knowledge.renewListChat(currentUser);
     }
+
+
 }

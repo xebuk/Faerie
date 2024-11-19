@@ -4,18 +4,6 @@ public interface Constants {
     String URL = "https://dnd.su/";
     String CREDITS = "Сделано на коленке @LartsAL и @esb_bbdl за 3 недели";
 
-    String HELP_MESSAGE = """
-            /help - выводит список команд
-            /mofu - "Mofu Mofu!"
-            /search - выводит меню поиска статьи
-            /roll - выводит меню броска костей
-            /credits - выводит авторов сия бота
-            """;
-    String START_MESSAGE = """
-            Привет! Меня зовут Faerie!
-            Для вывода описания команд нажмите или наберите /help
-            """;
-
     String CHANGE_TO_COMMON_KEYBOARD = "Вы перешли на стандартную клавиатуру!";
     String CHANGE_TO_GAME_KEYBOARD = "Вы перешли на клавиатуру игры!";
     String CHANGE_TO_DND_KEYBOARD = "Вы перешли на клавиатуру DnD!";
@@ -195,7 +183,7 @@ public interface Constants {
 
     String SHOW_CAMPAIGN_GROUP_NOTHING = "В данной группе нет группы.";
 
-    String SET_CAMPAIGN_NOT_FOUND = "Такой компании не найдено. Попробуйте ещё раз.";
+    String SET_CAMPAIGN_NOT_FOUND = "Такая компания не найдена. Устанавливаю: Нет компании.";
     String SET_CAMPAIGN_NULL = "Текущая компания не была указана. Для начала укажите текущую компанию.";
     String SET_CAMPAIGN_SUCCESS = "Название компании было изменено.";
 
@@ -203,6 +191,8 @@ public interface Constants {
 
     String SET_MULTICLASS_LIMIT_NOT_INTEGER = "Пожалуйста, введите корректное число.";
     String SET_MULTICLASS_LIMIT_ZERO = "При установке лимита классов на персонажа на 0, вы снимаете ограничение на количество классов.";
+
+    String GET_PLAYER_NOT_FOUND = "Игрока с таким тегом в компании не существует.";
 
     String CAMPAIGN_END_RESTRICTION = "Вы не DM данной компании.";
     String CAMPAIGN_END_VERIFICATION = "Введите пароль для роспуска компании.";

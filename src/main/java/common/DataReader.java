@@ -26,61 +26,6 @@ public class DataReader {
         return parseInt(Files.readString(creatorID_FilePath).trim());
     }
 
-    public static String searchArticleId(String section, String name) throws IOException {
-        try {
-            int index = Integer.parseInt(name);
-            return name;
-        } catch (NumberFormatException ignored) {}
-
-        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
-        List<String> lines = Files.readAllLines(articleIdFilePath);;
-        String[] separated;
-
-        LevenshteinDistance env = new LevenshteinDistance();
-        int minSimilarityDistance = 1999999999;
-        String resArticleId = "1";
-
-        for (String articleId: lines) {
-            separated = articleId.trim().split("~ ");
-            int distance;
-            if ((int) name.charAt(0) < 123 && (int) name.charAt(0) > 96) {
-                distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
-            }
-            else {
-                try {
-                    distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
-                } catch (StringIndexOutOfBoundsException e) {
-                    distance = env.apply(separated[1].substring(0, name.length()), name);
-                }
-            }
-
-            if (distance < minSimilarityDistance) {
-                minSimilarityDistance = distance;
-                resArticleId = separated[0];
-            }
-        }
-
-        return resArticleId;
-    }
-
-    public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
-        ArrayList<String> results = new ArrayList<>();
-
-        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
-        List<String> lines = Files.readAllLines(articleIdFilePath);
-        String[] separated;
-
-        for (String articleId: lines) {
-            separated = articleId.trim().split("~ ");
-            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
-                results.add(separated[0]);
-                results.add(separated[1]);
-            }
-        }
-
-        return results;
-    }
-
     public static void saveArticleIdsAsHashMap(String section) throws IOException {
         HashMap<Integer, String> articleIds = new HashMap<>();
 
@@ -120,11 +65,6 @@ public class DataReader {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static File getFrame(String chatId) {
-        File frame = new File(Constants.IMAGE_OUTPUT_PATH + chatId + "/output.png");
-        return frame;
     }
 
     public static Tiles[][][] readRoomPresets() throws IOException {

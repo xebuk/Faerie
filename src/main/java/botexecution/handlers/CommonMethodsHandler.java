@@ -1,11 +1,14 @@
 package botexecution.handlers;
 
+import botexecution.commands.CoreMessages;
+import botexecution.commands.KeyboardValues;
 import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
 import common.*;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ public class CommonMethodsHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
 
+    public final HashMap<String, String> commandsSummariesAllocator = new HashMap<>();
     public final HashMap<String, Consumer<ChatSession>> methodsAllocator = new HashMap<>();
 
     public CommonMethodsHandler(DataHandler knowledge, TextHandler walkieTalkie) {
@@ -74,16 +78,57 @@ public class CommonMethodsHandler {
         methodsAllocator.put(Constants.ROLL_4D6, Roll4D6);
         methodsAllocator.put(Constants.ROLL_D4, RollD4);
         methodsAllocator.put(Constants.CUSTOM_DICE, CustomDice);
+
+        commandsSummariesAllocator.put("help", CoreMessages.COMMAND_MESSAGE_HELP);
+        commandsSummariesAllocator.put("mofu", CoreMessages.COMMAND_MESSAGE_MOFU);
+        commandsSummariesAllocator.put("search", CoreMessages.COMMAND_MESSAGE_SEARCH);
+        commandsSummariesAllocator.put("roll", CoreMessages.COMMAND_MESSAGE_ROLL);
+        commandsSummariesAllocator.put("credits", CoreMessages.COMMAND_MESSAGE_CREDITS);
+        commandsSummariesAllocator.put("startagame", CoreMessages.COMMAND_MESSAGE_START_A_GAME);
+        commandsSummariesAllocator.put("pauseagame", CoreMessages.COMMAND_MESSAGE_PAUSE_A_GAME);
+        commandsSummariesAllocator.put("endagame", CoreMessages.COMMAND_MESSAGE_END_A_GAME);
+        commandsSummariesAllocator.put("createacharacter", CoreMessages.COMMAND_MESSAGE_CREATE_A_CHARACTER);
+        commandsSummariesAllocator.put("createaplayer", CoreMessages.COMMAND_MESSAGE_CREATE_A_PLAYER);
+        commandsSummariesAllocator.put("haltcreation", CoreMessages.COMMAND_MESSAGE_HALT_CREATION);
+        commandsSummariesAllocator.put("createacampaign", CoreMessages.COMMAND_MESSAGE_CREATE_A_CAMPAIGN);
+        commandsSummariesAllocator.put("endacampaign", CoreMessages.COMMAND_MESSAGE_END_A_CAMPAIGN);
+        commandsSummariesAllocator.put("showcampaigns", CoreMessages.COMMAND_MESSAGE_SHOW_CAMPAIGNS);
+        commandsSummariesAllocator.put("setcampaign", CoreMessages.COMMAND_MESSAGE_SET_CAMPAIGN);
+        commandsSummariesAllocator.put("setcampaignname", CoreMessages.COMMAND_MESSAGE_SET_CAMPAIGN_NAME);
+        commandsSummariesAllocator.put("setpassword", CoreMessages.COMMAND_MESSAGE_SET_PASSWORD);
+        commandsSummariesAllocator.put("setmulticlasslimit", CoreMessages.COMMAND_MESSAGE_SET_MULTICLASS_LIMIT);
+        commandsSummariesAllocator.put("showplayers", CoreMessages.COMMAND_MESSAGE_SHOW_PLAYERS);
+        commandsSummariesAllocator.put("showplayerprofile", CoreMessages.COMMAND_MESSAGE_SHOW_PLAYER_PROFILE);
+        commandsSummariesAllocator.put("requestaroll", CoreMessages.COMMAND_MESSAGE_REQUEST_A_ROLL);
+        commandsSummariesAllocator.put("addanitem", CoreMessages.COMMAND_MESSAGE_ADD_AN_ITEM);
     }
 
     public void startNewUser(MessageContext ctx) {
         ChatSession newUser = new ChatSession(ctx);
-        walkieTalkie.patternExecute(newUser, Constants.START_MESSAGE, KeyboardFactory.commonSetOfCommandsBoard(), false);
+        walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE, KeyboardFactory.commonSetOfCommandsBoard(), false);
 
         DataHandler.createChatFile(ctx.chatId().toString());
         newUser.setUsername(ctx.user().getUserName());
         knowledge.renewListChat(newUser);
         knowledge.renewListUsername(newUser);
+    }
+
+    public void sendHelp(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (ctx.firstArg().isEmpty() || commandsSummariesAllocator.get(ctx.firstArg()) == null) {
+            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString(), null, false);
+        }
+        else {
+            walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()), null, false);
+        }
+        knowledge.renewListChat(currentUser);
+    }
+
+    public void changeKeyboard(MessageContext ctx, KeyboardValues keys, ReplyKeyboard function, String changeMessage) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        currentUser.currentKeyboard = keys;
+        walkieTalkie.patternExecute(currentUser, changeMessage, function, false);
+        knowledge.renewListChat(currentUser);
     }
 
     public void rollCustom(ChatSession cs) {
@@ -127,7 +172,7 @@ public class CommonMethodsHandler {
         ArrayList<String> matches;
 
         try {
-            matches = DataReader.searchArticleIds(cs.sectionId.toString(), entry);
+            matches = SiteParser.searchArticleIds(cs.sectionId.toString(), entry);
         } catch (IOException e) {
             return walkieTalkie.reportIncorrect(cs);
         }

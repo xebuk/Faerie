@@ -2,6 +2,7 @@ package botexecution.handlers;
 
 import botexecution.mainobjects.ChatSession;
 import common.Constants;
+import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.sender.SilentSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -86,6 +87,40 @@ public class TextHandler  {
         }
         sign.append(message);
         SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
+        if (function != null) {
+            text.setReplyMarkup(function);
+        }
+        if (parseMode) {
+            text.setParseMode("HTML");
+            text.disableWebPagePreview();
+        }
+        silent.execute(text);
+    }
+
+    public void patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
+        StringBuilder sign = new StringBuilder();
+        if (!cs.isPM()) {
+            sign.append(username).append("\n").append("----------------------------------").append("\n");
+        }
+        sign.append(message);
+        SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
+        if (function != null) {
+            text.setReplyMarkup(function);
+        }
+        if (parseMode) {
+            text.setParseMode("HTML");
+            text.disableWebPagePreview();
+        }
+        silent.execute(text);
+    }
+
+    public void patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
+        StringBuilder sign = new StringBuilder();
+        if (ctx.chatId() < 0) {
+            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+        }
+        sign.append(message);
+        SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
         if (function != null) {
             text.setReplyMarkup(function);
         }

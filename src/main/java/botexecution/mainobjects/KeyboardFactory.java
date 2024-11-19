@@ -230,102 +230,132 @@ public class KeyboardFactory {
     }
 
     public static InlineKeyboardMarkup raceDnDSelectionBoard() {
-        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
-        inlineKeyRow.add(new InlineKeyboardButton("Гном"));
-        inlineKeyRow.get(0).setCallbackData("Гном");
-        inlineKeyRow.add(new InlineKeyboardButton("Дварф"));
-        inlineKeyRow.get(1).setCallbackData("Дварф");
-        inlineKeyRow.add(new InlineKeyboardButton("Драконорожденный"));
-        inlineKeyRow.get(2).setCallbackData("Драконорожденный");
-        inlineKeyRow.add(new InlineKeyboardButton("Полуорк"));
-        inlineKeyRow.get(3).setCallbackData("Полуорк");
-        inlineKeyRow.add(new InlineKeyboardButton("Полурослик"));
-        inlineKeyRow.get(4).setCallbackData("Полурослик");
-        inlineKeyRow.add(new InlineKeyboardButton("Полуэльф"));
-        inlineKeyRow.get(5).setCallbackData("Полуэльф");
-        inlineKeyRow.add(new InlineKeyboardButton("Тифлинг"));
-        inlineKeyRow.get(6).setCallbackData("Тифлинг");
-        inlineKeyRow.add(new InlineKeyboardButton("Человек"));
-        inlineKeyRow.get(7).setCallbackData("Человек");
-        inlineKeyRow.add(new InlineKeyboardButton("Человек (вариант)"));
-        inlineKeyRow.get(8).setCallbackData("Человек (вариант)");
-        inlineKeyRow.add(new InlineKeyboardButton("Эльф"));
-        inlineKeyRow.get(9).setCallbackData("Эльф");
+        InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
+        inlineKeyRow1.add(new InlineKeyboardButton("Гном"));
+        inlineKeyRow1.get(0).setCallbackData("Гном");
+        inlineKeyRow1.add(new InlineKeyboardButton("Дварф"));
+        inlineKeyRow1.get(1).setCallbackData("Дварф");
+        inlineKeyRow1.add(new InlineKeyboardButton("Драконорожденный"));
+        inlineKeyRow1.get(2).setCallbackData("Драконорожденный");
+
+        InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
+        inlineKeyRow2.add(new InlineKeyboardButton("Полуорк"));
+        inlineKeyRow2.get(0).setCallbackData("Полуорк");
+        inlineKeyRow2.add(new InlineKeyboardButton("Полурослик"));
+        inlineKeyRow2.get(1).setCallbackData("Полурослик");
+        inlineKeyRow2.add(new InlineKeyboardButton("Полуэльф"));
+        inlineKeyRow2.get(2).setCallbackData("Полуэльф");
+
+        InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
+        inlineKeyRow3.add(new InlineKeyboardButton("Тифлинг"));
+        inlineKeyRow3.get(0).setCallbackData("Тифлинг");
+        inlineKeyRow3.add(new InlineKeyboardButton("Человек"));
+        inlineKeyRow3.get(1).setCallbackData("Человек");
+        inlineKeyRow3.add(new InlineKeyboardButton("Человек (вариант)"));
+        inlineKeyRow3.get(2).setCallbackData("Человек (вариант)");
+        inlineKeyRow3.add(new InlineKeyboardButton("Эльф"));
+        inlineKeyRow3.get(3).setCallbackData("Эльф");
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
-        inlineKeyboardRows.add(inlineKeyRow);
+        inlineKeyboardRows.add(inlineKeyRow1);
+        inlineKeyboardRows.add(inlineKeyRow2);
+        inlineKeyboardRows.add(inlineKeyRow3);
 
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
     public static InlineKeyboardMarkup jobDnDSelectionBoard() {
-        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
-        inlineKeyRow.add(new InlineKeyboardButton("Бард"));
-        inlineKeyRow.get(0).setCallbackData("Бард");
-        inlineKeyRow.add(new InlineKeyboardButton("Варвар"));
-        inlineKeyRow.get(1).setCallbackData("Варвар");
-        inlineKeyRow.add(new InlineKeyboardButton("Воин"));
-        inlineKeyRow.get(2).setCallbackData("Воин");
-        inlineKeyRow.add(new InlineKeyboardButton("Волшебник"));
-        inlineKeyRow.get(3).setCallbackData("Волшебник");
-        inlineKeyRow.add(new InlineKeyboardButton("Друид"));
-        inlineKeyRow.get(4).setCallbackData("Друид");
-        inlineKeyRow.add(new InlineKeyboardButton("Жрец"));
-        inlineKeyRow.get(5).setCallbackData("Жрец");
-        inlineKeyRow.add(new InlineKeyboardButton("Изобретатель"));
-        inlineKeyRow.get(6).setCallbackData("Изобретатель");
-        inlineKeyRow.add(new InlineKeyboardButton("Колдун"));
-        inlineKeyRow.get(7).setCallbackData("Колдун");
-        inlineKeyRow.add(new InlineKeyboardButton("Монах"));
-        inlineKeyRow.get(8).setCallbackData("Монах");
-        inlineKeyRow.add(new InlineKeyboardButton("Паладин"));
-        inlineKeyRow.get(9).setCallbackData("Паладин");
-        inlineKeyRow.add(new InlineKeyboardButton("Плут"));
-        inlineKeyRow.get(10).setCallbackData("Плут");
-        inlineKeyRow.add(new InlineKeyboardButton("Следопыт"));
-        inlineKeyRow.get(11).setCallbackData("Следопыт");
-        inlineKeyRow.add(new InlineKeyboardButton("Чародей"));
-        inlineKeyRow.get(12).setCallbackData("Чародей");
+        InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
+        inlineKeyRow1.add(new InlineKeyboardButton("Бард"));
+        inlineKeyRow1.get(0).setCallbackData("Бард");
+        inlineKeyRow1.add(new InlineKeyboardButton("Варвар"));
+        inlineKeyRow1.get(1).setCallbackData("Варвар");
+        inlineKeyRow1.add(new InlineKeyboardButton("Воин"));
+        inlineKeyRow1.get(2).setCallbackData("Воин");
+
+        InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
+        inlineKeyRow2.add(new InlineKeyboardButton("Волшебник"));
+        inlineKeyRow2.get(0).setCallbackData("Волшебник");
+        inlineKeyRow2.add(new InlineKeyboardButton("Друид"));
+        inlineKeyRow2.get(1).setCallbackData("Друид");
+        inlineKeyRow2.add(new InlineKeyboardButton("Жрец"));
+        inlineKeyRow2.get(2).setCallbackData("Жрец");
+
+        InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
+        inlineKeyRow3.add(new InlineKeyboardButton("Изобретатель"));
+        inlineKeyRow3.get(0).setCallbackData("Изобретатель");
+        inlineKeyRow3.add(new InlineKeyboardButton("Колдун"));
+        inlineKeyRow3.get(1).setCallbackData("Колдун");
+        inlineKeyRow3.add(new InlineKeyboardButton("Монах"));
+        inlineKeyRow3.get(2).setCallbackData("Монах");
+
+        InlineKeyboardRow inlineKeyRow4 = new InlineKeyboardRow();
+        inlineKeyRow4.add(new InlineKeyboardButton("Паладин"));
+        inlineKeyRow4.get(0).setCallbackData("Паладин");
+        inlineKeyRow4.add(new InlineKeyboardButton("Плут"));
+        inlineKeyRow4.get(1).setCallbackData("Плут");
+
+        InlineKeyboardRow inlineKeyRow5 = new InlineKeyboardRow();
+        inlineKeyRow5.add(new InlineKeyboardButton("Следопыт"));
+        inlineKeyRow5.get(0).setCallbackData("Следопыт");
+        inlineKeyRow5.add(new InlineKeyboardButton("Чародей"));
+        inlineKeyRow5.get(1).setCallbackData("Чародей");
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
-        inlineKeyboardRows.add(inlineKeyRow);
+        inlineKeyboardRows.add(inlineKeyRow1);
+        inlineKeyboardRows.add(inlineKeyRow2);
+        inlineKeyboardRows.add(inlineKeyRow3);
+        inlineKeyboardRows.add(inlineKeyRow4);
+        inlineKeyboardRows.add(inlineKeyRow5);
 
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
     public static InlineKeyboardMarkup backgroundDnDSelectionBoard() {
-        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
-        inlineKeyRow.add(new InlineKeyboardButton("Артист"));
-        inlineKeyRow.get(0).setCallbackData("Артист");
-        inlineKeyRow.add(new InlineKeyboardButton("Беспризорник"));
-        inlineKeyRow.get(1).setCallbackData("Беспризорник");
-        inlineKeyRow.add(new InlineKeyboardButton("Благородный"));
-        inlineKeyRow.get(2).setCallbackData("Благородный");
-        inlineKeyRow.add(new InlineKeyboardButton("Гильдейский ремесленник"));
-        inlineKeyRow.get(3).setCallbackData("Гильдейский ремесленник");
-        inlineKeyRow.add(new InlineKeyboardButton("Моряк"));
-        inlineKeyRow.get(4).setCallbackData("Моряк");
-        inlineKeyRow.add(new InlineKeyboardButton("Мудрец"));
-        inlineKeyRow.get(5).setCallbackData("Мудрец");
-        inlineKeyRow.add(new InlineKeyboardButton("Народный герой"));
-        inlineKeyRow.get(6).setCallbackData("Народный герой");
-        inlineKeyRow.add(new InlineKeyboardButton("Отшельник"));
-        inlineKeyRow.get(7).setCallbackData("Отшельник");
-        inlineKeyRow.add(new InlineKeyboardButton("Пират"));
-        inlineKeyRow.get(8).setCallbackData("Пират");
-        inlineKeyRow.add(new InlineKeyboardButton("Преступник"));
-        inlineKeyRow.get(9).setCallbackData("Преступник");
-        inlineKeyRow.add(new InlineKeyboardButton("Прислужник"));
-        inlineKeyRow.get(10).setCallbackData("Прислужник");
-        inlineKeyRow.add(new InlineKeyboardButton("Солдат"));
-        inlineKeyRow.get(11).setCallbackData("Солдат");
-        inlineKeyRow.add(new InlineKeyboardButton("Чужеземец"));
-        inlineKeyRow.get(12).setCallbackData("Чужеземец");
-        inlineKeyRow.add(new InlineKeyboardButton("Шарлатан"));
-        inlineKeyRow.get(13).setCallbackData("Шарлатан");
+        InlineKeyboardRow inlineKeyRow1 = new InlineKeyboardRow();
+        inlineKeyRow1.add(new InlineKeyboardButton("Артист"));
+        inlineKeyRow1.get(0).setCallbackData("Артист");
+        inlineKeyRow1.add(new InlineKeyboardButton("Беспризорник"));
+        inlineKeyRow1.get(1).setCallbackData("Беспризорник");
+        inlineKeyRow1.add(new InlineKeyboardButton("Благородный"));
+        inlineKeyRow1.get(2).setCallbackData("Благородный");
+
+        InlineKeyboardRow inlineKeyRow2 = new InlineKeyboardRow();
+        inlineKeyRow2.add(new InlineKeyboardButton("Гильдейский ремесленник"));
+        inlineKeyRow2.get(0).setCallbackData("Гильдейский ремесленник");
+        inlineKeyRow2.add(new InlineKeyboardButton("Моряк"));
+        inlineKeyRow2.get(1).setCallbackData("Моряк");
+        inlineKeyRow2.add(new InlineKeyboardButton("Мудрец"));
+        inlineKeyRow2.get(2).setCallbackData("Мудрец");
+
+        InlineKeyboardRow inlineKeyRow3 = new InlineKeyboardRow();
+        inlineKeyRow3.add(new InlineKeyboardButton("Народный герой"));
+        inlineKeyRow3.get(0).setCallbackData("Народный герой");
+        inlineKeyRow3.add(new InlineKeyboardButton("Отшельник"));
+        inlineKeyRow3.get(1).setCallbackData("Отшельник");
+        inlineKeyRow3.add(new InlineKeyboardButton("Пират"));
+        inlineKeyRow3.get(2).setCallbackData("Пират");
+
+        InlineKeyboardRow inlineKeyRow4 = new InlineKeyboardRow();
+        inlineKeyRow4.add(new InlineKeyboardButton("Преступник"));
+        inlineKeyRow4.get(0).setCallbackData("Преступник");
+        inlineKeyRow4.add(new InlineKeyboardButton("Прислужник"));
+        inlineKeyRow4.get(1).setCallbackData("Прислужник");
+        inlineKeyRow4.add(new InlineKeyboardButton("Солдат"));
+        inlineKeyRow4.get(2).setCallbackData("Солдат");
+
+        InlineKeyboardRow inlineKeyRow5 = new InlineKeyboardRow();
+        inlineKeyRow5.add(new InlineKeyboardButton("Чужеземец"));
+        inlineKeyRow5.get(0).setCallbackData("Чужеземец");
+        inlineKeyRow5.add(new InlineKeyboardButton("Шарлатан"));
+        inlineKeyRow5.get(1).setCallbackData("Шарлатан");
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
-        inlineKeyboardRows.add(inlineKeyRow);
+        inlineKeyboardRows.add(inlineKeyRow1);
+        inlineKeyboardRows.add(inlineKeyRow2);
+        inlineKeyboardRows.add(inlineKeyRow3);
+        inlineKeyboardRows.add(inlineKeyRow4);
+        inlineKeyboardRows.add(inlineKeyRow5);
 
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
@@ -580,85 +610,6 @@ public class KeyboardFactory {
         return keyBoard;
     }
 
-    public static ReplyKeyboardMarkup dndSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add("/createaplayer");
-        keyRow1.add("/haltcreation");
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add("/search");
-        keyRow2.add("/roll");
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add("/createacampaign");
-        keyRow3.add("/endacampaign");
-
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add("/dmboard");
-
-        KeyboardRow keyRow5 = new KeyboardRow();
-        keyRow5.add("/common");
-        keyRow5.add("/game");
-
-        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
-        keyRowList.add(keyRow1);
-        keyRowList.add(keyRow2);
-        keyRowList.add(keyRow3);
-        keyRowList.add(keyRow4);
-        keyRowList.add(keyRow5);
-
-        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
-        keyBoard.setResizeKeyboard(true);
-
-        return keyBoard;
-    }
-
-    public static ReplyKeyboardMarkup dmSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/search"));
-        keyRow1.add(new KeyboardButton("/roll"));
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/showcampaigns"));
-        keyRow2.add(new KeyboardButton("/setcampaign"));
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/campaignsettings"));
-
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/common"));
-        keyRow4.add(new KeyboardButton("/game"));
-        keyRow4.add(new KeyboardButton("/dnd"));
-
-        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
-        keyRowList.add(keyRow1);
-        keyRowList.add(keyRow2);
-        keyRowList.add(keyRow4);
-
-        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
-        keyBoard.setResizeKeyboard(true);
-
-        return keyBoard;
-    }
-
-    public static ReplyKeyboardMarkup campaignSettingsBoard() {
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/setcampaignsname"));
-        keyRow4.add(new KeyboardButton("/setpassword"));
-
-        KeyboardRow keyRow5 = new KeyboardRow();
-        keyRow5.add(new KeyboardButton("/dmboard"));
-
-        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
-        keyRowList.add(keyRow4);
-        keyRowList.add(keyRow5);
-
-        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
-        keyBoard.setResizeKeyboard(true);
-
-        return keyBoard;
-    }
-
     public static ReplyKeyboardMarkup gameSetOfCommandsBoard() {
         KeyboardRow keyRow1 = new KeyboardRow();
         keyRow1.add(new KeyboardButton("/startagame"));
@@ -679,6 +630,97 @@ public class KeyboardFactory {
         keyRowList.add(keyRow2);
         keyRowList.add(keyRow3);
         keyRowList.add(keyRow4);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup dndSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow();
+        keyRow1.add(new KeyboardButton("/createaplayer"));
+        keyRow1.add(new KeyboardButton("/haltcreation"));
+
+        KeyboardRow keyRow2 = new KeyboardRow();
+        keyRow2.add(new KeyboardButton("/search"));
+        keyRow2.add(new KeyboardButton("/roll"));
+
+        KeyboardRow keyRow3 = new KeyboardRow();
+        keyRow3.add(new KeyboardButton("/createacampaign"));
+        keyRow3.add(new KeyboardButton("/endacampaign"));
+
+        KeyboardRow keyRow4 = new KeyboardRow();
+        keyRow4.add(new KeyboardButton("/help"));
+
+        KeyboardRow keyRow5 = new KeyboardRow();
+        keyRow5.add(new KeyboardButton("/dmboard"));
+
+        KeyboardRow keyRow6 = new KeyboardRow();
+        keyRow6.add(new KeyboardButton("/common"));
+        keyRow6.add(new KeyboardButton("/game"));
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup dmSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow();
+        keyRow1.add(new KeyboardButton("/search"));
+        keyRow1.add(new KeyboardButton("/roll"));
+
+        KeyboardRow keyRow2 = new KeyboardRow();
+        keyRow2.add(new KeyboardButton("/showcampaigns"));
+        keyRow2.add(new KeyboardButton("/setcampaign"));
+
+        KeyboardRow keyRow3 = new KeyboardRow();
+        keyRow3.add(new KeyboardButton("/help"));
+
+        KeyboardRow keyRow4 = new KeyboardRow();
+        keyRow4.add(new KeyboardButton("/campaignboard"));
+
+        KeyboardRow keyRow5 = new KeyboardRow();
+        keyRow5.add(new KeyboardButton("/common"));
+        keyRow5.add(new KeyboardButton("/game"));
+        keyRow5.add(new KeyboardButton("/dnd"));
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup campaignSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow();
+        keyRow1.add(new KeyboardButton("/setcampaignsname"));
+        keyRow1.add(new KeyboardButton("/setpassword"));
+
+        KeyboardRow keyRow2 = new KeyboardRow();
+        keyRow2.add(new KeyboardButton("/help"));
+
+        KeyboardRow keyRow3 = new KeyboardRow();
+        keyRow3.add(new KeyboardButton("/dmboard"));
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);

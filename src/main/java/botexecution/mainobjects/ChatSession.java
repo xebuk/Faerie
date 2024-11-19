@@ -1,5 +1,7 @@
 package botexecution.mainobjects;
 
+import botexecution.commands.Commands;
+import botexecution.commands.KeyboardValues;
 import botexecution.handlers.DataHandler;
 import common.Constants;
 import common.SearchCategories;
@@ -22,6 +24,9 @@ public class ChatSession implements Serializable {
     private final long chatId;
     private final boolean isPM;
     public String username = "";
+
+    //общие настройки
+    public KeyboardValues currentKeyboard = KeyboardValues.COMMON;
 
     //параметры для поисковика
     public SearchCategories sectionId = SearchCategories.NONE;
@@ -58,6 +63,7 @@ public class ChatSession implements Serializable {
     public PlayerDnD currentPlayer;
     public boolean editCurrentPlayer = false;
 
+    public boolean addingAnItem = false;
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
 

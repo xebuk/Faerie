@@ -7,12 +7,12 @@ import java.util.*;
 
 public class DataHandler {
     private final HashMap<String, ChatSession> listOfSessions;
-    private final HashMap<String, String> listOfUsernames;
+    private HashMap<String, String> listOfUsernames;
     private final Timer saver;
 
     public DataHandler(boolean noTimer) {
         this.listOfSessions = new HashMap<>();
-        this.listOfUsernames = new HashMap<>();
+        this.listOfUsernames = readUsernames();
 
         readSessions();
 
@@ -96,9 +96,12 @@ public class DataHandler {
     public void saveUsernames() {
         File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
 
+        HashMap<String, String> listOfUsernamesInFile = readUsernames();
+        listOfUsernamesInFile.putAll(this.listOfUsernames);
+
         try (FileOutputStream usernamesOut = new FileOutputStream(usernamesFile);
              ObjectOutputStream usernamesOutput = new ObjectOutputStream(usernamesOut)) {
-            usernamesOutput.writeObject(listOfUsernames);
+            usernamesOutput.writeObject(listOfUsernamesInFile);
         } catch (IOException ignored) {}
     }
 
@@ -127,6 +130,19 @@ public class DataHandler {
 
             } catch (IOException | ClassNotFoundException ignored) {}
         }
+    }
+
+    public HashMap<String, String> readUsernames() {
+        File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
+
+        HashMap<String, String> listOfUsernamesFile = new HashMap<>();
+
+        try (FileInputStream usernamesIn = new FileInputStream(usernamesFile);
+             ObjectInputStream usernamesInput = new ObjectInputStream(usernamesIn)) {
+            listOfUsernamesFile = (HashMap<String, String>) usernamesInput.readObject();
+        } catch (IOException | ClassNotFoundException ignored) {}
+
+        return listOfUsernamesFile;
     }
 
     public static void createChatFile(String chatId) {
