@@ -1,10 +1,11 @@
 package dnd.equipment;
 
 public class MagicArmorDnD extends ArmorDnD {
-    public String name;
-    public String summary;
+    public String effects;
 
-    public int value;
+    public MagicArmorDnD() {
+        this.name = "Своя магическая броня";
 
-    public int weight;
+
+    }
 }

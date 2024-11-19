@@ -1,6 +1,7 @@
 package dnd.dmtools;
 
 import common.DiceNew;
+import dnd.equipment.ItemDnD;
 import dnd.mainobjects.PlayerDnD;
 
 import java.util.Objects;
@@ -16,6 +17,7 @@ public class StarterInventorySelectorDnD {
     }
 
     public static void acolyteInventoryStart(PlayerDnD pc) {
-        pc.valuables = 15;
+        pc.valuables = pc.valuables + 15;
+        pc.itemCollection.put(new ItemDnD.PouchDnD(), 1);
     }
 }
