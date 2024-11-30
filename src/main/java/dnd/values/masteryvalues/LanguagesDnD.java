@@ -1,4 +1,4 @@
-package dnd.values;
+package dnd.values.masteryvalues;
 
 import java.io.Serializable;
 
