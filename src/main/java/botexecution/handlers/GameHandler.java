@@ -1,9 +1,11 @@
 package botexecution.handlers;
 
+import botexecution.handlers.corehandlers.DataHandler;
+import botexecution.handlers.corehandlers.MediaHandler;
+import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
-import common.DiceNew;
 import game.characteristics.Job;
 import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
@@ -22,16 +24,18 @@ public class GameHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final MediaHandler pager;
+    private final DiceHandler diceHoarder;
 
     public final HashMap<String, Job> jobAllocatorGame = new HashMap<>();
     public final HashMap<String, BiConsumer<PlayerCharacter, Integer>> statAllocatorGame = new HashMap<>();
     public final HashMap<String, Consumer<DungeonController>> movementAllocatorGame = new HashMap<>();
     public final Drawer fieldOfView = new Drawer();
 
-    public GameHandler(DataHandler knowledge, TextHandler walkieTalkie, MediaHandler pager) {
+    public GameHandler(DataHandler knowledge, TextHandler walkieTalkie, MediaHandler pager, DiceHandler diceHoarder) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
         this.pager = pager;
+        this.diceHoarder = diceHoarder;
 
         jobAllocatorGame.put(Constants.CREATION_MENU_FIGHTER, new Fighter());
         jobAllocatorGame.put(Constants.CREATION_MENU_CLERIC, new Cleric());
@@ -149,9 +153,9 @@ public class GameHandler {
                 walkieTalkie.patternExecute(cs, Constants.CREATION_MENU_SET_STATS, null, false);
 
                 cs.statProgress.add(update.getCallbackQuery().getData());
-                cs.luck = DiceNew.D6FourTimesCreation();
+                cs.luck = diceHoarder.D6FourTimesCreation();
 
-                walkieTalkie.patternExecute(cs, DiceNew.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
+                walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
                 knowledge.renewListChat(cs);
             }
             else {
@@ -172,9 +176,9 @@ public class GameHandler {
                 else {
                     statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
                     cs.statProgress.add(update.getCallbackQuery().getData());
-                    cs.luck = DiceNew.D6FourTimesCreation();
+                    cs.luck = diceHoarder.D6FourTimesCreation();
 
-                    walkieTalkie.patternExecute(cs, DiceNew.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
+                    walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
                     knowledge.renewListChat(cs);
                 }
             }
