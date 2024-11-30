@@ -1,7 +1,7 @@
 package dnd.equipment;
 
 import common.Constants;
-import dnd.values.CurrencyDnD;
+import dnd.values.aspectvalues.CurrencyDnD;
 
 import java.io.Serializable;
 
@@ -16,6 +16,8 @@ public class ItemDnD implements Serializable {
 
     public double weight;
 
+    public String effects;
+
     public ItemDnD() {
         this.name = "Свой предмет";
         this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
@@ -26,6 +28,8 @@ public class ItemDnD implements Serializable {
         this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
         this.weight = 1;
+
+        this.effects = "Нет.";
     }
 
     public void setName(String name) {
@@ -52,6 +56,21 @@ public class ItemDnD implements Serializable {
         this.weight = weight;
     }
 
+    public void setEffects(String effects) {
+        this.effects = effects;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder item = new StringBuilder();
+        item.append(name).append("\n").append(summary).append("\n");
+        item.append("Количество в одном наборе: ").append(amountInInstance).append("\n");
+        item.append("Цена: ").append(value).append(" ").append(currencyGrade).append("\n");
+        item.append("Масса: ").append(weight).append("\n");
+        item.append("Эффекты: ").append(effects).append("\n");
+        return item.toString();
+    }
+
     //предметы из магазина
     public static class AbacusDnD extends ItemDnD {
 
@@ -65,6 +84,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class VialOfAcidDnD extends ItemDnD {
@@ -79,6 +100,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class FlaskOfAlchemistFireDnD extends ItemDnD {
@@ -93,6 +116,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -109,6 +134,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class BlowgunNeedleDnD extends ItemDnD {
@@ -123,6 +150,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class CrossbowBoltDnD extends ItemDnD {
@@ -137,6 +166,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1.5;
+
+            this.effects = "Нет.";
         }
     }
     public static class SlingBulletDnD extends ItemDnD {
@@ -151,6 +182,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1.5;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -166,6 +199,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -182,6 +217,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class OrbDnD extends ItemDnD {
@@ -196,6 +233,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class RodDnD extends ItemDnD {
@@ -210,6 +249,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class StaffDnD extends ItemDnD {
@@ -224,6 +265,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class WandDnD extends ItemDnD {
@@ -238,6 +281,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -253,6 +298,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class BallBearingDnD extends ItemDnD {
@@ -267,6 +314,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class BarrelDnD extends ItemDnD {
@@ -281,6 +330,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 70;
+
+            this.effects = "Нет.";
         }
     }
     public static class BasketDnD extends ItemDnD {
@@ -295,6 +346,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class BedrollDnD extends ItemDnD {
@@ -309,6 +362,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 7;
+
+            this.effects = "Нет.";
         }
     }
     public static class BellDnD extends ItemDnD {
@@ -323,6 +378,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class BlanketDnD extends ItemDnD {
@@ -337,6 +394,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class BlockAndTackleDnD extends ItemDnD {
@@ -351,6 +410,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class BookDnD extends ItemDnD {
@@ -365,6 +426,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class GlassBottleDnD extends ItemDnD {
@@ -379,6 +442,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class BucketDnD extends ItemDnD {
@@ -393,6 +458,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class CaltropDnD extends ItemDnD {
@@ -407,6 +474,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class CandleDnD extends ItemDnD {
@@ -421,6 +490,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class CaseForCrossbowBoltsDnD extends ItemDnD {
@@ -435,6 +506,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class CaseForMapsAndScrollsDnD extends ItemDnD {
@@ -449,6 +522,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class ChainDnD extends ItemDnD {
@@ -463,6 +538,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class ChalkDnD extends ItemDnD {
@@ -477,6 +554,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class ChestDnD extends ItemDnD {
@@ -491,6 +570,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 25;
+
+            this.effects = "Нет.";
         }
     }
     public static class ClimberKitDnD extends ItemDnD {
@@ -505,6 +586,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 12;
+
+            this.effects = "Нет.";
         }
     }
     public static class CommonClothesDnD extends ItemDnD {
@@ -519,6 +602,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class CostumeClothesDnD extends ItemDnD {
@@ -533,6 +618,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class FineClothesDnD extends ItemDnD {
@@ -547,6 +634,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 6;
+
+            this.effects = "Нет.";
         }
     }
     public static class TravelerClothesDnD extends ItemDnD {
@@ -561,6 +650,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class ComponentPouchDnD extends ItemDnD {
@@ -575,6 +666,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class CrowbarDnD extends ItemDnD {
@@ -589,6 +682,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -605,6 +700,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class TotemDnD extends ItemDnD {
@@ -619,6 +716,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class WoodenStaffDnD extends ItemDnD {
@@ -633,6 +732,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class YewWandDnD extends ItemDnD {
@@ -647,6 +748,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -662,6 +765,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class FlaskOrTankardDnD extends ItemDnD {
@@ -676,6 +781,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class GrapplingHookDnD extends ItemDnD {
@@ -690,6 +797,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class HammerDnD extends ItemDnD {
@@ -704,6 +813,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class SledgehammerDnD extends ItemDnD {
@@ -718,6 +829,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class HealerKitDnD extends ItemDnD {
@@ -732,6 +845,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -748,6 +863,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class EmblemDnD extends ItemDnD {
@@ -762,6 +879,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class ReliquaryDnD extends ItemDnD {
@@ -776,6 +895,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
 
@@ -791,6 +912,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class HourglassDnD extends ItemDnD {
@@ -805,6 +928,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class HuntingTrapDnD extends ItemDnD {
@@ -819,6 +944,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 25;
+
+            this.effects = "Нет.";
         }
     }
     public static class InkDnD extends ItemDnD {
@@ -833,6 +960,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class InkPenDnD extends ItemDnD {
@@ -847,6 +976,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class JugOrPitcherDnD extends ItemDnD {
@@ -861,6 +992,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class LadderDnD extends ItemDnD {
@@ -875,6 +1008,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 25;
+
+            this.effects = "Нет.";
         }
     }
     public static class LampDnD extends ItemDnD {
@@ -889,6 +1024,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class BullseyeLanternDnD extends ItemDnD {
@@ -903,6 +1040,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class HoodedLanternDnD extends ItemDnD {
@@ -917,6 +1056,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class LockDnD extends ItemDnD {
@@ -931,6 +1072,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class MagnifyingGlassDnD extends ItemDnD {
@@ -945,6 +1088,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class ManaclesDnD extends ItemDnD {
@@ -959,6 +1104,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 6;
+
+            this.effects = "Нет.";
         }
     }
     public static class MessKitDnD extends ItemDnD {
@@ -973,6 +1120,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class SteelMirrorDnD extends ItemDnD {
@@ -987,6 +1136,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0.5;
+
+            this.effects = "Нет.";
         }
     }
     public static class FlaskOfOilDnD extends ItemDnD {
@@ -1001,6 +1152,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class PaperDnD extends ItemDnD {
@@ -1015,6 +1168,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class ParchmentDnD extends ItemDnD {
@@ -1029,6 +1184,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class VialOfPerfumeDnD extends ItemDnD {
@@ -1043,6 +1200,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class MinersPickDnD extends ItemDnD {
@@ -1057,6 +1216,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class PitonDnD extends ItemDnD {
@@ -1071,6 +1232,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0.25;
+
+            this.effects = "Нет.";
         }
     }
     public static class VialOfBasicPoisonDnD extends ItemDnD {
@@ -1085,6 +1248,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class PoleDnD extends ItemDnD {
@@ -1099,6 +1264,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class IronPotDnD extends ItemDnD {
@@ -1113,6 +1280,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class PotionOfHealingDnD extends ItemDnD {
@@ -1128,6 +1297,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0.5;
+
+            this.effects = "Нет.";
         }
     }
     public static class PouchDnD extends ItemDnD {
@@ -1142,6 +1313,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class QuiverDnD extends ItemDnD {
@@ -1156,6 +1329,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class PortableRamDnD extends ItemDnD {
@@ -1170,6 +1345,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 35;
+
+            this.effects = "Нет.";
         }
     }
     public static class RationsDnD extends ItemDnD {
@@ -1184,6 +1361,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 2;
+
+            this.effects = "Нет.";
         }
     }
     public static class RobesDnD extends ItemDnD {
@@ -1198,6 +1377,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 4;
+
+            this.effects = "Нет.";
         }
     }
     public static class HempenRopeDnD extends ItemDnD {
@@ -1212,6 +1393,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.effects = "Нет.";
         }
     }
     public static class SilkRopeDnD extends ItemDnD {
@@ -1226,6 +1409,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class SackDnD extends ItemDnD {
@@ -1240,6 +1425,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0.5;
+
+            this.effects = "Нет.";
         }
     }
     public static class MerchantScaleDnD extends ItemDnD {
@@ -1254,6 +1441,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class SealingWaxDnD extends ItemDnD {
@@ -1268,6 +1457,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class ShovelDnD extends ItemDnD {
@@ -1282,6 +1473,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class SignalWhistleDnD extends ItemDnD {
@@ -1296,6 +1489,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class SignetRingDnD extends ItemDnD {
@@ -1310,6 +1505,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class SoapDnD extends ItemDnD {
@@ -1324,6 +1521,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class SpellbookDnD extends ItemDnD {
@@ -1338,6 +1537,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.effects = "Нет.";
         }
     }
     public static class IronSpikeDnD extends ItemDnD {
@@ -1352,6 +1553,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.effects = "Нет.";
         }
     }
     public static class SpyglassDnD extends ItemDnD {
@@ -1366,6 +1569,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class TwoPersonTentDnD extends ItemDnD {
@@ -1380,6 +1585,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 20;
+
+            this.effects = "Нет.";
         }
     }
     public static class TinderboxDnD extends ItemDnD {
@@ -1394,6 +1601,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class TorchDnD extends ItemDnD {
@@ -1408,6 +1617,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
     public static class VialDnD extends ItemDnD {
@@ -1422,6 +1633,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class WaterskinDnD extends ItemDnD {
@@ -1436,6 +1649,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.effects = "Нет.";
         }
     }
     public static class WhetstoneDnD extends ItemDnD {
@@ -1450,6 +1665,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.effects = "Нет.";
         }
     }
 }
