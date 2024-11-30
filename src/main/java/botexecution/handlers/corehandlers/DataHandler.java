@@ -1,4 +1,4 @@
-package botexecution.handlers;
+package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
 
@@ -17,7 +17,7 @@ public class DataHandler {
         readSessions();
 
         if (!noTimer) {
-            this.saver = new Timer("Храни_Меня_Господь_Создатель",true);
+            this.saver = new Timer("Храни_Меня_Господь",true);
             saver.schedule(new TimerTask() {
                 @Override
                 public void run() {

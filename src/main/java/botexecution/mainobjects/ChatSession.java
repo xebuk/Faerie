@@ -1,13 +1,14 @@
 package botexecution.mainobjects;
 
-import botexecution.commands.Commands;
 import botexecution.commands.KeyboardValues;
-import botexecution.handlers.DataHandler;
+import botexecution.handlers.corehandlers.DataHandler;
 import common.Constants;
 import common.SearchCategories;
 import dnd.mainobjects.DungeonMasterDnD;
+import dnd.values.EditingParameters;
 import dnd.values.PlayerDnDCreationStage;
 import dnd.mainobjects.PlayerDnD;
+import dnd.values.RoleParameters;
 import game.environment.DungeonController;
 import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
@@ -50,20 +51,34 @@ public class ChatSession implements Serializable {
     public int lastDungeonMessageId;
 
     //параметры для менеджера компаний
-    public boolean isHavingACampaign = false;
-    public boolean isEndingACampaign = false;
-    public boolean campaignNameIsChosen = false;
-
     public boolean creationOfPlayerDnD = false;
     public boolean haltCreation = false;
     public PlayerDnDCreationStage creationStage = NAME;
 
-    public HashMap<String, Long> campaigns = new HashMap<>();
-    public Long currentCampaign;
-    public PlayerDnD currentPlayer;
-    public boolean editCurrentPlayer = false;
+    public HashMap<String, Long> campaignsAsDungeonMaster = new HashMap<>();
+    public HashMap<String, Long> campaignsAsPlayer = new HashMap<>();
+    public String whoIsRolling = "";
 
-    public boolean addingAnItem = false;
+    public RoleParameters role = RoleParameters.NONE;
+    public Long currentCampaign;
+
+    public boolean editingANote = false;
+    public EditingParameters editNote = EditingParameters.NONE;
+    public int editNoteIndex = 0;
+
+    public boolean editingAQuest = false;
+    public String editQuestParameter = "";
+
+    public boolean addingAnAspect = false;
+
+    public boolean editingAnAspect = false;
+
+    public boolean editingAPrestigeJob = false;
+    public int editPrestigeJobIndex = 0;
+
+    public String whoIsEdited = "";
+    public String lastParameter = "";
+
     public DungeonMasterDnD activeDm;
     public PlayerDnD activePc;
 

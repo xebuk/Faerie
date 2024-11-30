@@ -12,7 +12,7 @@ public enum SearchCategories implements Serializable {
     FEATS,
     BACKGROUNDS;
 
-    private static final Map<SearchCategories, String> categories = Map.of(NONE, "", SPELLS, "spells",
+    private static final Map<SearchCategories, String> siteSearchCategories = Map.of(NONE, "", SPELLS, "spells",
             ITEMS, "items", BESTIARY, "bestiary", RACES, "race",
             FEATS, "feats", BACKGROUNDS, "backgrounds");
 
@@ -22,6 +22,6 @@ public enum SearchCategories implements Serializable {
 
     @Override
     public String toString() {
-        return categories.get(this);
+        return siteSearchCategories.get(this);
     }
 }

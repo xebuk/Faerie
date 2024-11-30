@@ -1,12 +1,11 @@
 package botexecution.mainobjects;
 
 import common.Constants;
-import dnd.values.LanguagesDnD;
+import dnd.values.masteryvalues.LanguagesDnD;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
@@ -117,6 +116,20 @@ public class KeyboardFactory {
         inlineKeyRow.get(0).setCallbackData("Да");
         inlineKeyRow.add(new InlineKeyboardButton("Нет"));
         inlineKeyRow.get(1).setCallbackData("Нет");
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
+    public static InlineKeyboardMarkup YesOrNoBoard(String identity) {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        inlineKeyRow.add(new InlineKeyboardButton("Да"));
+        inlineKeyRow.get(0).setCallbackData("Да " + identity);
+        inlineKeyRow.add(new InlineKeyboardButton("Нет"));
+        inlineKeyRow.get(1).setCallbackData("Нет " + identity);
 
         ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
         inlineKeyboardRows.add(inlineKeyRow);
@@ -563,6 +576,20 @@ public class KeyboardFactory {
         return new InlineKeyboardMarkup(inlineKeyboardRows);
     }
 
+    public static InlineKeyboardMarkup dexOrStrPrecisionBoard() {
+        InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
+
+        inlineKeyRow.add(new InlineKeyboardButton("Сила"));
+        inlineKeyRow.get(0).setCallbackData("Сила");
+        inlineKeyRow.add(new InlineKeyboardButton("Ловкость"));
+        inlineKeyRow.get(1).setCallbackData("Ловкость");
+
+        ArrayList<InlineKeyboardRow> inlineKeyboardRows = new ArrayList<>();
+        inlineKeyboardRows.add(inlineKeyRow);
+
+        return new InlineKeyboardMarkup(inlineKeyboardRows);
+    }
+
     public static InlineKeyboardMarkup variantsBoard(int size) {
         ArrayList<InlineKeyboardRow> inlineKeyRows = new ArrayList<>();
         InlineKeyboardRow inlineKeyRow = new InlineKeyboardRow();
@@ -583,20 +610,10 @@ public class KeyboardFactory {
     }
 
     public static ReplyKeyboardMarkup commonSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/search"));
-        keyRow1.add(new KeyboardButton("/roll"));
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/mofu"));
-        keyRow2.add(new KeyboardButton("/help"));
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/credits"));
-
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/game"));
-        keyRow4.add(new KeyboardButton("/dnd"));
+        KeyboardRow keyRow1 = new KeyboardRow("/search", "/roll");
+        KeyboardRow keyRow2 = new KeyboardRow("/mofu", "/help");
+        KeyboardRow keyRow3 = new KeyboardRow("/credits");
+        KeyboardRow keyRow4 = new KeyboardRow("/game", "/dnd");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
@@ -611,19 +628,10 @@ public class KeyboardFactory {
     }
 
     public static ReplyKeyboardMarkup gameSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/startagame"));
-        keyRow1.add(new KeyboardButton("/pauseagame"));
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/endagame"));
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/createacharacter"));
-
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/dnd"));
-        keyRow4.add(new KeyboardButton("/common"));
+        KeyboardRow keyRow1 = new KeyboardRow("/startagame", "/pauseagame");
+        KeyboardRow keyRow2 = new KeyboardRow("/endagame");
+        KeyboardRow keyRow3 = new KeyboardRow("/createacharacter");
+        KeyboardRow keyRow4 = new KeyboardRow("/dnd", "/common");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
@@ -638,32 +646,69 @@ public class KeyboardFactory {
     }
 
     public static ReplyKeyboardMarkup dndSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/createaplayer"));
-        keyRow1.add(new KeyboardButton("/haltcreation"));
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/search"));
-        keyRow2.add(new KeyboardButton("/roll"));
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/createacampaign"));
-        keyRow3.add(new KeyboardButton("/endacampaign"));
-
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/help"));
-
-        KeyboardRow keyRow5 = new KeyboardRow();
-        keyRow5.add(new KeyboardButton("/dmboard"));
-
-        KeyboardRow keyRow6 = new KeyboardRow();
-        keyRow6.add(new KeyboardButton("/common"));
-        keyRow6.add(new KeyboardButton("/game"));
+        KeyboardRow keyRow1 = new KeyboardRow("/showcampaigns", "/showcurcampaign");
+        KeyboardRow keyRow2 = new KeyboardRow("/setcampaign");
+        KeyboardRow keyRow3 = new KeyboardRow("/createaplayer", "/haltcreation");
+        KeyboardRow keyRow4 = new KeyboardRow("/createacampaign", "/endacampaign");
+        KeyboardRow keyRow5 = new KeyboardRow("/help");
+        KeyboardRow keyRow6 = new KeyboardRow("/dmboard", "/playerboard");
+        KeyboardRow keyRow7 = new KeyboardRow("/common", "/game");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
         keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
+        keyRowList.add(keyRow7);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup playerSetOfCommands() {
+        KeyboardRow keyRow1 = new KeyboardRow("/showplayerprofile");
+        KeyboardRow keyRow2 = new KeyboardRow("/bringanitem");
+        KeyboardRow keyRow3 = new KeyboardRow("/equipanitem", "/unequipanitem");
+        KeyboardRow keyRow4 = new KeyboardRow("/askforaroll");
+        KeyboardRow keyRow5 = new KeyboardRow("/showmynotes");
+        KeyboardRow keyRow6 = new KeyboardRow("/addanote", "/editanote");
+        KeyboardRow keyRow7 = new KeyboardRow("/help");
+        KeyboardRow keyRow8 = new KeyboardRow("/common", "/game", "/dnd");
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
+        keyRowList.add(keyRow7);
+        keyRowList.add(keyRow8);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup dmSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow("/search", "/roll");
+        KeyboardRow keyRow2 = new KeyboardRow("/showplayers", "/showplayerprofile");
+        KeyboardRow keyRow3 = new KeyboardRow("/requestaroll", "/lockvault");
+        KeyboardRow keyRow4 = new KeyboardRow("/help");
+        KeyboardRow keyRow5 = new KeyboardRow("/itemboard", "/campaignboard", "/statboard", "/questboard");
+        KeyboardRow keyRow6 = new KeyboardRow("/common", "/game", "/dnd");
+
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
         keyRowList.add(keyRow5);
         keyRowList.add(keyRow6);
 
@@ -673,25 +718,38 @@ public class KeyboardFactory {
         return keyBoard;
     }
 
-    public static ReplyKeyboardMarkup dmSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/search"));
-        keyRow1.add(new KeyboardButton("/roll"));
+    public static ReplyKeyboardMarkup itemSetOfCommands() {
+        KeyboardRow keyRow1 = new KeyboardRow("/showanitems", "/showcuritem");
+        KeyboardRow keyRow2 = new KeyboardRow("/addanitem", "/setanitem");
+        KeyboardRow keyRow3 = new KeyboardRow("/editcuritem", "/deleteanitem");
+        KeyboardRow keyRow4 = new KeyboardRow("/giveanitem", "/takeanitem");
+        KeyboardRow keyRow5 = new KeyboardRow("/lockvault");
+        KeyboardRow keyRow6 = new KeyboardRow("/help");
+        KeyboardRow keyRow7 = new KeyboardRow("/dmboard", "/campaignboard", "/statboard", "/questboard");
+        KeyboardRow keyRow8 = new KeyboardRow("/common", "/game", "/dnd");
 
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/showcampaigns"));
-        keyRow2.add(new KeyboardButton("/setcampaign"));
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
+        keyRowList.add(keyRow7);
+        keyRowList.add(keyRow8);
 
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/help"));
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
 
-        KeyboardRow keyRow4 = new KeyboardRow();
-        keyRow4.add(new KeyboardButton("/campaignboard"));
+        return keyBoard;
+    }
 
-        KeyboardRow keyRow5 = new KeyboardRow();
-        keyRow5.add(new KeyboardButton("/common"));
-        keyRow5.add(new KeyboardButton("/game"));
-        keyRow5.add(new KeyboardButton("/dnd"));
+    public static ReplyKeyboardMarkup campaignSetOfCommandsBoard() {
+        KeyboardRow keyRow1 = new KeyboardRow("/help");
+        KeyboardRow keyRow2 = new KeyboardRow("/setcampaignsname", "/setpassword");
+        KeyboardRow keyRow3 = new KeyboardRow("/setmulticlasslimit");
+        KeyboardRow keyRow4 = new KeyboardRow("/itemboard", "/dmboard", "/statboard", "/questboard");
+        KeyboardRow keyRow5 = new KeyboardRow("/common", "/game", "/dnd");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
@@ -706,21 +764,47 @@ public class KeyboardFactory {
         return keyBoard;
     }
 
-    public static ReplyKeyboardMarkup campaignSetOfCommandsBoard() {
-        KeyboardRow keyRow1 = new KeyboardRow();
-        keyRow1.add(new KeyboardButton("/setcampaignsname"));
-        keyRow1.add(new KeyboardButton("/setpassword"));
-
-        KeyboardRow keyRow2 = new KeyboardRow();
-        keyRow2.add(new KeyboardButton("/help"));
-
-        KeyboardRow keyRow3 = new KeyboardRow();
-        keyRow3.add(new KeyboardButton("/dmboard"));
+    public static ReplyKeyboardMarkup statSetOfCommands() {
+        KeyboardRow keyRow1 = new KeyboardRow("/changehealth");
+        KeyboardRow keyRow2 = new KeyboardRow("/changedeathcounters");
+        KeyboardRow keyRow3 = new KeyboardRow("/changeexp", "/levelup");
+        KeyboardRow keyRow4 = new KeyboardRow("/giveinsp");
+        KeyboardRow keyRow5 = new KeyboardRow("/setsecondaryjob", "/setprestigejob");
+        KeyboardRow keyRow6 = new KeyboardRow("/help");
+        KeyboardRow keyRow7 = new KeyboardRow("/itemboard", "/campaignboard", "/dmboard", "/questboard");
+        KeyboardRow keyRow8 = new KeyboardRow("/common", "/game", "/dnd");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
         keyRowList.add(keyRow2);
         keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
+        keyRowList.add(keyRow7);
+        keyRowList.add(keyRow8);
+
+        ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
+        keyBoard.setResizeKeyboard(true);
+
+        return keyBoard;
+    }
+
+    public static ReplyKeyboardMarkup questSetOfCommands() {
+        KeyboardRow keyRow1 = new KeyboardRow("/addaquest", "/editaquest");
+        KeyboardRow keyRow2 = new KeyboardRow("/showaquestboard", "showaquest");
+        KeyboardRow keyRow3 = new KeyboardRow("/postaquest", "/closeaquest");
+        KeyboardRow keyRow4 = new KeyboardRow("/help");
+        KeyboardRow keyRow5 = new KeyboardRow("/itemboard", "/campaignboard", "/statboard", "/dmboard");
+        KeyboardRow keyRow6 = new KeyboardRow("/common", "/game", "/dnd");
+
+        ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
+        keyRowList.add(keyRow1);
+        keyRowList.add(keyRow2);
+        keyRowList.add(keyRow3);
+        keyRowList.add(keyRow4);
+        keyRowList.add(keyRow5);
+        keyRowList.add(keyRow6);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);

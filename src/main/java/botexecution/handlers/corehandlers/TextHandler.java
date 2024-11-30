@@ -1,4 +1,4 @@
-package botexecution.handlers;
+package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
 import common.Constants;
@@ -80,6 +80,26 @@ public class TextHandler  {
         patternExecute(cs, partOfArticle.toString(), function, false);
     }
 
+    public void patternExecute(ChatSession cs, String message) {
+        StringBuilder sign = new StringBuilder();
+        if (!cs.isPM()) {
+            sign.append(cs.username).append("\n").append("----------------------------------").append("\n");
+        }
+        sign.append(message);
+        SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
+        silent.execute(text);
+    }
+
+    public void patternExecute(MessageContext ctx, String message) {
+        StringBuilder sign = new StringBuilder();
+        if (ctx.chatId() < 0) {
+            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+        }
+        sign.append(message);
+        SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
+        silent.execute(text);
+    }
+
     public void patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (!cs.isPM()) {
@@ -99,9 +119,7 @@ public class TextHandler  {
 
     public void patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
-        if (!cs.isPM()) {
-            sign.append(username).append("\n").append("----------------------------------").append("\n");
-        }
+        sign.append(username).append("\n").append("----------------------------------").append("\n");
         sign.append(message);
         SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
         if (function != null) {

@@ -7,8 +7,12 @@ public interface Constants {
     String CHANGE_TO_COMMON_KEYBOARD = "Вы перешли на стандартную клавиатуру!";
     String CHANGE_TO_GAME_KEYBOARD = "Вы перешли на клавиатуру игры!";
     String CHANGE_TO_DND_KEYBOARD = "Вы перешли на клавиатуру DnD!";
+    String CHANGE_TO_PLAYER_KEYBOARD = "Вы перешли на клавиатуру Игрока!";
     String CHANGE_TO_DM_KEYBOARD = "Вы перешли на клавиатуру DM-a!";
+    String CHANGE_TO_ITEMS_KEYBOARD = "Вы перешли на клавиатуру предметов!";
     String CHANGE_TO_CAMPAIGN_KEYBOARD = "Вы перешли на клавиатуру компании!";
+    String CHANGE_TO_STATS_KEYBOARD = "Вы перешли на клавиатуру изменения статов!";
+    String CHANGE_TO_QUEST_KEYBOARD = "Вы перешли на клавиатуру заданий!";
 
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
@@ -179,9 +183,7 @@ public interface Constants {
 
     String PLAYER_CREATION_NAME = "Введите имя персонажа.";
 
-    String SHOW_CAMPAIGNS_NOTHING = "На данный момент вы не ведете никаких компаний.";
-
-    String SHOW_CAMPAIGN_GROUP_NOTHING = "В данной группе нет группы.";
+    String SHOW_CAMPAIGN_GROUP_NOTHING = "В данной группе нет компании.";
 
     String SET_CAMPAIGN_NOT_FOUND = "Такая компания не найдена. Устанавливаю: Нет компании.";
     String SET_CAMPAIGN_NULL = "Текущая компания не была указана. Для начала укажите текущую компанию.";
@@ -189,10 +191,7 @@ public interface Constants {
 
     String SET_PASSWORD_SUCCESS = "Пароль для удаления компании был указан. При удалении компании он отправится к вам в личные сообщения.";
 
-    String SET_MULTICLASS_LIMIT_NOT_INTEGER = "Пожалуйста, введите корректное число.";
     String SET_MULTICLASS_LIMIT_ZERO = "При установке лимита классов на персонажа на 0, вы снимаете ограничение на количество классов.";
-
-    String GET_PLAYER_NOT_FOUND = "Игрока с таким тегом в компании не существует.";
 
     String CAMPAIGN_END_RESTRICTION = "Вы не DM данной компании.";
     String CAMPAIGN_END_VERIFICATION = "Введите пароль для роспуска компании.";
