@@ -1,4 +1,4 @@
-package dnd.mainobjects;
+package dnd.dmtools;
 
 import dnd.characteristics.JobDnD;
 
