@@ -1,28 +1,59 @@
 package dnd.mainobjects;
 
 import dnd.characteristics.*;
-import dnd.equipment.ItemDnD;
-import dnd.equipment.MagicItemDnD;
-import dnd.values.*;
-import dnd.dmtools.*;
+import dnd.dmtools.NoteDnD;
+import dnd.equipment.*;
+import dnd.equipment.InstrumentsDnD;
+import dnd.values.characteristicsvalues.BackgroundsDnD;
+import dnd.values.characteristicsvalues.JobsDnD;
+import dnd.values.characteristicsvalues.RacesDnD;
+import dnd.values.characteristicsvalues.RacesSizeDnD;
+import dnd.values.equipmentids.ArmorsDnD;
+import dnd.values.equipmentids.WeaponsDnD;
+import dnd.values.masteryvalues.AdvantageTypeDnD;
+import dnd.values.masteryvalues.LanguagesDnD;
+import dnd.values.masteryvalues.MasteryTypeDnD;
+import dnd.values.masteryvalues.ScriptsDnD;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 public class PlayerDnD implements Serializable {
     public String name;
-    public RaceDnD race;
-    public JobDnD mainJob;
-    public BackgroundDnD background;
-    public String alignment;
-
     public String playerName;
     public Long campaignChatId;
 
-    public ArrayList<JobDnD> secondaryJobs = new ArrayList<>();
+    public RacesDnD race;
+    public String raceName;
+    public String raceSubspeciesName;
+    public int walkingSpeed;
+    public RacesSizeDnD size;
+
+    public JobsDnD mainJob;
+    public String mainJobTitle;
+    public String mainPrestigeJobTitle;
+    public int mainJobLevel = 1;
+
+    public ArrayList<JobsDnD> secondaryJobs = new ArrayList<>();
+    public ArrayList<String> secondaryJobsTitles = new ArrayList<>();
+    public ArrayList<String> secondaryJobsPrestigeTitles = new ArrayList<>();
+    public ArrayList<Integer> secondaryJobsLevels = new ArrayList<>();
+
+    public BackgroundsDnD background;
+    public String backgroundName;
+    public String specialAbility;
+    public String specialAbilitySummary;
+    public String specialBackgroundQuality = "Нет";
+
+    public HashMap<String, String> personality = new HashMap<>();
+    public HashMap<String, String> ideals = new HashMap<>();
+    public HashMap<String, String> bonds = new HashMap<>();
+    public HashMap<String, String> flaws = new HashMap<>();
+
+    public String alignment;
+
     public int experience = 0;
     public int totalLevel = 1;
 
@@ -30,11 +61,8 @@ public class PlayerDnD implements Serializable {
     public int bonusMastery = 2;
     public MasteryTypeDnD bonusMasteryTowards;
 
-    public int armorClass;
-    public HashSet<ArmorTypeDnD> armorProficiency = new HashSet<>();
     public int initiativeBonus;
     public int speed;
-    public RacesSizeDnD size;
 
     public int healthPoints;
     public int maxHealthPoints;
@@ -44,18 +72,14 @@ public class PlayerDnD implements Serializable {
     public int deathThrowsSuccess = 0;
     public int deathThrowsFailure = 0;
 
-    public String specialBackgroundQuality = "Нет";
-    public HashMap<String, String> personality = new HashMap<>();
-    public HashMap<String, String> ideals = new HashMap<>();
-    public HashMap<String, String> bonds = new HashMap<>();
-    public HashMap<String, String> flaws = new HashMap<>();
-
     public HashSet<String> allocatedStats = new HashSet<>();
     public ArrayList<Integer> luck = new ArrayList<>();
 
-    public int bonusSkills = 0;
-    public HashSet<String> learnedSkills = new HashSet<>();
-    public HashSet<MasteryTypeDnD> characterMasteries = new HashSet<>();
+    public String diceComb = "";
+    public MasteryTypeDnD statCheck;
+    public AdvantageTypeDnD advantage = AdvantageTypeDnD.CLEAR_THROW;
+    public MasteryTypeDnD specialCase = MasteryTypeDnD.NONE;
+    public boolean inPublic = true;
 
     public int strength;
     public int strengthModifier;
@@ -75,6 +99,10 @@ public class PlayerDnD implements Serializable {
     public int charisma;
     public int charismaModifier;
     public int charismaSaveThrow;
+
+    public int freeSkillPoints = 0;
+    public HashSet<String> learnedSkills = new HashSet<>();
+    public HashSet<MasteryTypeDnD> characterMasteries = new HashSet<>();
 
     public int acrobatics;
     public int analysis;
@@ -97,13 +125,32 @@ public class PlayerDnD implements Serializable {
 
     public int passivePerception = 10;
 
-    public HashSet<MasteryTypeDnD> advantages = new HashSet<>();
-    public HashSet<MasteryTypeDnD> disadvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> personalAdvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> personalDisadvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> externalAdvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> externalDisadvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> totalAdvantages = new HashSet<>();
+    public HashSet<MasteryTypeDnD> totalDisadvantages = new HashSet<>();
 
-    public ArrayList<AbilityDnD> attacksAndSpells = new ArrayList<>();
-    public ArrayList<MagicItemDnD> equipment = new ArrayList<>();
+    public ArrayList<AbilityDnD> abilities = new ArrayList<>();
     public ArrayList<FeatDnD> traits = new ArrayList<>();
     public ArrayList<FeatDnD> feats = new ArrayList<>();
+
+    public WeaponDnD equippedWeapon;
+    public int hitBonus = 0;
+    public String attackDice = "1d4";
+    public String damageType = "Дробящий";
+    public int equippedWeaponIndex = 0;
+    public String weaponEffects = "Нет";
+    public HashSet<WeaponsDnD> weaponProficiency = new HashSet<>();
+
+    public ArmorDnD equippedArmor;
+    public int equippedArmorIndex = 0;
+    public int armorClass = 10;
+    public String armorEffects = "Нет";
+    public HashSet<ArmorsDnD> armorProficiency = new HashSet<>();
+
+    public ArrayList<ItemDnD> attunedAccessories;
 
     public int bonusLanguages = 0;
     public HashSet<LanguagesDnD> knownLanguages = new HashSet<>();
@@ -116,13 +163,23 @@ public class PlayerDnD implements Serializable {
     public String skin;
     public String hair;
 
-    public HashMap<String, NonPlayerDnD> allies = new HashMap<>();
-    public ArrayList<QuestDnDForPlayers> quests = new ArrayList<>();
+    public double currentCarryingCapacity = 0;
+    public double maxCarryingCapacity;
 
-    public HashMap<ItemDnD, Integer> itemCollection = new HashMap<>();
-    public int valuables = 0;
+    public ArrayList<ItemDnD> itemCollectionOnHands = new ArrayList<>();
+    public ArrayList<WeaponDnD> weaponCollectionOnHands = new ArrayList<>();
+    public ArrayList<ArmorDnD> armorCollectionOnHands = new ArrayList<>();
+    public ArrayList<InstrumentsDnD> instrumentsCollectionOnHands = new ArrayList<>();
+    public ArrayList<KitDnD> kitCollectionOnHands = new ArrayList<>();
+    public int[] valuables = {0, 0, 0};
 
-    public HashMap<String, String> notes = new HashMap<>();
+    public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
+    public ArrayList<WeaponDnD> weaponCollection = new ArrayList<>();
+    public ArrayList<ArmorDnD> armorCollection = new ArrayList<>();
+    public ArrayList<InstrumentsDnD> instrumentsCollection = new ArrayList<>();
+    public ArrayList<KitDnD> kitCollection = new ArrayList<>();
+
+    public ArrayList<NoteDnD> notes = new ArrayList<>();
 
     public BookOfSpellsDnD spellBook;
 
@@ -133,21 +190,23 @@ public class PlayerDnD implements Serializable {
 
         profile.append("Имя: ").append(this.name).append("\n");
         profile.append("Тег игрока: ").append(this.playerName).append("\n");
-        profile.append("Раса: ").append(this.race.name).append("\n");
-        profile.append("Подвид: ").append(this.race.subspeciesName).append("\n");
-        profile.append("Предыстория: ").append(this.background.name).append("\n");
+        profile.append("Раса: ").append(this.raceName).append("\n");
+        profile.append("Подвид: ").append(this.raceSubspeciesName).append("\n");
+        profile.append("Предыстория: ").append(this.backgroundName).append("\n");
         profile.append("Мировоззрение: ").append(this.alignment).append("\n\n");
 
-        profile.append("Основной класс: ").append(this.mainJob.title)
-                .append(" - ").append(this.mainJob.level).append(" уровень").append("\n");
+        profile.append("Основной класс: ").append(this.mainJobTitle)
+                .append(" - ").append(this.mainJobLevel).append(" уровень").append("\n");
         profile.append("Дополнительные классы: ");
-        if (this.secondaryJobs.isEmpty()) {
-            profile.append("Нет\n");
+        if (this.secondaryJobsTitles.isEmpty()) {
+            profile.append("Нет.\n");
         }
         else {
             profile.append("\n");
-            for (JobDnD job : this.secondaryJobs) {
-                profile.append(job.title).append(" - ").append(job.level).append(" уровень").append("\n");
+            for (int i = 0; i < secondaryJobsTitles.size(); i++) {
+                profile.append(secondaryJobsTitles.get(i)).append("\n");
+                profile.append("Уровень: ").append(secondaryJobsLevels.get(i)).append("\n");
+                profile.append("Подкласс: ").append(secondaryJobsPrestigeTitles.get(i)).append("\n");
             }
         }
         profile.append("\n");
@@ -158,93 +217,105 @@ public class PlayerDnD implements Serializable {
         profile.append("Характеристики: значение (модификатор) (бонус спас-броска)\n");
         profile.append("Сила: ").append(this.strength)
                 .append("   (").append(this.strengthModifier)
-                .append(")  -  (").append(this.strengthSaveThrow).append(")\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.STRENGTH)
+                        ? this.strengthSaveThrow : "Не освоено")).append(")\n");
         profile.append("Ловкость: ").append(this.dexterity)
                 .append("   (").append(this.dexterityModifier)
-                .append(")  -  (").append(this.dexteritySaveThrow).append(")\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.DEXTERITY)
+                        ? this.dexteritySaveThrow : "Не освоено")).append(")\n");
         profile.append("Выносливость: ").append(this.constitution)
                 .append("   (").append(this.constitutionModifier)
-                .append(")  -  (").append(this.constitutionSaveThrow).append(")\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.CONSTITUTION)
+                        ? this.constitutionSaveThrow : "Не освоено")).append(")\n");
         profile.append("Мудрость: ").append(this.wisdom)
                 .append("   (").append(this.wisdomModifier)
-                .append(")  -  (").append(this.wisdomSaveThrow).append(")\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.WISDOM)
+                        ? this.wisdomSaveThrow : "Не освоено")).append(")\n");
         profile.append("Интеллект: ").append(this.intelligence)
                 .append("   (").append(this.intelligenceModifier)
-                .append(")  -  (").append(this.intelligenceSaveThrow).append(")\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.INTELLIGENCE)
+                        ? this.intelligenceSaveThrow : "Не освоено")).append(")\n");
         profile.append("Харизма: ").append(this.charisma)
                 .append("   (").append(this.charismaModifier)
-                .append(")  -  (").append(this.charismaSaveThrow).append(")\n\n");
+                .append(")  -  (").append((characterMasteries.contains(MasteryTypeDnD.CHARISMA)
+                        ? this.charismaSaveThrow : "Не освоено")).append(")\n\n");
+
+        profile.append("Скорость ходьбы: ").append(this.walkingSpeed).append("\n\n");
 
         profile.append("Навыки: \n");
-        profile.append("Акробатика: ").append(this.acrobatics).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.ACROBATICS) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Анализ: ").append(this.analysis).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.ANALYSIS) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Атлетика: ").append(this.athletics).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.ATHLETICS) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Восприятие: ").append(this.perception).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.PERCEPTION) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Выживание: ").append(this.survival).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.SURVIVAL) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Выступление: ").append(this.performance).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.PERFORMANCE) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Запугивание: ").append(this.intimidation).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.INTIMIDATION) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("История: ").append(this.history).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.HISTORY) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Ловкость рук: ").append(this.sleightOfHand).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.SLEIGHT_OF_HAND) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Магия: ").append(this.arcane).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.ARCANE) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Медицина: ").append(this.medicine).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.MEDICINE) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Обман: ").append(this.deception).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.DECEPTION) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Природа: ").append(this.nature).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.NATURE) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Проницательность: ").append(this.insight).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.INSIGHT) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Религия: ").append(this.religion).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.RELIGION) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Скрытность: ").append(this.stealth).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.STEALTH) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Убеждение: ").append(this.persuasion).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.PERSUASION) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("Уход за животными: ").append(this.animalHandling).append(" - ")
-                .append((characterMasteries.contains(MasteryTypeDnD.ANIMAL_HANDLING) ? "Освоено\n" : "Не освоено\n"));
-        profile.append("\n");
+        profile.append("Акробатика: ").append((characterMasteries.contains(MasteryTypeDnD.ACROBATICS)
+                ? this.acrobatics : "Не освоено")).append("\n");
+        profile.append("Анализ: ").append((characterMasteries.contains(MasteryTypeDnD.ANALYSIS)
+                ? this.analysis : "Не освоено")).append("\n");
+        profile.append("Атлетика: ").append((characterMasteries.contains(MasteryTypeDnD.ATHLETICS)
+                ? this.athletics : "Не освоено")).append("\n");
+        profile.append("Восприятие: ").append((characterMasteries.contains(MasteryTypeDnD.PERCEPTION)
+                ? this.perception : "Не освоено")).append("\n");
+        profile.append("Выживание: ").append((characterMasteries.contains(MasteryTypeDnD.SURVIVAL)
+                ? this.survival : "Не освоено")).append("\n");
+        profile.append("Выступление: ").append((characterMasteries.contains(MasteryTypeDnD.PERFORMANCE)
+                ? this.performance : "Не освоено")).append("\n");
+        profile.append("Запугивание: ").append((characterMasteries.contains(MasteryTypeDnD.INTIMIDATION)
+                ? this.intimidation : "Не освоено")).append("\n");
+        profile.append("История: ").append((characterMasteries.contains(MasteryTypeDnD.HISTORY)
+                ? this.history : "Не освоено")).append("\n");
+        profile.append("Ловкость рук: ").append((characterMasteries.contains(MasteryTypeDnD.SLEIGHT_OF_HAND)
+                ? this.sleightOfHand : "Не освоено")).append("\n");
+        profile.append("Магия: ").append((characterMasteries.contains(MasteryTypeDnD.ARCANE)
+                ? this.arcane : "Не освоено")).append("\n");
+        profile.append("Медицина: ").append((characterMasteries.contains(MasteryTypeDnD.MEDICINE)
+                ? this.medicine : "Не освоено")).append("\n");
+        profile.append("Обман: ").append((characterMasteries.contains(MasteryTypeDnD.DECEPTION)
+                ? this.deception : "Не освоено")).append("\n");
+        profile.append("Природа: ").append((characterMasteries.contains(MasteryTypeDnD.NATURE)
+                ? this.nature : "Не освоено")).append("\n");
+        profile.append("Проницательность: ").append((characterMasteries.contains(MasteryTypeDnD.INSIGHT)
+                ? this.insight : "Не освоено")).append("\n");
+        profile.append("Религия: ").append((characterMasteries.contains(MasteryTypeDnD.RELIGION)
+                ? this.religion : "Не освоено")).append("\n");
+        profile.append("Скрытность: ").append((characterMasteries.contains(MasteryTypeDnD.STEALTH)
+                ? this.stealth : "Не освоено")).append("\n");
+        profile.append("Убеждение: ").append((characterMasteries.contains(MasteryTypeDnD.PERSUASION)
+                ? this.persuasion : "Не освоено")).append("\n");
+        profile.append("Уход за животными: ").append((characterMasteries.contains(MasteryTypeDnD.ANIMAL_HANDLING)
+                ? this.animalHandling : "Не освоено")).append("\n\n");
 
         profile.append("Пассивное восприятие: ").append(this.passivePerception).append("\n\n");
 
         profile.append("Преимущества: ");
-        if (this.advantages.isEmpty()) {
-            profile.append("Нет \n");
+        if (this.personalAdvantages.isEmpty()) {
+            profile.append("Нет.");
         }
         else {
-            for (MasteryTypeDnD adv: this.advantages) {
-                profile.append(adv);
+            for (MasteryTypeDnD adv: this.personalAdvantages) {
+                profile.append(adv.toString()).append(", ");
             }
-            profile.append("\n");
+            profile.setLength(profile.length() - 2);
         }
+        profile.append("\n");
 
         profile.append("Помехи: ");
-        if (this.disadvantages.isEmpty()) {
-            profile.append("Нет \n");
+        if (this.personalDisadvantages.isEmpty()) {
+            profile.append("Нет.");
         }
         else {
-            for (MasteryTypeDnD disadv: this.disadvantages) {
-                profile.append(disadv);
+            for (MasteryTypeDnD disadv: this.personalDisadvantages) {
+                profile.append(disadv.toString()).append(", ");
             }
-            profile.append("\n");
+            profile.setLength(profile.length() - 2);
         }
+        profile.append("\n");
+
+
+
 
         return profile.toString();
     }
 
     public void initStartHealth() {
-        this.healthPoints = mainJob.startingHealth + constitutionModifier;
+        this.healthPoints = JobsDnD.getJobAsClass(this.mainJob).startingHealth + constitutionModifier;
         this.maxHealthPoints = healthPoints;
-        this.healthDice = mainJob.healthDice;
+        this.healthDice = JobsDnD.getJobAsClass(this.mainJob).healthDice;
         this.temporaryHealthPoints = 0;
     }
 
@@ -253,7 +324,7 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initStrength(int strength) {
-        this.strength = strength + race.strengthBonus;
+        this.strength = strength + RacesDnD.getRaceAsClass(this.race).strengthBonus;
         this.strengthModifier = modifierSet(this.strength);
         if (characterMasteries.contains(MasteryTypeDnD.STRENGTH)) {
             this.strengthSaveThrow = strengthModifier;
@@ -261,10 +332,11 @@ public class PlayerDnD implements Serializable {
         else {
             this.strengthSaveThrow = 0;
         }
+        this.maxCarryingCapacity = this.strength * 15;
     }
 
     public void initDexterity(int dexterity) {
-        this.dexterity = dexterity + race.dexterityBonus;
+        this.dexterity = dexterity + RacesDnD.getRaceAsClass(this.race).dexterityBonus;
         this.dexterityModifier = modifierSet(this.dexterity);
         if (characterMasteries.contains(MasteryTypeDnD.DEXTERITY)) {
             this.dexteritySaveThrow = dexterityModifier;
@@ -276,7 +348,7 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initConstitution(int constitution) {
-        this.constitution = constitution + race.constitutionBonus;
+        this.constitution = constitution + RacesDnD.getRaceAsClass(this.race).constitutionBonus;
         this.constitutionModifier = modifierSet(this.constitution);
         if (characterMasteries.contains(MasteryTypeDnD.CONSTITUTION)) {
             this.constitutionSaveThrow = constitutionModifier;
@@ -287,7 +359,7 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initIntelligence(int intelligence) {
-        this.intelligence = intelligence + race.intelligenceBonus;
+        this.intelligence = intelligence + RacesDnD.getRaceAsClass(this.race).intelligenceBonus;
         this.intelligenceModifier = modifierSet(this.intelligence);
         if (characterMasteries.contains(MasteryTypeDnD.INTELLIGENCE)) {
             this.intelligenceSaveThrow = intelligenceModifier;
@@ -298,7 +370,7 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initWisdom(int wisdom) {
-        this.wisdom = wisdom + race.wisdomBonus;
+        this.wisdom = wisdom + RacesDnD.getRaceAsClass(this.race).wisdomBonus;
         this.wisdomModifier = modifierSet(this.wisdom);
         if (characterMasteries.contains(MasteryTypeDnD.WISDOM)) {
             this.wisdomSaveThrow = wisdomModifier;
@@ -309,7 +381,7 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initCharisma(int charisma) {
-        this.charisma = charisma + race.charismaBonus;
+        this.charisma = charisma + RacesDnD.getRaceAsClass(this.race).charismaBonus;
         this.charismaModifier = modifierSet(this.charisma);
         if (characterMasteries.contains(MasteryTypeDnD.CHARISMA)) {
             this.charismaSaveThrow = charismaModifier;
@@ -320,8 +392,76 @@ public class PlayerDnD implements Serializable {
     }
 
     public void initBookOfSpellsDnD() {
-        if (this.mainJob.usesMagic) {
+        if (JobsDnD.getJobAsClass(this.mainJob).usesMagic) {
             this.spellBook = new BookOfSpellsDnD();
+        }
+    }
+
+    public void setStrength(int strength) {
+        this.strength = strength;
+        this.strengthModifier = modifierSet(this.strength);
+        if (characterMasteries.contains(MasteryTypeDnD.STRENGTH)) {
+            this.strengthSaveThrow = strengthModifier;
+        }
+        else {
+            this.strengthSaveThrow = 0;
+        }
+        this.maxCarryingCapacity = this.strength * 15;
+    }
+
+    public void setDexterity(int dexterity) {
+        this.dexterity = dexterity;
+        this.dexterityModifier = modifierSet(this.dexterity);
+        if (characterMasteries.contains(MasteryTypeDnD.DEXTERITY)) {
+            this.dexteritySaveThrow = dexterityModifier;
+        }
+        else {
+            this.dexteritySaveThrow = 0;
+        }
+        this.initiativeBonus = dexterityModifier;
+    }
+
+    public void setConstitution(int constitution) {
+        this.constitution = constitution;
+        this.constitutionModifier = modifierSet(this.constitution);
+        if (characterMasteries.contains(MasteryTypeDnD.CONSTITUTION)) {
+            this.constitutionSaveThrow = constitutionModifier;
+        }
+        else {
+            this.constitutionSaveThrow = 0;
+        }
+    }
+
+    public void setIntelligence(int intelligence) {
+        this.intelligence = intelligence;
+        this.intelligenceModifier = modifierSet(this.intelligence);
+        if (characterMasteries.contains(MasteryTypeDnD.INTELLIGENCE)) {
+            this.intelligenceSaveThrow = intelligenceModifier;
+        }
+        else {
+            this.intelligenceSaveThrow = 0;
+        }
+    }
+
+    public void setWisdom(int wisdom) {
+        this.wisdom = wisdom;
+        this.wisdomModifier = modifierSet(this.wisdom);
+        if (characterMasteries.contains(MasteryTypeDnD.WISDOM)) {
+            this.wisdomSaveThrow = wisdomModifier;
+        }
+        else {
+            this.wisdomSaveThrow = 0;
+        }
+    }
+
+    public void setCharisma(int charisma) {
+        this.charisma = charisma;
+        this.charismaModifier = modifierSet(this.charisma);
+        if (characterMasteries.contains(MasteryTypeDnD.CHARISMA)) {
+            this.charismaSaveThrow = charismaModifier;
+        }
+        else {
+            this.charismaSaveThrow = 0;
         }
     }
 
