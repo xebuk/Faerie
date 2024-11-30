@@ -1,20 +1,27 @@
 package dnd.equipment;
 
 import common.Constants;
-import dnd.values.CurrencyDnD;
+import dnd.values.aspectvalues.CurrencyDnD;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class KitDnD {
-    public String name;
-    public String summary;
-
+public class KitDnD extends ItemDnD {
     public Map<ItemDnD, Integer> contents;
 
-    public int value;
-    public CurrencyDnD currencyGrade;
+    public KitDnD() {
+        this.name = "Свой набор";
+        this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
-    public int weight;
+        this.amountInInstance = 1;
+
+        this.value = 1;
+        this.currencyGrade = CurrencyDnD.GOLD_COINS;
+
+        this.effects = "Нет.";
+
+        this.contents = new HashMap<>();
+    }
 
     public static class BurglarPackDnD extends KitDnD {
 

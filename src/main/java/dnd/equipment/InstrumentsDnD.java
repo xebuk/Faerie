@@ -1,21 +1,33 @@
 package dnd.equipment;
 
 import common.Constants;
-import dnd.values.CurrencyDnD;
+import dnd.values.aspectvalues.CurrencyDnD;
+import dnd.values.masteryvalues.MasteryTypeDnD;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class InstrumentsDnD extends ItemDnD {
-    public String name;
-    public String summary;
+    public ArrayList<MasteryTypeDnD> advantages = new ArrayList<>();
 
-    public int value;
-    public CurrencyDnD currencyGrade;
+    public void addAdvantage(MasteryTypeDnD adv) {
+        this.advantages.add(adv);
+    }
 
-    public int weight;
+    public void delAdvantage(MasteryTypeDnD adv) {
+        this.advantages.remove(adv);
+    }
 
-    public List<String> contents;
-    public List<String> advantages;
+    public InstrumentsDnD() {
+        this.name = "Свои инструменты";
+        this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
+
+        this.amountInInstance = 1;
+
+        this.value = 1;
+        this.currencyGrade = CurrencyDnD.GOLD_COINS;
+
+        this.effects = "Нет.";
+    }
 
     //инструменты ремесленников
     public static class AlchemistSuppliesDnD extends InstrumentsDnD {

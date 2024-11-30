@@ -1,4 +1,4 @@
-package dnd.values;
+package dnd.values.equipmentids;
 
 import java.io.Serializable;
 

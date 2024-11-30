@@ -1,6 +1,8 @@
-package dnd.values;
+package dnd.values.masteryvalues;
 
-public enum DamageTypeDnD {
+import java.io.Serializable;
+
+public enum DamageTypeDnD  implements Serializable {
     NONE,
     SLASHING,
     PIERCING,
