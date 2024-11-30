@@ -1,4 +1,4 @@
-package dnd.values;
+package dnd.values.characteristicsvalues;
 
 import java.io.Serializable;
 
