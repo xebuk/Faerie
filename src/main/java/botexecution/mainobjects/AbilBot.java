@@ -51,7 +51,7 @@ public class AbilBot extends AbilityBot {
 
         this.secretMessages = new DnDNotificationHandler(knowledge, walkieTalkie);
         this.tableTop = new DnDHandler(knowledge, walkieTalkie, secretMessages);
-        this.story = new DnDCampaignHandler(knowledge, walkieTalkie);
+        this.story = new DnDCampaignHandler(knowledge, walkieTalkie, secretMessages);
         this.characterList = new DnDPlayerHandler(knowledge, walkieTalkie, diceHoarder);
         this.bagOfHolding = new DnDItemHandler(knowledge, walkieTalkie, secretMessages);
         super.onRegister();
@@ -467,7 +467,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability setCampaignName() {
-        Consumer<MessageContext> campaignName = tableTop::setCampaignName;
+        Consumer<MessageContext> campaignName = story::setCampaignName;
         //есть в coremessages
 
         return Ability
@@ -482,7 +482,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability setPassword() {
-        Consumer<MessageContext> password = tableTop::setPassword;
+        Consumer<MessageContext> password = story::setPassword;
         //есть в coremessages
 
         return Ability
@@ -497,7 +497,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability setMulticlassLimit() {
-        Consumer<MessageContext> multi = tableTop::setMulticlassLimit;
+        Consumer<MessageContext> multi = story::setMulticlassLimit;
         //есть в coremessages
 
         return Ability
@@ -512,7 +512,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showPlayers() {
-        Consumer<MessageContext> playersList = tableTop::showPlayers;
+        Consumer<MessageContext> playersList = story::showPlayers;
         //есть в coremessages
 
         return Ability
@@ -527,7 +527,7 @@ public class AbilBot extends AbilityBot {
     }
 
     public Ability showPlayerProfile() {
-        Consumer<MessageContext> profile = tableTop::showPlayerProfile;
+        Consumer<MessageContext> profile = story::showPlayerProfile;
         //есть в coremessages
 
         return Ability

@@ -45,122 +45,6 @@ public class DnDHandler {
         return currentCampaign;
     }
 
-    //настройка кампаний
-    public void setCampaignName(MessageContext ctx) {
-        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
-            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
-            return;
-        }
-
-        ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (ctx.firstArg() == null || Objects.equals(ctx.firstArg(), "")) {
-            walkieTalkie.patternExecute(ctx,
-                    "Пустое поля в качестве названия запрещено.\n" +
-                            "Попробуйте иное название или проверьте правильность ввода по справке в /help [команда].");
-            return;
-        }
-
-        for (String tag: currentCampaign.activeDm.campaignParty.keySet()) {
-            ChatSession affectedUser = knowledge.getSession(knowledge.findChatId(tag));
-            affectedUser.campaignsAsPlayer.remove(currentCampaign.activeDm.campaignName);
-            affectedUser.campaignsAsPlayer.put(ctx.firstArg(), currentCampaign.getChatId());
-        }
-
-        currentUser.campaignsAsDungeonMaster.remove(currentCampaign.activeDm.campaignName);
-        currentCampaign.activeDm.campaignName = ctx.firstArg();
-        currentUser.campaignsAsDungeonMaster.put(currentCampaign.activeDm.campaignName, currentUser.currentCampaign);
-
-        walkieTalkie.patternExecute(currentUser, Constants.SET_CAMPAIGN_SUCCESS);
-
-        knowledge.renewListChat(currentCampaign);
-        knowledge.renewListChat(currentUser);
-    }
-
-    public void setPassword(MessageContext ctx) {
-        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
-            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
-            return;
-        }
-
-        ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (ctx.firstArg() == null || Objects.equals(ctx.firstArg(), "")) {
-            walkieTalkie.patternExecute(ctx,
-                    "Пустое поля в качестве пароля запрещено.\n" +
-                            "Попробуйте иное выражение или проверьте правильность ввода по справке в /help [команда].");
-            return;
-        }
-
-        currentCampaign.activeDm.campaignPassword = ctx.firstArg();
-        walkieTalkie.patternExecute(currentUser, Constants.SET_PASSWORD_SUCCESS);
-
-        knowledge.renewListChat(currentCampaign);
-        knowledge.renewListChat(currentUser);
-    }
-
-    public void setMulticlassLimit(MessageContext ctx) {
-        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
-            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
-            return;
-        }
-
-        ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "int1")) {
-            return;
-        }
-
-        currentCampaign.activeDm.multiclassLimit = Integer.parseInt(ctx.firstArg());
-
-        walkieTalkie.patternExecute(currentUser, "Лимит классов на персонажа установлен. Теперь максимальное количество классов - "
-                + currentCampaign.activeDm.multiclassLimit);
-        walkieTalkie.patternExecute(currentUser, Constants.SET_MULTICLASS_LIMIT_ZERO);
-
-        knowledge.renewListChat(currentCampaign);
-        knowledge.renewListChat(currentUser);
-    }
-
-    public void showPlayers(MessageContext ctx) {
-        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null) {
-            return;
-        }
-
-        StringBuilder playersList = new StringBuilder();
-        playersList.append("Игроки текущей компании: \n");
-        int index = 1;
-        for (Map.Entry<String, PlayerDnD> player : currentCampaign.activeDm.campaignParty.entrySet()) {
-            playersList.append(index).append(". ").append(player.getKey()).append(" - ").append(player.getValue().name);
-            index++;
-        }
-
-        walkieTalkie.patternExecute(currentUser, playersList.toString());
-        knowledge.renewListChat(currentUser);
-        knowledge.renewListChat(currentCampaign);
-    }
-
-    public void showPlayerProfile(MessageContext ctx) {
-        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1")) {
-            return;
-        }
-
-        String username = ctx.firstArg();
-        if (currentUser.role != RoleParameters.DUNGEON_MASTER && !Objects.equals(username, currentUser.username)) {
-            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.\n" +
-                    "На данный момент вы можете посмотреть только профиль своего персонажа, введя ваш тег.");
-            return;
-        }
-
-        String profile = currentCampaign.activeDm.campaignParty.get(username).characterProfile();;
-        walkieTalkie.articleMessaging(profile, currentUser, null);
-        knowledge.renewListChat(currentCampaign);
-        knowledge.renewListChat(currentUser);
-    }
-
     //основная игровая механика
     public void requestARoll(MessageContext ctx) {
         ChatSession dungeonMaster = knowledge.getSession(ctx.chatId().toString());
@@ -861,6 +745,110 @@ public class DnDHandler {
     //изменение параметров персонажа игрока
     public int[] bonusMastery = {2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6};
 
+    public void setPrestigeJob(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1")) {
+            return;
+        }
+
+        if (!"-m-s".contains(ctx.secondArg())) {
+            walkieTalkie.patternExecute(currentUser,
+                        "Введите корректный параметр.");
+            return;
+        }
+
+        if (ctx.secondArg().contains("-m")) {
+            currentUser.editPrestigeJobIndex = 0;
+        }
+        else if (ctx.secondArg().contains("-s")) {
+            if (secretMessages.isNotLegal(ctx, "int3")) {
+                return;
+            }
+            currentUser.editPrestigeJobIndex = Integer.parseInt(ctx.thirdArg());
+        }
+
+        currentUser.editingAPrestigeJob = true;
+        currentUser.whoIsEdited = ctx.firstArg();
+
+        walkieTalkie.patternExecute(currentUser, "Введите название подкласса персонажа.");
+        knowledge.renewListChat(currentUser);
+        knowledge.renewListChat(currentCampaign);
+    }
+
+    public void giveASecondaryJob(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1")) {
+            return;
+        }
+
+        if (!JobsDnD.getJobs().containsKey(ctx.secondArg())) {
+            walkieTalkie.patternExecute(currentUser,
+                    "Произошла ошибка - название класса введено не корректно.\n" +
+                    "Процесс приостановлен.");
+            return;
+        }
+
+        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobs.add(JobsDnD.getJob(ctx.secondArg()));
+        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsTitles.add(ctx.secondArg());
+        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsPrestigeTitles.add("Не выбрано");
+        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsLevels.add(1);
+        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).totalLevel += 1;
+
+        walkieTalkie.patternExecute(currentUser,
+                "Добавление дополнительного класса прошло успешно.");
+        knowledge.renewListChat(currentUser);
+        knowledge.renewListChat(currentCampaign);
+    }
+
+    public void setPrestigeJobSecondStage(ChatSession dungeonMaster, String response) {
+        if (dungeonMaster.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(dungeonMaster, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(dungeonMaster);
+        if (currentCampaign == null) {
+            return;
+        }
+
+        if (dungeonMaster.editPrestigeJobIndex == 0) {
+            currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited)
+                    .mainPrestigeJobTitle = response;
+        }
+        else {
+            if (currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited)
+                    .secondaryJobsPrestigeTitles.size() <= dungeonMaster.editPrestigeJobIndex - 1
+                    || dungeonMaster.editPrestigeJobIndex - 1 < 0) {
+                walkieTalkie.patternExecute(dungeonMaster,
+                        "Произошла ошибка - введено число вне возможного набора индексов.\n" +
+                                "Попробуйте заново.");
+                dungeonMaster.editingAPrestigeJob = false;
+                return;
+            }
+            currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited).secondaryJobsPrestigeTitles
+                    .set(dungeonMaster.editPrestigeJobIndex - 1, response);
+        }
+
+        walkieTalkie.patternExecute(dungeonMaster,
+                "Изменение подкласса прошло успешно.");
+        knowledge.renewListChat(dungeonMaster);
+        knowledge.renewListChat(currentCampaign);
+    }
+
     public void changeHealth(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
 
@@ -1093,7 +1081,7 @@ public class DnDHandler {
         knowledge.renewListChat(currentUser);
     }
 
-    public void setPrestigeJob(MessageContext ctx) {
+    public void changeLook(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
 
         if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
@@ -1106,31 +1094,38 @@ public class DnDHandler {
             return;
         }
 
-        if (!"-m-s".contains(ctx.secondArg())) {
-            walkieTalkie.patternExecute(currentUser,
-                        "Введите корректный параметр.");
-            return;
-        }
-
-        if (ctx.secondArg().contains("-m")) {
-            currentUser.editPrestigeJobIndex = 0;
-        }
-        else if (ctx.secondArg().contains("-s")) {
-            if (secretMessages.isNotLegal(ctx, "int3")) {
-                return;
-            }
-            currentUser.editPrestigeJobIndex = Integer.parseInt(ctx.thirdArg());
-        }
-
-        currentUser.editingAPrestigeJob = true;
-        currentUser.whoIsEdited = ctx.firstArg();
-
-        walkieTalkie.patternExecute(currentUser, "Введите название подкласса персонажа.");
-        knowledge.renewListChat(currentUser);
-        knowledge.renewListChat(currentCampaign);
+        currentUser.editingALook = true;
+        currentUser.whoIsEdited = ctx.secondArg() + ctx.firstArg();
+        walkieTalkie.patternExecute(currentUser, "Введите изменения.");
     }
 
-    public void giveASecondaryJob(MessageContext ctx) {
+    public void changeLookSecondStage(ChatSession cs, String response) {
+        if (cs.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(cs, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+        ChatSession currentCampaign = getCampaignSession(cs);
+        String[] parameters = cs.whoIsStyling.split("@");
+
+        switch (parameters[0]) {
+            case "-a" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).age = response;
+            case "-he" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).height = response;
+            case "-w" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).weight = response;
+            case "-e" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).eyes = response;
+            case "-s" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).skin = response;
+            case "-ha" -> currentCampaign.activeDm.campaignParty.get("@" + parameters[1]).hair = response;
+            default -> {
+                walkieTalkie.patternExecute(cs, "Произошла ошибка - введен некорректный параметр.");
+                return;
+            }
+        }
+
+        walkieTalkie.patternExecute(cs, "Изменение прошло успешно.");
+        knowledge.renewListChat(currentCampaign);
+        knowledge.renewListChat(cs);
+    }
+
+    public void changeValuables(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
 
         if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
@@ -1139,62 +1134,26 @@ public class DnDHandler {
         }
 
         ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1")) {
+        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1-int3")) {
             return;
         }
 
-        if (!JobsDnD.getJobs().containsKey(ctx.secondArg())) {
-            walkieTalkie.patternExecute(currentUser,
-                    "Произошла ошибка - название класса введено не корректно.\n" +
-                    "Процесс приостановлен.");
-            return;
-        }
-
-        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobs.add(JobsDnD.getJob(ctx.secondArg()));
-        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsTitles.add(ctx.secondArg());
-        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsPrestigeTitles.add("Не выбрано");
-        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).secondaryJobsLevels.add(1);
-        currentCampaign.activeDm.campaignParty.get(ctx.firstArg()).totalLevel += 1;
-
-        walkieTalkie.patternExecute(currentUser,
-                "Добавление дополнительного класса прошло успешно.");
-        knowledge.renewListChat(currentUser);
-        knowledge.renewListChat(currentCampaign);
-    }
-
-    public void setPrestigeJobSecondStage(ChatSession dungeonMaster, String response) {
-        if (dungeonMaster.role != RoleParameters.DUNGEON_MASTER) {
-            walkieTalkie.patternExecute(dungeonMaster, "Доступ запрещен - вы не ДМ данной компании.");
-            return;
-        }
-
-        ChatSession currentCampaign = getCampaignSession(dungeonMaster);
-        if (currentCampaign == null) {
-            return;
-        }
-
-        if (dungeonMaster.editPrestigeJobIndex == 0) {
-            currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited)
-                    .mainPrestigeJobTitle = response;
-        }
-        else {
-            if (currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited)
-                    .secondaryJobsPrestigeTitles.size() <= dungeonMaster.editPrestigeJobIndex - 1
-                    || dungeonMaster.editPrestigeJobIndex - 1 < 0) {
-                walkieTalkie.patternExecute(dungeonMaster,
-                        "Произошла ошибка - введено число вне возможного набора индексов.\n" +
-                                "Попробуйте заново.");
-                dungeonMaster.editingAPrestigeJob = false;
+        switch (ctx.secondArg()) {
+            case "-g" -> currentCampaign.activeDm
+                    .campaignParty.get(ctx.firstArg()).gold += Integer.parseInt(ctx.thirdArg());
+            case "-s" -> currentCampaign.activeDm
+                    .campaignParty.get(ctx.firstArg()).silver += Integer.parseInt(ctx.thirdArg());
+            case "-c" -> currentCampaign.activeDm
+                    .campaignParty.get(ctx.firstArg()).copper += Integer.parseInt(ctx.thirdArg());
+            default -> {
+                walkieTalkie.patternExecute(currentUser, "Произошла ошибка - введен некорректный параметр.");
                 return;
             }
-            currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited).secondaryJobsPrestigeTitles
-                    .set(dungeonMaster.editPrestigeJobIndex - 1, response);
         }
 
-        walkieTalkie.patternExecute(dungeonMaster,
-                "Изменение подкласса прошло успешно.");
-        knowledge.renewListChat(dungeonMaster);
+        walkieTalkie.patternExecute(currentUser, "Изменение прошло успешно.");
         knowledge.renewListChat(currentCampaign);
+        knowledge.renewListChat(currentUser);
     }
 
     public void editPlayer(MessageContext ctx) {

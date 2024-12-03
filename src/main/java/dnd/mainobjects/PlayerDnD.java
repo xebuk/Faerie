@@ -72,14 +72,18 @@ public class PlayerDnD implements Serializable {
     public int deathThrowsSuccess = 0;
     public int deathThrowsFailure = 0;
 
+    //технические параметры для расчета статов персонажа, их никто не должен видеть
     public HashSet<String> allocatedStats = new HashSet<>();
     public ArrayList<Integer> luck = new ArrayList<>();
+    //технические параметры для расчета статов персонажа, их никто не должен видеть
 
+    //технические параметры для бросков, их никто не должен видеть
     public String diceComb = "";
     public MasteryTypeDnD statCheck;
     public AdvantageTypeDnD advantage = AdvantageTypeDnD.CLEAR_THROW;
     public MasteryTypeDnD specialCase = MasteryTypeDnD.NONE;
     public boolean inPublic = true;
+    //технические параметры для бросков, их никто не должен видеть
 
     public int strength;
     public int strengthModifier;
@@ -150,7 +154,7 @@ public class PlayerDnD implements Serializable {
     public String armorEffects = "Нет";
     public HashSet<ArmorsDnD> armorProficiency = new HashSet<>();
 
-    public ArrayList<ItemDnD> attunedAccessories;
+    public ArrayList<ItemDnD> attunedAccessories = new ArrayList<>();
 
     public int bonusLanguages = 0;
     public HashSet<LanguagesDnD> knownLanguages = new HashSet<>();
@@ -171,7 +175,10 @@ public class PlayerDnD implements Serializable {
     public ArrayList<ArmorDnD> armorCollectionOnHands = new ArrayList<>();
     public ArrayList<InstrumentsDnD> instrumentsCollectionOnHands = new ArrayList<>();
     public ArrayList<KitDnD> kitCollectionOnHands = new ArrayList<>();
-    public int[] valuables = {0, 0, 0};
+
+    public int gold = 0;
+    public int silver = 0;
+    public int copper = 0;
 
     public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
     public ArrayList<WeaponDnD> weaponCollection = new ArrayList<>();

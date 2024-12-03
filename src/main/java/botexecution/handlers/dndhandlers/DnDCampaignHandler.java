@@ -6,16 +6,36 @@ import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
 import dnd.mainobjects.DungeonMasterDnD;
+import dnd.mainobjects.PlayerDnD;
 import dnd.values.RoleParameters;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class DnDCampaignHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
+    private final DnDNotificationHandler secretMessages;
 
-    public DnDCampaignHandler(DataHandler knowledge, TextHandler walkieTalkie) {
+    public DnDCampaignHandler(DataHandler knowledge, TextHandler walkieTalkie, DnDNotificationHandler secretMessages) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
+        this.secretMessages = secretMessages;
+
+    }
+
+    public ChatSession getCampaignSession(ChatSession currentUser) {
+        if (currentUser.currentCampaign == null) {
+            walkieTalkie.patternExecute(currentUser, Constants.SET_CAMPAIGN_NULL);
+            return null;
+        }
+        ChatSession currentCampaign = knowledge.getSession(currentUser.currentCampaign.toString());
+        if (currentCampaign == null) {
+            walkieTalkie.patternExecute(currentUser, Constants.SET_CAMPAIGN_NULL);
+            return null;
+        }
+        return currentCampaign;
     }
 
     public void createCampaign(MessageContext ctx) {
@@ -172,6 +192,121 @@ public class DnDCampaignHandler {
                     "Произошла ошибка - такого параметра у команды нет.\n" +
                             "Проверьте правильность ввода по справке в /help [команда]");
         }
+        knowledge.renewListChat(currentUser);
+    }
+
+    public void setCampaignName(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (ctx.firstArg() == null || Objects.equals(ctx.firstArg(), "")) {
+            walkieTalkie.patternExecute(ctx,
+                    "Пустое поля в качестве названия запрещено.\n" +
+                            "Попробуйте иное название или проверьте правильность ввода по справке в /help [команда].");
+            return;
+        }
+
+        for (String tag: currentCampaign.activeDm.campaignParty.keySet()) {
+            ChatSession affectedUser = knowledge.getSession(knowledge.findChatId(tag));
+            affectedUser.campaignsAsPlayer.remove(currentCampaign.activeDm.campaignName);
+            affectedUser.campaignsAsPlayer.put(ctx.firstArg(), currentCampaign.getChatId());
+        }
+
+        currentUser.campaignsAsDungeonMaster.remove(currentCampaign.activeDm.campaignName);
+        currentCampaign.activeDm.campaignName = ctx.firstArg();
+        currentUser.campaignsAsDungeonMaster.put(currentCampaign.activeDm.campaignName, currentUser.currentCampaign);
+
+        walkieTalkie.patternExecute(currentUser, Constants.SET_CAMPAIGN_SUCCESS);
+
+        knowledge.renewListChat(currentCampaign);
+        knowledge.renewListChat(currentUser);
+    }
+
+    public void setPassword(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (ctx.firstArg() == null || Objects.equals(ctx.firstArg(), "")) {
+            walkieTalkie.patternExecute(ctx,
+                    "Пустое поля в качестве пароля запрещено.\n" +
+                            "Попробуйте иное выражение или проверьте правильность ввода по справке в /help [команда].");
+            return;
+        }
+
+        currentCampaign.activeDm.campaignPassword = ctx.firstArg();
+        walkieTalkie.patternExecute(currentUser, Constants.SET_PASSWORD_SUCCESS);
+
+        knowledge.renewListChat(currentCampaign);
+        knowledge.renewListChat(currentUser);
+    }
+
+    public void setMulticlassLimit(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
+            return;
+        }
+
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "int1")) {
+            return;
+        }
+
+        currentCampaign.activeDm.multiclassLimit = Integer.parseInt(ctx.firstArg());
+
+        walkieTalkie.patternExecute(currentUser, "Лимит классов на персонажа установлен. Теперь максимальное количество классов - "
+                + currentCampaign.activeDm.multiclassLimit);
+        walkieTalkie.patternExecute(currentUser, Constants.SET_MULTICLASS_LIMIT_ZERO);
+
+        knowledge.renewListChat(currentCampaign);
+        knowledge.renewListChat(currentUser);
+    }
+
+    public void showPlayers(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (currentCampaign == null) {
+            return;
+        }
+
+        StringBuilder playersList = new StringBuilder();
+        playersList.append("Игроки текущей компании: \n");
+        int index = 1;
+        for (Map.Entry<String, PlayerDnD> player : currentCampaign.activeDm.campaignParty.entrySet()) {
+            playersList.append(index).append(". ").append(player.getKey()).append(" - ").append(player.getValue().name);
+            index++;
+        }
+
+        walkieTalkie.patternExecute(currentUser, playersList.toString());
+        knowledge.renewListChat(currentUser);
+        knowledge.renewListChat(currentCampaign);
+    }
+
+    public void showPlayerProfile(MessageContext ctx) {
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        ChatSession currentCampaign = getCampaignSession(currentUser);
+        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "prof1")) {
+            return;
+        }
+
+        String username = ctx.firstArg();
+        if (currentUser.role != RoleParameters.DUNGEON_MASTER && !Objects.equals(username, currentUser.username)) {
+            walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.\n" +
+                    "На данный момент вы можете посмотреть только профиль своего персонажа, введя ваш тег.");
+            return;
+        }
+
+        String profile = currentCampaign.activeDm.campaignParty.get(username).characterProfile();;
+        walkieTalkie.articleMessaging(profile, currentUser, null);
+        knowledge.renewListChat(currentCampaign);
         knowledge.renewListChat(currentUser);
     }
 }

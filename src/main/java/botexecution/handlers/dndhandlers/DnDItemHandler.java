@@ -1201,6 +1201,21 @@ public class DnDItemHandler {
                         + affectedPlayer.equippedArmor.name
                         + " была установлена.");
             }
+            case "-i" -> {
+                if (index >= affectedPlayer.itemCollectionOnHands.size()) {
+                    walkieTalkie.patternExecute(currentUser,
+                            "Произошла ошибка - введено число вне возможного набора индексов.\n"
+                                    + "Попробуйте заново.");
+                    return;
+                }
+
+                ItemDnD requestedItem = affectedPlayer.itemCollectionOnHands.get(index);
+                affectedPlayer.attunedAccessories.add(requestedItem);
+
+                walkieTalkie.patternExecute(currentUser, "Предмет "
+                        + affectedPlayer.attunedAccessories.getLast().name
+                        + " был настроен на вас.");
+            }
             default -> {
                 walkieTalkie.patternExecute(ctx,
                         "Произошла ошибка - такого параметра у команды нет.\n" +

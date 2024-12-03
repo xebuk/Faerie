@@ -66,6 +66,9 @@ public class ChatSession implements Serializable {
     public EditingParameters editNote = EditingParameters.NONE;
     public int editNoteIndex = 0;
 
+    public boolean editingALook = false;
+    public String whoIsStyling = "";
+
     public boolean editingAQuest = false;
     public String editQuestParameter = "";
 
