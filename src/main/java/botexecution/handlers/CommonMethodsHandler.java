@@ -20,14 +20,17 @@ import java.util.function.Consumer;
 public class CommonMethodsHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
+    private final SiteParseHandler archive;
     private final DiceHandler diceHoarder;
 
     public final HashMap<String, String> commandsSummariesAllocator = new HashMap<>();
     public final HashMap<String, Consumer<ChatSession>> methodsAllocator = new HashMap<>();
 
-    public CommonMethodsHandler(DataHandler knowledge, TextHandler walkieTalkie, DiceHandler diceHoarder) {
+    public CommonMethodsHandler(DataHandler knowledge, TextHandler walkieTalkie,
+                                SiteParseHandler archive, DiceHandler diceHoarder) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
+        this.archive = archive;
         this.diceHoarder = diceHoarder;
 
         Consumer<ChatSession> Spell = cs -> {
@@ -216,12 +219,7 @@ public class CommonMethodsHandler {
 
     public boolean searchEngine(ChatSession cs, String entry) {
         ArrayList<String> matches;
-
-        try {
-            matches = SiteParser.searchArticleIds(cs.sectionId.toString(), entry);
-        } catch (IOException e) {
-            return walkieTalkie.reportIncorrect(cs);
-        }
+        matches = knowledge.searchArticleIds(cs.sectionId.toString(), entry);
 
         if (matches.isEmpty()) {
             walkieTalkie.reportFail(cs);
@@ -232,22 +230,22 @@ public class CommonMethodsHandler {
             try {
                 switch (cs.sectionId) {
                     case SPELLS:
-                        article = SiteParser.SpellsGrabber(matches.getFirst());
+                        article = archive.SpellsGrabber(matches.getFirst());
                         break;
                     case ITEMS:
-                        article = SiteParser.ItemsGrabber(matches.getFirst());
+                        article = archive.ItemsGrabber(matches.getFirst());
                         break;
                     case BESTIARY:
-                        article = SiteParser.BestiaryGrabber(matches.getFirst());
+                        article = archive.BestiaryGrabber(matches.getFirst());
                         break;
                     case RACES:
-                        article = SiteParser.RacesGrabber(matches.getFirst());
+                        article = archive.RacesGrabber(matches.getFirst());
                         break;
                     case FEATS:
-                        article = SiteParser.FeatsGrabber(matches.getFirst());
+                        article = archive.FeatsGrabber(matches.getFirst());
                         break;
                     case BACKGROUNDS:
-                        article = SiteParser.BackgroundsGrabber(matches.getFirst());
+                        article = archive.BackgroundsGrabber(matches.getFirst());
                         break;
                     default:
                         walkieTalkie.reportImpossible(cs);
@@ -264,7 +262,7 @@ public class CommonMethodsHandler {
             return false;
         }
 
-        walkieTalkie.patternExecute(cs, SiteParser.addressWriter(matches, cs.sectionId.toString()), null, true);
+        walkieTalkie.patternExecute(cs, archive.addressWriter(matches, cs.sectionId.toString()), null, true);
         return true;
     }
 
@@ -273,22 +271,22 @@ public class CommonMethodsHandler {
         try {
             switch (cs.sectionId) {
                 case SPELLS:
-                    walkieTalkie.articleMessaging(SiteParser.SpellsGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.SpellsGrabber(cs.title), cs);
                     break;
                 case ITEMS:
-                    walkieTalkie.articleMessaging(SiteParser.ItemsGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.ItemsGrabber(cs.title), cs);
                     break;
                 case BESTIARY:
-                    walkieTalkie.articleMessaging(SiteParser.BestiaryGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.BestiaryGrabber(cs.title), cs);
                     break;
                 case RACES:
-                    walkieTalkie.articleMessaging(SiteParser.RacesGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.RacesGrabber(cs.title), cs);
                     break;
                 case FEATS:
-                    walkieTalkie.articleMessaging(SiteParser.FeatsGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.FeatsGrabber(cs.title), cs);
                     break;
                 case BACKGROUNDS:
-                    walkieTalkie.articleMessaging(SiteParser.BackgroundsGrabber(cs.title), cs);
+                    walkieTalkie.articleMessaging(archive.BackgroundsGrabber(cs.title), cs);
                     break;
                 default:
                     walkieTalkie.reportImpossible(cs);

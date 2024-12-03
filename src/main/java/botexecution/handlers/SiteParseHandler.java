@@ -1,5 +1,6 @@
-package common;
+package botexecution.handlers;
 
+import botexecution.handlers.corehandlers.DataHandler;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -13,68 +14,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static common.Constants.URL;
 
-public class SiteParser {
+public class SiteParseHandler {
+    private final DataHandler knowledge;
 
-    public static String searchArticleId(String section, String name) throws IOException {
-        try {
-            int index = Integer.parseInt(name);
-            return name;
-        } catch (NumberFormatException ignored) {}
-
-        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
-        List<String> lines = Files.readAllLines(articleIdFilePath);;
-        String[] separated;
-
-        LevenshteinDistance env = new LevenshteinDistance();
-        int minSimilarityDistance = Integer.MAX_VALUE;
-        String resArticleId = "1";
-
-        for (String articleId: lines) {
-            separated = articleId.trim().split("~ ");
-            int distance;
-            if (name.charAt(0) <= 'z' && name.charAt(0) >= 'a') {
-                distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
-            }
-            else {
-                try {
-                    distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
-                } catch (StringIndexOutOfBoundsException e) {
-                    distance = env.apply(separated[1].substring(0, name.length()), name);
-                }
-            }
-
-            if (distance < minSimilarityDistance) {
-                minSimilarityDistance = distance;
-                resArticleId = separated[0];
-            }
-        }
-
-        return resArticleId;
+    public SiteParseHandler(DataHandler knowledge) {
+        this.knowledge = knowledge;
     }
 
-    public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
-        ArrayList<String> results = new ArrayList<>();
-
-        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
-        List<String> lines = Files.readAllLines(articleIdFilePath);
-        String[] separated;
-
-        for (String articleId: lines) {
-            separated = articleId.trim().split("~ ");
-            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
-                results.add(separated[0]);
-                results.add(separated[1]);
-            }
-        }
-
-        return results;
-    }
-
-    public static ArrayList<String> SpellsGrabber(String id) throws IOException {
-        String article = searchArticleId("spells", id);
+    public ArrayList<String> SpellsGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells/" + article);
         Document page;
@@ -115,8 +67,8 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> ItemsGrabber(String id) throws IOException {
-        String article = searchArticleId("items", id);;
+    public ArrayList<String> ItemsGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("items", id);
 
         Connection link = Jsoup.connect(URL + "items/" + article);
         Document page;
@@ -152,8 +104,8 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
-        String article = searchArticleId("bestiary", id);
+    public ArrayList<String> BestiaryGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary/" + article);
         Document page;
@@ -246,8 +198,8 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> RacesGrabber(String id) throws IOException {
-        String article = searchArticleId("race", id);
+    public ArrayList<String> RacesGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race/" + article);
         Document page;
@@ -278,8 +230,8 @@ public class SiteParser {
 
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
-    public static ArrayList<String> ClassesGrabber(String id) throws IOException {
-        String article = searchArticleId("class", id);
+    public ArrayList<String> ClassesGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("class", id);
 
         Connection link = Jsoup.connect(URL + "class/" + article);
         Document page;
@@ -313,8 +265,8 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> FeatsGrabber(String id) throws IOException {
-        String article = searchArticleId("feats", id);
+    public ArrayList<String> FeatsGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats/" + article);
         Document page;
@@ -340,8 +292,8 @@ public class SiteParser {
         return result;
     }
 
-    public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
-        String article = searchArticleId("backgrounds", id);
+    public ArrayList<String> BackgroundsGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
@@ -364,8 +316,8 @@ public class SiteParser {
         return result;
     }
 
-    public static void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
-        String article = searchArticleId("backgrounds", id);
+    public void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
@@ -383,8 +335,8 @@ public class SiteParser {
         }
     }
 
-    public static void BackgroundSpecialAbilityGrabber(String id) throws IOException {
-        String article = searchArticleId("backgrounds", id);
+    public void BackgroundSpecialAbilityGrabber(String id) throws IOException {
+        String article = knowledge.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
@@ -402,7 +354,7 @@ public class SiteParser {
         }
     }
 
-    public static void DictWriter(String section) {
+    public void DictWriter(String section) {
         Connection link;
         Connection.Response response;
         Document page = null;
@@ -450,7 +402,7 @@ public class SiteParser {
         //System.out.println(data);
     }
 
-    public static void addressWriter(String section) {
+    public void addressWriter(String section) {
         Connection link;
         Document page = null;
 
@@ -484,7 +436,7 @@ public class SiteParser {
         }
     }
 
-    public static String addressWriter(ArrayList<String> entries, String section) {
+    public String addressWriter(ArrayList<String> entries, String section) {
         StringBuilder result = new StringBuilder();
 
         result.append("Результаты поиска:").append("\n");
@@ -497,13 +449,5 @@ public class SiteParser {
         result.append("Введите индекс или имя статьи, которую вы хотите получить.");
 //        result.append("Send an index or a name of an article that you want to get.");
         return result.toString();
-    }
-
-    public static void main(String[] args) {
-        try {
-            BackgroundSpecialAbilityGrabber("770");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
