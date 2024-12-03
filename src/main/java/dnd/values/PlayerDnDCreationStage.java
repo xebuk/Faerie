@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum PlayerDnDCreationStage {
+import java.io.Serializable;
+
+public enum PlayerDnDCreationStage implements Serializable {
     NAME,
     RACE,
     RACE_PERSONALITY,
@@ -8,12 +10,15 @@ public enum PlayerDnDCreationStage {
     RACE_BOND,
     RACE_FLAW,
     JOB,
+    JOB_ITEMS,
     BACKGROUND,
+    BACKGROUND_ITEMS,
     BACKGROUND_SPECIAL_INFO,
     BACKGROUND_PERSONALITY,
     BACKGROUND_IDEAL,
     BACKGROUND_BOND,
     BACKGROUND_FLAW,
+    ITEM_REFUSAL,
     ALIGNMENT,
     LANGUAGE,
     STATS1,

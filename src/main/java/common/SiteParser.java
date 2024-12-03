@@ -1,5 +1,6 @@
 package common;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,15 +8,73 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static common.Constants.URL;
 
 public class SiteParser {
 
+    public static String searchArticleId(String section, String name) throws IOException {
+        try {
+            int index = Integer.parseInt(name);
+            return name;
+        } catch (NumberFormatException ignored) {}
+
+        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
+        List<String> lines = Files.readAllLines(articleIdFilePath);;
+        String[] separated;
+
+        LevenshteinDistance env = new LevenshteinDistance();
+        int minSimilarityDistance = Integer.MAX_VALUE;
+        String resArticleId = "1";
+
+        for (String articleId: lines) {
+            separated = articleId.trim().split("~ ");
+            int distance;
+            if (name.charAt(0) <= 'z' && name.charAt(0) >= 'a') {
+                distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
+            }
+            else {
+                try {
+                    distance = env.apply(separated[1].substring(0, separated[1].indexOf("[")), name);
+                } catch (StringIndexOutOfBoundsException e) {
+                    distance = env.apply(separated[1].substring(0, name.length()), name);
+                }
+            }
+
+            if (distance < minSimilarityDistance) {
+                minSimilarityDistance = distance;
+                resArticleId = separated[0];
+            }
+        }
+
+        return resArticleId;
+    }
+
+    public static ArrayList<String> searchArticleIds(String section, String name) throws IOException {
+        ArrayList<String> results = new ArrayList<>();
+
+        Path articleIdFilePath = Path.of("../token_dir/searchID/" + section + ".txt");
+        List<String> lines = Files.readAllLines(articleIdFilePath);
+        String[] separated;
+
+        for (String articleId: lines) {
+            separated = articleId.trim().split("~ ");
+            if (separated[1].toLowerCase().contains(name.toLowerCase())) {
+                results.add(separated[0]);
+                results.add(separated[1]);
+            }
+        }
+
+        return results;
+    }
+
     public static ArrayList<String> SpellsGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("spells", id);
+        String article = searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells/" + article);
         Document page;
@@ -57,7 +116,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> ItemsGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("items", id);;
+        String article = searchArticleId("items", id);;
 
         Connection link = Jsoup.connect(URL + "items/" + article);
         Document page;
@@ -94,7 +153,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BestiaryGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("bestiary", id);
+        String article = searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary/" + article);
         Document page;
@@ -188,7 +247,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> RacesGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("race", id);
+        String article = searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race/" + article);
         Document page;
@@ -220,7 +279,7 @@ public class SiteParser {
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
     public static ArrayList<String> ClassesGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("class", id);
+        String article = searchArticleId("class", id);
 
         Connection link = Jsoup.connect(URL + "class/" + article);
         Document page;
@@ -255,7 +314,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> FeatsGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("feats", id);
+        String article = searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats/" + article);
         Document page;
@@ -282,7 +341,7 @@ public class SiteParser {
     }
 
     public static ArrayList<String> BackgroundsGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("backgrounds", id);
+        String article = searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
@@ -306,7 +365,7 @@ public class SiteParser {
     }
 
     public static void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("backgrounds", id);
+        String article = searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
@@ -325,7 +384,7 @@ public class SiteParser {
     }
 
     public static void BackgroundSpecialAbilityGrabber(String id) throws IOException {
-        String article = DataReader.searchArticleId("backgrounds", id);
+        String article = searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;

@@ -1,30 +1,18 @@
 package common;
 
-import botexecution.ChatSession;
-
-import java.util.function.Consumer;
-
 public interface Constants {
     String URL = "https://dnd.su/";
     String CREDITS = "Сделано на коленке @LartsAL и @esb_bbdl за 3 недели";
 
-    String HELP_MESSAGE = """
-            /help - выводит список команд
-            /mofu - "Mofu Mofu!"
-            /search - выводит меню поиска статьи
-            /roll - выводит меню броска костей
-            /credits - выводит авторов сия бота
-            """;
-    String START_MESSAGE = """
-            Привет! Меня зовут Faerie!
-            Для вывода описания команд нажмите или наберите /help
-            """;
-
     String CHANGE_TO_COMMON_KEYBOARD = "Вы перешли на стандартную клавиатуру!";
     String CHANGE_TO_GAME_KEYBOARD = "Вы перешли на клавиатуру игры!";
     String CHANGE_TO_DND_KEYBOARD = "Вы перешли на клавиатуру DnD!";
+    String CHANGE_TO_PLAYER_KEYBOARD = "Вы перешли на клавиатуру Игрока!";
     String CHANGE_TO_DM_KEYBOARD = "Вы перешли на клавиатуру DM-a!";
+    String CHANGE_TO_ITEMS_KEYBOARD = "Вы перешли на клавиатуру предметов!";
     String CHANGE_TO_CAMPAIGN_KEYBOARD = "Вы перешли на клавиатуру компании!";
+    String CHANGE_TO_STATS_KEYBOARD = "Вы перешли на клавиатуру изменения статов!";
+    String CHANGE_TO_QUEST_KEYBOARD = "Вы перешли на клавиатуру заданий!";
 
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
@@ -152,11 +140,17 @@ public interface Constants {
     String GAME_CONTINUE = """
             Сеанс возобновлен.
             """;
+    String GAME_EXPUNGE = """
+            Сеанс удален.
+            """;
 
     String CAMPAIGN_CREATION_START = """
             Поздравляю! Вам присуждена роль Мастера Подземелья (ДМ-а) в этом чате!
             Выберите название для компании (его можно сменить позже).
             Внимание! Кампания, как и ДМ, может быть только одна на группу.
+            """;
+    String CAMPAIGN_CREATION_NOTIFICATION = """
+            Вы создали компанию. Вы можете просмотреть свои компании через /showcampaigns
             """;
     String CAMPAIGN_CREATION_CONGRATULATION = """
             Поздравляю с началом кампании! Теперь игроки могут добавляться к вам в компанию.
@@ -189,15 +183,14 @@ public interface Constants {
 
     String PLAYER_CREATION_NAME = "Введите имя персонажа.";
 
-    String SHOW_CAMPAIGNS_NOTHING = "На данный момент вы не ведете никаких компаний.";
+    String SHOW_CAMPAIGN_GROUP_NOTHING = "В данной группе нет компании.";
 
-    String SET_CAMPAIGN_NOT_FOUND = "Такой компании не найдено. Попробуйте ещё раз.";
+    String SET_CAMPAIGN_NOT_FOUND = "Такая компания не найдена. Устанавливаю: Нет компании.";
     String SET_CAMPAIGN_NULL = "Текущая компания не была указана. Для начала укажите текущую компанию.";
     String SET_CAMPAIGN_SUCCESS = "Название компании было изменено.";
 
     String SET_PASSWORD_SUCCESS = "Пароль для удаления компании был указан. При удалении компании он отправится к вам в личные сообщения.";
 
-    String SET_MULTICLASS_LIMIT_NOT_INTEGER = "Пожалуйста, введите корректное число.";
     String SET_MULTICLASS_LIMIT_ZERO = "При установке лимита классов на персонажа на 0, вы снимаете ограничение на количество классов.";
 
     String CAMPAIGN_END_RESTRICTION = "Вы не DM данной компании.";

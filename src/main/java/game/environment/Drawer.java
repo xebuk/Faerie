@@ -1,6 +1,6 @@
 package game.environment;
 
-import botexecution.ChatSession;
+import botexecution.mainobjects.ChatSession;
 import common.Constants;
 import game.objects.*;
 import tools.Tools;
@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Drawer {
-    private static final int CANVAS_WIDTH = 1024;
-    private static final int CANVAS_HEIGHT = 576;
+    private static final int CANVAS_WIDTH = 512;
+    private static final int CANVAS_HEIGHT = 288;
 
     private static final double FOV = Math.toRadians(60);
     private static final double FOCAL_LENGTH = 1.0 / Math.tan(FOV / 2);
