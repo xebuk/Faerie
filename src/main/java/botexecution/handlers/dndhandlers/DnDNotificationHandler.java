@@ -4,7 +4,6 @@ import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
 import dnd.values.RoleParameters;
-import dnd.values.masteryvalues.AdvantageTypeDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 

@@ -131,7 +131,7 @@ public class DnDCampaignHandler {
             case NONE -> {
                 if (currentUser.getChatId() > 0) {
                     walkieTalkie.patternExecute(currentUser,
-                            "Произошла ошибка - перед использованием этой функции устанивите текущую компанию.");
+                            "Произошла ошибка - перед использованием этой функции установите текущую компанию.");
                 } else {
                     walkieTalkie.patternExecute(currentUser, Constants.SHOW_CAMPAIGN_GROUP_NOTHING);
                 }

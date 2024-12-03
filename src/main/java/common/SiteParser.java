@@ -35,7 +35,7 @@ public class SiteParser {
         for (String articleId: lines) {
             separated = articleId.trim().split("~ ");
             int distance;
-            if ((int) name.charAt(0) < 123 && (int) name.charAt(0) > 96) {
+            if (name.charAt(0) <= 'z' && name.charAt(0) >= 'a') {
                 distance = env.apply(separated[1].substring(separated[1].indexOf("[") + 1, separated[1].indexOf("]")), name);
             }
             else {
