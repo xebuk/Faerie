@@ -31,6 +31,7 @@ public class AbilBot extends AbilityBot {
     private final DiceHandler diceHoarder;
 
     private final CommonMethodsHandler jackOfAllTrades;
+    private final SiteParseHandler archive;
     private final GameHandler dungeonCrawl;
 
     private final DnDNotificationHandler secretMessages;
@@ -39,14 +40,15 @@ public class AbilBot extends AbilityBot {
     private final DnDPlayerHandler characterList;
     private final DnDItemHandler bagOfHolding;
 
-    public AbilBot() throws IOException {
+    public AbilBot() {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
         this.walkieTalkie = new TextHandler(this.getSilent());
         this.pager = new MediaHandler(this.getTelegramClient());
         this.knowledge = new DataHandler(false);
         this.diceHoarder = new DiceHandler(knowledge, walkieTalkie);
 
-        this.jackOfAllTrades = new CommonMethodsHandler(knowledge, walkieTalkie, diceHoarder);
+        this.archive = new SiteParseHandler(knowledge);
+        this.jackOfAllTrades = new CommonMethodsHandler(knowledge, walkieTalkie, archive, diceHoarder);
         this.dungeonCrawl = new GameHandler(knowledge, walkieTalkie, pager, diceHoarder);
 
         this.secretMessages = new DnDNotificationHandler(knowledge, walkieTalkie);
@@ -59,10 +61,8 @@ public class AbilBot extends AbilityBot {
 
     @Override
     public long creatorId() {
-        long id;
-        try {
-            id = DataReader.readCreatorId();
-        } catch (IOException e) {
+        long id = DataReader.readCreatorId();
+        if (id < 0) {
             id = 0;
         }
         return id;
