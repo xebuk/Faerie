@@ -201,6 +201,7 @@ public interface Constants {
 
     String STANDARD_INVENTORY_SUMMARY = "Определите с ДМ-ом описание предмета.";
 
-    String IMAGE_OUTPUT_PATH = "../token_dir/userData/";
-    String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";
+    String IMAGE_OUTPUT_PATH = "../token_dir/userData/";        // TODO: Finally rename/split token_dir
+    String ROOM_PRESETS_PATH = "../token_dir/roomPresets/";     //       and make logical folders names?
+    String LOGS_PATH = "../token_dir/logs/";
 }
