@@ -10,10 +10,7 @@ import dnd.values.characteristicsvalues.RacesDnD;
 import dnd.values.characteristicsvalues.RacesSizeDnD;
 import dnd.values.equipmentids.ArmorsDnD;
 import dnd.values.equipmentids.WeaponsDnD;
-import dnd.values.masteryvalues.AdvantageTypeDnD;
-import dnd.values.masteryvalues.LanguagesDnD;
-import dnd.values.masteryvalues.MasteryTypeDnD;
-import dnd.values.masteryvalues.ScriptsDnD;
+import dnd.values.masteryvalues.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -143,7 +140,7 @@ public class PlayerDnD implements Serializable {
     public WeaponDnD equippedWeapon;
     public int hitBonus = 0;
     public String attackDice = "1d4";
-    public String damageType = "Дробящий";
+    public DamageTypeDnD damageType = DamageTypeDnD.BLUDGEONING;
     public int equippedWeaponIndex = 0;
     public String weaponEffects = "Нет";
     public HashSet<WeaponsDnD> weaponProficiency = new HashSet<>();

@@ -117,6 +117,16 @@ public enum WeaponsDnD implements Serializable {
         return weaponsAsClasses.get(weapon);
     }
 
+    public static WeaponsDnD whatType(WeaponsDnD weapon) {
+        boolean isSimple = typesToWeapons.get(SIMPLE).contains(weapon);
+        return (isSimple ? SIMPLE : MARTIAL);
+    }
+
+    public static WeaponsDnD whatRange(WeaponsDnD weapon) {
+        boolean isMelee = rangesToWeapons.get(MELEE).contains(weapon);
+        return (isMelee ? MELEE : RANGED);
+    }
+
     public static boolean isMastered(HashSet<WeaponsDnD> mastered, WeaponsDnD requested) {
         return mastered.contains(requested)
                 || mastered.contains(weaponsAsClasses.get(requested).type)

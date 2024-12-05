@@ -4,8 +4,10 @@ import common.Constants;
 import dnd.values.equipmentids.WeaponsDnD;
 import dnd.values.aspectvalues.CurrencyDnD;
 import dnd.values.aspectvalues.WeaponTraitsDnD;
+import dnd.values.masteryvalues.DamageTypeDnD;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class WeaponDnD extends ItemDnD {
     public WeaponsDnD id;
@@ -14,7 +16,8 @@ public class WeaponDnD extends ItemDnD {
     public WeaponsDnD range;
 
     public String attackDice;
-    public String damageType;
+    public String attackDiceVersatile;
+    public DamageTypeDnD damageType;
 
     public HashSet<WeaponTraitsDnD> traits;
     public int minDistance;
@@ -35,7 +38,7 @@ public class WeaponDnD extends ItemDnD {
     }
 
     public void setDamageType(String damageType) {
-        this.damageType = damageType;
+        this.damageType = DamageTypeDnD.getType(damageType);
     }
 
     public void addTraits(WeaponTraitsDnD trait) {
@@ -70,10 +73,10 @@ public class WeaponDnD extends ItemDnD {
         weapon.append("Цена: ").append(value).append(" ").append(currencyGrade).append("\n");
         weapon.append("Масса: ").append(weight).append("\n");
         weapon.append("Эффекты: ").append(effects).append("\n");
-        weapon.append("Тип: ").append(type).append("\n");
-        weapon.append("Специальность: ").append(range).append("\n");
+        weapon.append("Тип: ").append(type.toString()).append("\n");
+        weapon.append("Специальность: ").append(range.toString()).append("\n");
         weapon.append("Кость атаки: ").append(attackDice).append("\n");
-        weapon.append("Тип урона: ").append(damageType).append("\n");
+        weapon.append("Тип урона: ").append(damageType.toString()).append("\n");
         weapon.append("Черты оружия: ").append(traits).append("\n");
         weapon.append("Минимальное расстояние: ").append(minDistance).append("\n");
         weapon.append("Максимальное расстояние: ").append(maxDistance).append("\n");
@@ -98,7 +101,8 @@ public class WeaponDnD extends ItemDnD {
         this.range = WeaponsDnD.MELEE;
 
         this.attackDice = "1d4";
-        this.damageType = "Дробящий";
+        this.attackDiceVersatile = "1d4";
+        this.damageType = DamageTypeDnD.BLUDGEONING;
 
         this.traits = new HashSet<>();
 
@@ -112,25 +116,26 @@ public class WeaponDnD extends ItemDnD {
     public static class BattleaxeDnD extends WeaponDnD {
 
         public BattleaxeDnD() {
-            this.name = "Новое оружие";
+            this.name = "Боевой топор";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 4;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.BATTLEAXE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = "1d10";
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.VERSATILE));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -143,28 +148,30 @@ public class WeaponDnD extends ItemDnD {
     public static class BlowgunDnD extends WeaponDnD {
 
         public BlowgunDnD() {
-            this.name = "Новое оружие";
+            this.name = "Духовая трубка";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.BLOWGUN;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.RELOAD));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 25;
+            this.maxDistance = 100;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -174,25 +181,26 @@ public class WeaponDnD extends ItemDnD {
     public static class ClubDnD extends WeaponDnD {
 
         public ClubDnD() {
-            this.name = "Новое оружие";
+            this.name = "Дубинка";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
             this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.CLUB;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -205,28 +213,31 @@ public class WeaponDnD extends ItemDnD {
     public static class DaggerDnD extends WeaponDnD {
 
         public DaggerDnD() {
-            this.name = "Новое оружие";
+            this.name = "Кинжал";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 2;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.DAGGER;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.THROWABLE,
+                    WeaponTraitsDnD.FENCING));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -236,59 +247,30 @@ public class WeaponDnD extends ItemDnD {
     public static class DartDnD extends WeaponDnD {
 
         public DartDnD() {
-            this.name = "Новое оружие";
+            this.name = "Дротик";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.value = 5;
+            this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
-            this.weight = 1;
+            this.weight = 0.25;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.DART;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
-
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
-
-            this.traits = new HashSet<>();
-
-            this.minDistance = 0;
-            this.maxDistance = 5;
-
-            this.hitBonus = 0;
-            this.effects = "Нет.";
-        }
-    }
-
-    public static class DoubleBladedScimitarDnD extends WeaponDnD {
-
-        public DoubleBladedScimitarDnD() {
-            this.name = "Новое оружие";
-            this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
-
-            this.amountInInstance = 1;
-
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
-
-            this.weight = 1;
-
-            this.id = WeaponsDnD.CUSTOM;
-
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.THROWABLE,
+                    WeaponTraitsDnD.FENCING));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -298,23 +280,24 @@ public class WeaponDnD extends ItemDnD {
     public static class FlailDnD extends WeaponDnD {
 
         public FlailDnD() {
-            this.name = "Новое оружие";
+            this.name = "Цеп";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.FLAIL;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
             this.traits = new HashSet<>();
 
@@ -329,25 +312,28 @@ public class WeaponDnD extends ItemDnD {
     public static class GlaiveDnD extends WeaponDnD {
 
         public GlaiveDnD() {
-            this.name = "Новое оружие";
+            this.name = "Глефа";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 20;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 6;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.GLAIVE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d10";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.REACH,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -360,25 +346,27 @@ public class WeaponDnD extends ItemDnD {
     public static class GreataxeDnD extends WeaponDnD {
 
         public GreataxeDnD() {
-            this.name = "Новое оружие";
+            this.name = "";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 30;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 7;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.GREATAXE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d12";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -391,25 +379,26 @@ public class WeaponDnD extends ItemDnD {
     public static class GreatclubDnD extends WeaponDnD {
 
         public GreatclubDnD() {
-            this.name = "Новое оружие";
+            this.name = "Палица";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.value = 2;
+            this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
-            this.weight = 1;
+            this.weight = 10;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.GREATCLUB;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -422,25 +411,27 @@ public class WeaponDnD extends ItemDnD {
     public static class GreatswordDnD extends WeaponDnD {
 
         public GreatswordDnD() {
-            this.name = "Новое оружие";
+            this.name = "Двуручный меч";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 50;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 6;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.GREATSWORD;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "2d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -453,25 +444,28 @@ public class WeaponDnD extends ItemDnD {
     public static class HalbergDnD extends WeaponDnD {
 
         public HalbergDnD() {
-            this.name = "Новое оружие";
+            this.name = "Алебарда";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 20;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 6;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.HALBERG;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d10";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.REACH,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -484,28 +478,30 @@ public class WeaponDnD extends ItemDnD {
     public static class HandaxeDnD extends WeaponDnD {
 
         public HandaxeDnD() {
-            this.name = "Новое оружие";
+            this.name = "Ручной топор";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 5;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.HANDAXE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.THROWABLE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -515,28 +511,31 @@ public class WeaponDnD extends ItemDnD {
     public static class HandCrossbowDnD extends WeaponDnD {
 
         public HandCrossbowDnD() {
-            this.name = "Новое оружие";
+            this.name = "Ручной арбалет";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 75;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.HAND_CROSSBOW;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.RELOAD));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 30;
+            this.maxDistance = 120;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -546,28 +545,32 @@ public class WeaponDnD extends ItemDnD {
     public static class HeavyCrossbowDnD extends WeaponDnD {
 
         public HeavyCrossbowDnD() {
-            this.name = "Новое оружие";
+            this.name = "Тяжелый арбалет";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 50;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 18;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.HEAVY_CROSSBOW;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d10";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.TWOHANDED,
+                    WeaponTraitsDnD.RELOAD,
+                    WeaponTraitsDnD.HEAVY));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 100;
+            this.maxDistance = 400;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -577,28 +580,29 @@ public class WeaponDnD extends ItemDnD {
     public static class JavelinDnD extends WeaponDnD {
 
         public JavelinDnD() {
-            this.name = "Новое оружие";
+            this.name = "Метательное копье";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.value = 5;
+            this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.JAVELIN;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.THROWABLE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 30;
+            this.maxDistance = 120;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -608,25 +612,27 @@ public class WeaponDnD extends ItemDnD {
     public static class LanceDnD extends WeaponDnD {
 
         public LanceDnD() {
-            this.name = "Новое оружие";
+            this.name = "Длинное копье";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 6;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.LANCE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d12";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.REACH,
+                    WeaponTraitsDnD.SPECIAL));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -639,28 +645,31 @@ public class WeaponDnD extends ItemDnD {
     public static class LightCrossbowDnD extends WeaponDnD {
 
         public LightCrossbowDnD() {
-            this.name = "Новое оружие";
+            this.name = "Легкий арбалет";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 25;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 5;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.LIGHT_CROSSBOW;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.TWOHANDED,
+                    WeaponTraitsDnD.RELOAD));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 80;
+            this.maxDistance = 320;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -670,28 +679,30 @@ public class WeaponDnD extends ItemDnD {
     public static class LightHammerDnD extends WeaponDnD {
 
         public LightHammerDnD() {
-            this.name = "Новое оружие";
+            this.name = "Легкий молот";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 2;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.LIGHT_HAMMER;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.THROWABLE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -701,28 +712,31 @@ public class WeaponDnD extends ItemDnD {
     public static class LongbowDnD extends WeaponDnD {
 
         public LongbowDnD() {
-            this.name = "Новое оружие";
+            this.name = "Длинный лук";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 50;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.LONGBOW;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.TWOHANDED,
+                    WeaponTraitsDnD.HEAVY));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 150;
+            this.maxDistance = 600;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -732,25 +746,26 @@ public class WeaponDnD extends ItemDnD {
     public static class LongswordDnD extends WeaponDnD {
 
         public LongswordDnD() {
-            this.name = "Новое оружие";
+            this.name = "Длинный меч";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 15;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.LONGSWORD;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = "1d10";
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.VERSATILE));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -763,23 +778,24 @@ public class WeaponDnD extends ItemDnD {
     public static class MaceDnD extends WeaponDnD {
 
         public MaceDnD() {
-            this.name = "Новое оружие";
+            this.name = "Булава";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 5;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 4;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.MACE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
             this.traits = new HashSet<>();
 
@@ -794,25 +810,27 @@ public class WeaponDnD extends ItemDnD {
     public static class MaulDnD extends WeaponDnD {
 
         public MaulDnD() {
-            this.name = "Новое оружие";
+            this.name = "Молот";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 10;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.MAUL;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "2d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -825,23 +843,24 @@ public class WeaponDnD extends ItemDnD {
     public static class MorningstarDnD extends WeaponDnD {
 
         public MorningstarDnD() {
-            this.name = "Новое оружие";
+            this.name = "Моргенштерн";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 15;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 4;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.MORNINGSTAR;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
             this.traits = new HashSet<>();
 
@@ -856,7 +875,7 @@ public class WeaponDnD extends ItemDnD {
     public static class NetDnD extends WeaponDnD {
 
         public NetDnD() {
-            this.name = "Новое оружие";
+            this.name = "Сеть";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
@@ -864,20 +883,22 @@ public class WeaponDnD extends ItemDnD {
             this.value = 1;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.NET;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "0";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.NONE;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.SPECIAL,
+                    WeaponTraitsDnD.THROWABLE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 5;
+            this.maxDistance = 15;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -887,25 +908,28 @@ public class WeaponDnD extends ItemDnD {
     public static class PikeDnD extends WeaponDnD {
 
         public PikeDnD() {
-            this.name = "Новое оружие";
+            this.name = "Пика";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 5;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 18;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.PIKE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d10";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.HEAVY,
+                    WeaponTraitsDnD.REACH,
+                    WeaponTraitsDnD.TWOHANDED));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -918,25 +942,26 @@ public class WeaponDnD extends ItemDnD {
     public static class QuarterstaffDnD extends WeaponDnD {
 
         public QuarterstaffDnD() {
-            this.name = "Новое оружие";
+            this.name = "Боевой посох";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.value = 2;
+            this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
-            this.weight = 1;
+            this.weight = 4;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.QUARTERSTAFF;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = "1d8";
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.VERSATILE));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -949,25 +974,26 @@ public class WeaponDnD extends ItemDnD {
     public static class RapierDnD extends WeaponDnD {
 
         public RapierDnD() {
-            this.name = "Новое оружие";
+            this.name = "Рапира";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 25;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.RAPIER;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.FENCING));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -980,25 +1006,27 @@ public class WeaponDnD extends ItemDnD {
     public static class ScimitarDnD extends WeaponDnD {
 
         public ScimitarDnD() {
-            this.name = "Новое оружие";
+            this.name = "Скимитар";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 25;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SCIMITAR;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.FENCING));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -1011,28 +1039,30 @@ public class WeaponDnD extends ItemDnD {
     public static class ShortbowDnD extends WeaponDnD {
 
         public ShortbowDnD() {
-            this.name = "Новое оружие";
+            this.name = "Короткий лук";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 25;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SHORTBOW;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO,
+                    WeaponTraitsDnD.TWOHANDED));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 80;
+            this.maxDistance = 320;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -1042,25 +1072,27 @@ public class WeaponDnD extends ItemDnD {
     public static class ShortswordDnD extends WeaponDnD {
 
         public ShortswordDnD() {
-            this.name = "Новое оружие";
+            this.name = "Короткий меч";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SHORTSWORD;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT,
+                    WeaponTraitsDnD.FENCING));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -1073,7 +1105,7 @@ public class WeaponDnD extends ItemDnD {
     public static class SickleDnD extends WeaponDnD {
 
         public SickleDnD() {
-            this.name = "Новое оружие";
+            this.name = "Серп";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
@@ -1081,17 +1113,18 @@ public class WeaponDnD extends ItemDnD {
             this.value = 1;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SICKLE;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.LIGHT));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -1104,28 +1137,29 @@ public class WeaponDnD extends ItemDnD {
     public static class SlingDnD extends WeaponDnD {
 
         public SlingDnD() {
-            this.name = "Новое оружие";
+            this.name = "Праща";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
             this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
+            this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
-            this.weight = 1;
+            this.weight = 0;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SLING;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.AMMO));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 30;
+            this.maxDistance = 120;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -1135,7 +1169,7 @@ public class WeaponDnD extends ItemDnD {
     public static class SpearDnD extends WeaponDnD {
 
         public SpearDnD() {
-            this.name = "Новое оружие";
+            this.name = "Копье";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
@@ -1143,20 +1177,22 @@ public class WeaponDnD extends ItemDnD {
             this.value = 1;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.SPEAR;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = "1d8";
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.THROWABLE,
+                    WeaponTraitsDnD.VERSATILE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -1166,28 +1202,30 @@ public class WeaponDnD extends ItemDnD {
     public static class TridentDnD extends WeaponDnD {
 
         public TridentDnD() {
-            this.name = "Новое оружие";
+            this.name = "Трезубец";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 5;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 4;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.TRIDENT;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d6";
+            this.attackDiceVersatile = "1d8";
+            this.damageType = DamageTypeDnD.PIERCING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.THROWABLE,
+                    WeaponTraitsDnD.VERSATILE));
 
-            this.minDistance = 0;
-            this.maxDistance = 5;
+            this.minDistance = 20;
+            this.maxDistance = 60;
 
             this.hitBonus = 0;
             this.effects = "Нет.";
@@ -1197,25 +1235,26 @@ public class WeaponDnD extends ItemDnD {
     public static class WarhammerDnD extends WeaponDnD {
 
         public WarhammerDnD() {
-            this.name = "Новое оружие";
+            this.name = "Боевой молот";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 15;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.WARHAMMER;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = "1d10";
+            this.damageType = DamageTypeDnD.BLUDGEONING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.VERSATILE));
 
             this.minDistance = 0;
             this.maxDistance = 5;
@@ -1228,23 +1267,24 @@ public class WeaponDnD extends ItemDnD {
     public static class WarPickDnD extends WeaponDnD {
 
         public WarPickDnD() {
-            this.name = "Новое оружие";
+            this.name = "Боевая кирка";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 5;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 2;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.WAR_PICK;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDice = "1d8";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.PIERCING;
 
             this.traits = new HashSet<>();
 
@@ -1259,56 +1299,27 @@ public class WeaponDnD extends ItemDnD {
     public static class WhipDnD extends WeaponDnD {
 
         public WhipDnD() {
-            this.name = "Новое оружие";
+            this.name = "Кнут";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 2;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 3;
 
-            this.id = WeaponsDnD.CUSTOM;
+            this.id = WeaponsDnD.WHIP;
 
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
-
-            this.attackDice = "1d4";
-            this.damageType = "Дробящий";
-
-            this.traits = new HashSet<>();
-
-            this.minDistance = 0;
-            this.maxDistance = 5;
-
-            this.hitBonus = 0;
-            this.effects = "Нет.";
-        }
-    }
-
-    public static class YklwaDnD extends WeaponDnD {
-
-        public YklwaDnD() {
-            this.name = "Новое оружие";
-            this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
-
-            this.amountInInstance = 1;
-
-            this.value = 1;
-            this.currencyGrade = CurrencyDnD.GOLD_COINS;
-
-            this.weight = 1;
-
-            this.id = WeaponsDnD.CUSTOM;
-
-            this.type = WeaponsDnD.SIMPLE;
-            this.range = WeaponsDnD.MELEE;
+            this.type = WeaponsDnD.whatType(this.id);
+            this.range = WeaponsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
-            this.damageType = "Дробящий";
+            this.attackDiceVersatile = this.attackDice;
+            this.damageType = DamageTypeDnD.SLASHING;
 
-            this.traits = new HashSet<>();
+            this.traits = new HashSet<>(Set.of(WeaponTraitsDnD.REACH,
+                    WeaponTraitsDnD.FENCING));
 
             this.minDistance = 0;
             this.maxDistance = 5;
