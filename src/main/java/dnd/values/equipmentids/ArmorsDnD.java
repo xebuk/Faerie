@@ -8,7 +8,21 @@ public enum ArmorsDnD {
     LIGHT,
     MEDIUM,
     HEAVY,
-    SHIELD;
+    SHIELD,
+
+    BREASTPLATE,
+    CHAIN_MAIL,
+    CHAIN_SHIRT,
+    HALF_PLATE,
+    HIDE_ARMOR,
+    LEATHER_ARMOR,
+    PADDED_ARMOR,
+    PLATE_ARMOR,
+    RING_MAIL,
+    SCALE_MAIL,
+    SPIKED_ARMOR,
+    SPLINT_ARMOR,
+    STUDDED_LEATHER_ARMOR;
 
     private static final Map<String, ArmorsDnD> armorTypes = Map.of("Легкая", LIGHT,
             "Средняя", MEDIUM, "Тяжелая", HEAVY, "Щит", SHIELD);

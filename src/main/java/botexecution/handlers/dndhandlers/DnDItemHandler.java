@@ -12,6 +12,7 @@ import dnd.equipment.InstrumentsDnD;
 import dnd.mainobjects.PlayerDnD;
 import dnd.values.equipmentids.ArmorsDnD;
 import dnd.values.characteristicsvalues.JobsDnD;
+import dnd.values.masteryvalues.DamageTypeDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
 import dnd.values.equipmentids.WeaponsDnD;
 import dnd.values.aspectvalues.*;
@@ -355,7 +356,7 @@ public class DnDItemHandler {
         }
 
         if (currentCampaign.activeDm.editParameter.equals("-t")) {
-            if (WeaponsDnD.getTypes().containsKey(response)) {
+            if (!WeaponsDnD.getTypes().containsKey(response)) {
                 walkieTalkie.patternExecute(cs,
                         "Введите корректный тип оружия (Простое, Боевое)");
                 return;
@@ -363,9 +364,19 @@ public class DnDItemHandler {
         }
 
         if (currentCampaign.activeDm.editParameter.equals("-r")) {
-            if (WeaponsDnD.getRanges().containsKey(response)) {
+            if (!WeaponsDnD.getRanges().containsKey(response)) {
                 walkieTalkie.patternExecute(cs,
                         "Введите корректную специальность оружия (Ближнего боя, Дальнего боя)");
+                return;
+            }
+        }
+
+        if (currentCampaign.activeDm.editParameter.equals("-dt")) {
+            if (!DamageTypeDnD.getTypes().containsKey(response)) {
+                walkieTalkie.patternExecute(cs,
+                        "Введите корректный тип урона (Нет, Рубящий, Колющий, " +
+                                "Дробящий, Яд, Кислота, Огонь, Холод, Святой, Некротика, " +
+                                "Молния, Громовой, Силовой, Психический)");
                 return;
             }
         }
@@ -1249,7 +1260,7 @@ public class DnDItemHandler {
                 affectedPlayer.equippedArmorIndex = 0;
                 affectedPlayer.weaponEffects = "Нет.";
                 affectedPlayer.attackDice = "1d4";
-                affectedPlayer.damageType = "Дробящий";
+                affectedPlayer.damageType = DamageTypeDnD.BLUDGEONING;
             }
             case "-a" -> {
                 if (affectedPlayer.equippedArmor.hasStealthDisadvantage) {

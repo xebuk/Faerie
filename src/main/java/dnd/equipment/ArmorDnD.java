@@ -84,21 +84,21 @@ public class ArmorDnD extends ItemDnD {
     public static class BreastplateDnD extends ArmorDnD {
 
         public BreastplateDnD() {
-            this.name = "Своя броня";
+            this.name = "Кираса";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 400;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 20;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.BREASTPLATE;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 14;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
@@ -111,25 +111,25 @@ public class ArmorDnD extends ItemDnD {
     public static class ChainMailDnD extends ArmorDnD {
 
         public ChainMailDnD() {
-            this.name = "Своя броня";
+            this.name = "Кольчуга";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 75;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 55;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.CHAIN_MAIL;
+            this.type = ArmorsDnD.HEAVY;
 
-            this.armorClass = 10;
+            this.armorClass = 16;
             this.dexterityModMax = 0;
 
-            this.strengthRequirement = 0;
+            this.strengthRequirement = 13;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -138,21 +138,21 @@ public class ArmorDnD extends ItemDnD {
     public static class ChainShirtDnD extends ArmorDnD {
 
         public ChainShirtDnD() {
-            this.name = "Своя броня";
+            this.name = "Кольчужная рубаха";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 50;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 20;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.CHAIN_SHIRT;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 13;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
@@ -165,25 +165,25 @@ public class ArmorDnD extends ItemDnD {
     public static class HalfPlateDnD extends ArmorDnD {
 
         public HalfPlateDnD() {
-            this.name = "Своя броня";
+            this.name = "Полулаты";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 750;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 40;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.HALF_PLATE;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 15;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -192,21 +192,21 @@ public class ArmorDnD extends ItemDnD {
     public static class HideArmorDnD extends ArmorDnD {
 
         public HideArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Шкурный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 12;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.HIDE_ARMOR;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 12;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
@@ -219,21 +219,21 @@ public class ArmorDnD extends ItemDnD {
     public static class LeatherArmorDnD extends ArmorDnD {
 
         public LeatherArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Кожаный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 8;
 
-            this.id = ArmorsDnD.CUSTOM;
+            this.id = ArmorsDnD.LEATHER_ARMOR;
             this.type = ArmorsDnD.LIGHT;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 11;
+            this.dexterityModMax = 999;
 
             this.strengthRequirement = 0;
 
@@ -246,7 +246,7 @@ public class ArmorDnD extends ItemDnD {
     public static class PaddedArmorDnD extends ArmorDnD {
 
         public PaddedArmorDnD() {
-            this.name = "Стеганный";
+            this.name = "Стёганный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
@@ -256,11 +256,11 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 8;
 
-            this.id = ArmorsDnD.CUSTOM;
+            this.id = ArmorsDnD.PADDED_ARMOR;
             this.type = ArmorsDnD.LIGHT;
 
             this.armorClass = 11;
-            this.dexterityModMax = 0;
+            this.dexterityModMax = 999;
 
             this.strengthRequirement = 0;
 
@@ -271,26 +271,27 @@ public class ArmorDnD extends ItemDnD {
     }
 
     public static class PlateArmorDnD extends ArmorDnD {
+
         public PlateArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Латы";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 1500;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 65;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.PLATE_ARMOR;
+            this.type = ArmorsDnD.HEAVY;
 
-            this.armorClass = 10;
+            this.armorClass = 18;
             this.dexterityModMax = 0;
 
-            this.strengthRequirement = 0;
+            this.strengthRequirement = 15;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -299,25 +300,25 @@ public class ArmorDnD extends ItemDnD {
     public static class RingMailDnD extends ArmorDnD {
 
         public RingMailDnD() {
-            this.name = "Своя броня";
+            this.name = "Колечный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 30;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 40;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.RING_MAIL;
+            this.type = ArmorsDnD.HEAVY;
 
-            this.armorClass = 10;
+            this.armorClass = 14;
             this.dexterityModMax = 0;
 
             this.strengthRequirement = 0;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -326,25 +327,25 @@ public class ArmorDnD extends ItemDnD {
     public static class ScaleMailDnD extends ArmorDnD {
 
         public ScaleMailDnD() {
-            this.name = "Своя броня";
+            this.name = "Чешуйчатый доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 50;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 45;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.SCALE_MAIL;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 14;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -353,20 +354,20 @@ public class ArmorDnD extends ItemDnD {
     public static class ShieldDnD extends ArmorDnD {
 
         public ShieldDnD() {
-            this.name = "Своя броня";
+            this.name = "Щит";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 10;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 6;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.SHIELD;
+            this.type = ArmorsDnD.SHIELD;
 
-            this.armorClass = 10;
+            this.armorClass = 2;
             this.dexterityModMax = 0;
 
             this.strengthRequirement = 0;
@@ -380,25 +381,25 @@ public class ArmorDnD extends ItemDnD {
     public static class SpikedArmorDnD extends ArmorDnD {
 
         public SpikedArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Шипастые доспехи";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 75;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 40;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.SPIKED_ARMOR;
+            this.type = ArmorsDnD.MEDIUM;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 14;
+            this.dexterityModMax = 2;
 
             this.strengthRequirement = 0;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -407,25 +408,25 @@ public class ArmorDnD extends ItemDnD {
     public static class SplintArmorDnD extends ArmorDnD {
 
         public SplintArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Наборный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 200;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 60;
 
-            this.id = ArmorsDnD.CUSTOM;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ArmorsDnD.SPLINT_ARMOR;
+            this.type = ArmorsDnD.HEAVY;
 
-            this.armorClass = 10;
+            this.armorClass = 17;
             this.dexterityModMax = 0;
 
-            this.strengthRequirement = 0;
+            this.strengthRequirement = 15;
 
-            this.hasStealthDisadvantage = false;
+            this.hasStealthDisadvantage = true;
 
             this.effects = "Нет.";
         }
@@ -434,21 +435,21 @@ public class ArmorDnD extends ItemDnD {
     public static class StuddedLeatherArmorDnD extends ArmorDnD {
 
         public StuddedLeatherArmorDnD() {
-            this.name = "Своя броня";
+            this.name = "Проклепанный кожаный доспех";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
 
-            this.value = 1;
+            this.value = 45;
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
-            this.weight = 1;
+            this.weight = 13;
 
-            this.id = ArmorsDnD.CUSTOM;
+            this.id = ArmorsDnD.STUDDED_LEATHER_ARMOR;
             this.type = ArmorsDnD.LIGHT;
 
-            this.armorClass = 10;
-            this.dexterityModMax = 0;
+            this.armorClass = 12;
+            this.dexterityModMax = 999;
 
             this.strengthRequirement = 0;
 
