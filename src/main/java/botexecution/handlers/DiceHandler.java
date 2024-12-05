@@ -4,6 +4,7 @@ import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
+import dice.Dice;
 import dnd.mainobjects.PlayerDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
 import dnd.values.masteryvalues.AdvantageTypeDnD;
@@ -17,18 +18,19 @@ public class DiceHandler {
     private final TextHandler walkieTalkie;
     private final DataHandler knowledge;
 
+    private final Dice die;
+    private final String color = "purple";
+
     public DiceHandler(DataHandler knowledge, TextHandler walkieTalkie) {
         this.walkieTalkie = walkieTalkie;
         this.knowledge = knowledge;
+        this.die = new Dice();
     }
-
-    private final Random random = new Random();
-    private final String color = "purple";
 
     public void D20(ChatSession cs) {
         StringBuilder luck = new StringBuilder();
 
-        int dice = random.nextInt(20) + 1;
+        int dice = die.throwDice(20);
         luck.append(dice).append("\n");
 
         if (dice == 20) {
@@ -46,8 +48,8 @@ public class DiceHandler {
     public void D20TwoTimes(ChatSession cs, boolean adv) {
         StringBuilder luck = new StringBuilder();
 
-        int dice1 = random.nextInt(20) + 1;
-        int dice2 = random.nextInt(20) + 1;
+        int dice1 = die.throwDice(20);
+        int dice2 = die.throwDice(20);
 
         luck.append(dice1).append(" / ").append(dice2).append("\n");
 
@@ -92,10 +94,10 @@ public class DiceHandler {
     public String D6FourTimes() {
         StringBuilder luck = new StringBuilder();
 
-        int dice1 = random.nextInt(6) + 1;
-        int dice2 = random.nextInt(6) + 1;
-        int dice3 = random.nextInt(6) + 1;
-        int dice4 = random.nextInt(6) + 1;
+        int dice1 = die.throwDice(6);
+        int dice2 = die.throwDice(6);
+        int dice3 = die.throwDice(6);
+        int dice4 = die.throwDice(6);
 
         luck.append(dice1).append(" / ").append(dice2).append(" / ").append(dice3).append(" / ").append(dice4).append("\n");
         luck.append("Итоговый стат по костям: ").append(dice1 + dice2 + dice3 + dice4 - Integer.min(Integer.min(dice1, dice2), Integer.min(dice3, dice4)));
@@ -121,17 +123,17 @@ public class DiceHandler {
     }
 
     public void D8(ChatSession cs) {
-        int dice = random.nextInt(8) + 1;
+        int dice = die.throwDice(8);
         walkieTalkie.patternExecute(cs, String.valueOf(dice), null, false);
     }
 
     public void D6(ChatSession cs) {
-        int dice = random.nextInt(6) + 1;
+        int dice = die.throwDice(8);
         walkieTalkie.patternExecute(cs, String.valueOf(dice), null, false);
     }
 
     public void D4(ChatSession cs) {
-        int dice = random.nextInt(4) + 1;
+        int dice = die.throwDice(8);
         walkieTalkie.patternExecute(cs, String.valueOf(dice), null, false);
     }
 
@@ -142,7 +144,7 @@ public class DiceHandler {
         int critFailures = 0;
 
         for (int i = 0; i < numberOfDice; i++) {
-            int dice = random.nextInt(numberOfSides) + 1;
+            int dice = die.throwDice(numberOfSides);;
             diceTable.append(dice).append(" / ");
             sum = sum + dice;
             if (dice == numberOfSides) {
@@ -169,7 +171,7 @@ public class DiceHandler {
 
         int luck = 0;
         for (int i = 0; i < numberOfDice; i++) {
-            luck = luck + random.nextInt(numberOfSides) + 1;
+            luck = luck + die.throwDice(numberOfSides);;
         }
 
         return luck;
@@ -178,10 +180,10 @@ public class DiceHandler {
     public ArrayList<Integer> D6FourTimesCreation() {
         ArrayList<Integer> luck = new ArrayList<>();
 
-        luck.add(random.nextInt(6) + 1);
-        luck.add(random.nextInt(6) + 1);
-        luck.add(random.nextInt(6) + 1);
-        luck.add(random.nextInt(6) + 1);
+        luck.add(die.throwDice(6));
+        luck.add(die.throwDice(6));
+        luck.add(die.throwDice(6));
+        luck.add(die.throwDice(6));
         luck.add(luck.get(0) + luck.get(1) + luck.get(2) + luck.get(3)
                 - Integer.min(Integer.min(luck.get(0), luck.get(1)), Integer.min(luck.get(2), luck.get(3))));
 
@@ -372,8 +374,8 @@ public class DiceHandler {
 
         if (affectedPlayer.advantage != AdvantageTypeDnD.CLEAR_THROW) {
             result.append("2D20:\n");
-            int dice1 = random.nextInt(20) + 1;
-            int dice2 = random.nextInt(20) + 1;
+            int dice1 = die.throwDice(20);;
+            int dice2 = die.throwDice(20);;
             result.append(dice1).append(" / ").append(dice2).append("\n");
             int res = 0;
             switch (affectedPlayer.advantage) {
@@ -444,7 +446,7 @@ public class DiceHandler {
                 numberOfSides = Integer.parseInt(diceData[1]);
 
                 for (int i = 0; i < numberOfDice; i++) {
-                    throwRes = random.nextInt(numberOfSides) + 1;
+                    throwRes = die.throwDice(numberOfSides);;
                     result.append(throwRes).append(" / ");
                     sum = sum + throwRes;
                     if (throwRes == numberOfSides) {
