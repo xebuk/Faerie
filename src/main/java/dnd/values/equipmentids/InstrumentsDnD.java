@@ -47,8 +47,5 @@ public enum InstrumentsDnD implements Serializable {
     PAINTER_TOOLS,
     JEWELER_TOOLS;
 
-    private static final InstrumentsDnD[] valuesArray = values();
-    public InstrumentsDnD get(int index) {
-        return valuesArray[index];
-    }
+
 }
