@@ -1,5 +1,6 @@
 package botexecution.handlers.dndhandlers;
 
+import botexecution.handlers.SiteParseHandler;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
@@ -8,13 +9,12 @@ import dnd.characteristics.AbilityDnD;
 import dnd.characteristics.FeatDnD;
 import dnd.characteristics.SpellDnD;
 import dnd.equipment.*;
-import dnd.equipment.InstrumentsDnD;
+import dnd.equipment.InstrumentDnD;
 import dnd.mainobjects.PlayerDnD;
-import dnd.values.equipmentids.ArmorsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.characteristicsvalues.JobsDnD;
 import dnd.values.masteryvalues.DamageTypeDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
-import dnd.values.equipmentids.WeaponsDnD;
 import dnd.values.aspectvalues.*;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
@@ -27,6 +27,7 @@ import java.util.Set;
 public class DnDItemHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
+    private final SiteParseHandler archive;
     private final DnDNotificationHandler secretMessages;
 
     public ChatSession getCampaignSession(ChatSession currentUser) {
@@ -97,7 +98,7 @@ public class DnDItemHandler {
                 currentCampaign.activeDm.armorCollectionNames.add(armor.name);
             }
             case "-in" -> {
-                InstrumentsDnD instruments = instrumentsAllocator.get(searchAspect(searchLine, cs.lastParameter));
+                InstrumentDnD instruments = instrumentsAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор инструментов добавлено: ").append(instruments.name);
                 currentCampaign.activeDm.instrumentsCollection.add(instruments);
                 currentCampaign.activeDm.instrumentsCollectionNames.add(instruments.name);
@@ -306,7 +307,10 @@ public class DnDItemHandler {
             case ITEM -> aspectStatus.append(currentCampaign.activeDm.editItem.toString());
             case WEAPON -> aspectStatus.append(currentCampaign.activeDm.editWeapon.toString());
             case ARMOR -> aspectStatus.append(currentCampaign.activeDm.editArmor.toString());
-            case INSTRUMENTS -> aspectStatus.append(currentCampaign.activeDm.editInstruments.toString());
+            case INSTRUMENTS -> {
+                aspectStatus.append(currentCampaign.activeDm.editInstruments.toString());
+                aspectStatus.append(archive.toolGrabber(currentCampaign.activeDm.editInstruments.id));
+            }
             case KIT -> aspectStatus.append(currentCampaign.activeDm.editKit.toString());
             case FEAT -> aspectStatus.append(currentCampaign.activeDm.editFeat.toString());
             case ABILITY -> aspectStatus.append(currentCampaign.activeDm.editAbility.toString());
@@ -356,7 +360,7 @@ public class DnDItemHandler {
         }
 
         if (currentCampaign.activeDm.editParameter.equals("-t")) {
-            if (!WeaponsDnD.getTypes().containsKey(response)) {
+            if (!ItemsIdsDnD.getTypes().containsKey(response)) {
                 walkieTalkie.patternExecute(cs,
                         "Введите корректный тип оружия (Простое, Боевое)");
                 return;
@@ -364,7 +368,7 @@ public class DnDItemHandler {
         }
 
         if (currentCampaign.activeDm.editParameter.equals("-r")) {
-            if (!WeaponsDnD.getRanges().containsKey(response)) {
+            if (!ItemsIdsDnD.getRanges().containsKey(response)) {
                 walkieTalkie.patternExecute(cs,
                         "Введите корректную специальность оружия (Ближнего боя, Дальнего боя)");
                 return;
@@ -382,7 +386,7 @@ public class DnDItemHandler {
         }
 
         if (currentCampaign.activeDm.editParameter.equals("-at")) {
-            if (!ArmorsDnD.getArmorTypes().containsKey(response)) {
+            if (!ItemsIdsDnD.getArmorTypes().containsKey(response)) {
                 walkieTalkie.patternExecute(cs,
                         "Введите корректный тип брони (Легкая, Средняя, Тяжелая, Щит)");
                 return;
@@ -484,8 +488,8 @@ public class DnDItemHandler {
                     case "-v" -> currentCampaign.activeDm.editWeapon.setValue(Integer.parseInt(response));
                     case "-c" -> currentCampaign.activeDm.editWeapon.setCurrencyGrade(CurrencyDnD.getCurrency(response));
                     case "-w" ->  currentCampaign.activeDm.editWeapon.setWeight(Integer.parseInt(response));
-                    case "-t" -> currentCampaign.activeDm.editWeapon.setType(WeaponsDnD.getType(response));
-                    case "-r" -> currentCampaign.activeDm.editWeapon.setRange(WeaponsDnD.getRange(response));
+                    case "-t" -> currentCampaign.activeDm.editWeapon.setType(ItemsIdsDnD.getType(response));
+                    case "-r" -> currentCampaign.activeDm.editWeapon.setRange(ItemsIdsDnD.getRange(response));
                     case "-ad" -> currentCampaign.activeDm.editWeapon.setAttackDice(response);
                     case "-dt" -> currentCampaign.activeDm.editWeapon.setDamageType(response);
                     case "-atr" -> currentCampaign.activeDm.editWeapon.addTraits(WeaponTraitsDnD.getTrait(response));
@@ -515,7 +519,7 @@ public class DnDItemHandler {
                     case "-v" -> currentCampaign.activeDm.editArmor.setValue(Integer.parseInt(response));
                     case "-c" -> currentCampaign.activeDm.editArmor.setCurrencyGrade(CurrencyDnD.getCurrency(response));
                     case "-w" ->  currentCampaign.activeDm.editArmor.setWeight(Integer.parseInt(response));
-                    case "-at" -> currentCampaign.activeDm.editArmor.setType(ArmorsDnD.getArmorType(response));
+                    case "-at" -> currentCampaign.activeDm.editArmor.setType(ItemsIdsDnD.getArmorType(response));
                     case "-ac" -> currentCampaign.activeDm.editArmor.setArmorClass(Integer.parseInt(response));
                     case "-dmm" -> currentCampaign.activeDm.editArmor.setDexterityModMax(Integer.parseInt(response));
                     case "-sr" -> currentCampaign.activeDm.editArmor.setStrengthRequirement(Integer.parseInt(response));
@@ -1158,9 +1162,9 @@ public class DnDItemHandler {
                 }
 
                 WeaponDnD requestedWeapon = affectedPlayer.weaponCollectionOnHands.get(index);
-                if (!WeaponsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.id)
-                        && !WeaponsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.type)
-                        && !WeaponsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.range)) {
+                if (!ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.id)
+                        && !ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.type)
+                        && !ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.range)) {
                     walkieTalkie.patternExecute(currentUser, "Ваш персонаж не владеет данным типом оружия.",
                             null, false);
                     return;
@@ -1294,7 +1298,7 @@ public class DnDItemHandler {
     private final HashMap<String, ItemDnD> itemAllocator = new HashMap<>();
     private final HashMap<String, WeaponDnD> weaponAllocator = new HashMap<>();
     private final HashMap<String, ArmorDnD> armorAllocator = new HashMap<>();
-    private final HashMap<String, InstrumentsDnD> instrumentsAllocator = new HashMap<>();
+    private final HashMap<String, InstrumentDnD> instrumentsAllocator = new HashMap<>();
     private final HashMap<String, KitDnD> kitAllocator = new HashMap<>();
     private final HashMap<String, FeatDnD> featAllocator = new HashMap<>();
     private final HashMap<String, AbilityDnD> abilityAllocator = new HashMap<>();
@@ -1383,9 +1387,10 @@ public class DnDItemHandler {
         return result.toString();
     }
 
-    public DnDItemHandler(DataHandler knowledge, TextHandler walkieTalkie, DnDNotificationHandler secretMessages) {
+    public DnDItemHandler(DataHandler knowledge, TextHandler walkieTalkie, SiteParseHandler archive, DnDNotificationHandler secretMessages) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
+        this.archive = archive;
         this.secretMessages = secretMessages;
 
         itemAllocator.put("Новый предмет", new ItemDnD());
@@ -1499,12 +1504,108 @@ public class DnDItemHandler {
         itemAllocator.put("Точильный камень", new ItemDnD.WhetstoneDnD());
 
         weaponAllocator.put("Новое оружие", new WeaponDnD());
+        weaponAllocator.put("Боевой топор", new WeaponDnD.BattleaxeDnD());
+        weaponAllocator.put("Духовая трубка", new WeaponDnD.BlowgunDnD());
+        weaponAllocator.put("Дубинка", new WeaponDnD.ClubDnD());
+        weaponAllocator.put("Кинжал", new WeaponDnD.DaggerDnD());
+        weaponAllocator.put("Дротик", new WeaponDnD.DartDnD());
+        weaponAllocator.put("Цеп", new WeaponDnD.FlailDnD());
+        weaponAllocator.put("Глефа", new WeaponDnD.GlaiveDnD());
+        weaponAllocator.put("Секира", new WeaponDnD.GreataxeDnD());
+        weaponAllocator.put("Палица", new WeaponDnD.GreatclubDnD());
+        weaponAllocator.put("Двуручный меч", new WeaponDnD.GreatswordDnD());
+        weaponAllocator.put("Алебарда", new WeaponDnD.HalbergDnD());
+        weaponAllocator.put("Ручной топор", new WeaponDnD.HandaxeDnD());
+        weaponAllocator.put("Ручной арбалет", new WeaponDnD.HandCrossbowDnD());
+        weaponAllocator.put("Тяжелый арбалет", new WeaponDnD.HeavyCrossbowDnD());
+        weaponAllocator.put("Метательное копье", new WeaponDnD.JavelinDnD());
+        weaponAllocator.put("Длинное копье", new WeaponDnD.LanceDnD());
+        weaponAllocator.put("Легкий арбалет", new WeaponDnD.LightCrossbowDnD());
+        weaponAllocator.put("Легкий молот", new WeaponDnD.LightHammerDnD());
+        weaponAllocator.put("Длинный лук", new WeaponDnD.LongbowDnD());
+        weaponAllocator.put("Длинный меч", new WeaponDnD.LongswordDnD());
+        weaponAllocator.put("Булава", new WeaponDnD.MaceDnD());
+        weaponAllocator.put("Молот", new WeaponDnD.MaulDnD());
+        weaponAllocator.put("Моргенштерн", new WeaponDnD.MorningstarDnD());
+        weaponAllocator.put("Сеть", new WeaponDnD.NetDnD());
+        weaponAllocator.put("Пика", new WeaponDnD.PikeDnD());
+        weaponAllocator.put("Боевой посох", new WeaponDnD.QuarterstaffDnD());
+        weaponAllocator.put("Рапира", new WeaponDnD.RapierDnD());
+        weaponAllocator.put("Скимитар", new WeaponDnD.ScimitarDnD());
+        weaponAllocator.put("Короткий лук", new WeaponDnD.ShortbowDnD());
+        weaponAllocator.put("Короткий меч", new WeaponDnD.ShortswordDnD());
+        weaponAllocator.put("Серп", new WeaponDnD.SickleDnD());
+        weaponAllocator.put("Праща", new WeaponDnD.SlingDnD());
+        weaponAllocator.put("Копье", new WeaponDnD.SpearDnD());
+        weaponAllocator.put("Трезубец", new WeaponDnD.TridentDnD());
+        weaponAllocator.put("Боевой молот", new WeaponDnD.WarhammerDnD());
+        weaponAllocator.put("Боевая кирка", new WeaponDnD.WarPickDnD());
+        weaponAllocator.put("Кнут", new WeaponDnD.WhipDnD());
 
         armorAllocator.put("Новая броня", new ArmorDnD());
+        armorAllocator.put("Кираса", new ArmorDnD.BreastplateDnD());
+        armorAllocator.put("Кольчуга", new ArmorDnD.ChainMailDnD());
+        armorAllocator.put("Кольчужная рубаха", new ArmorDnD.ChainShirtDnD());
+        armorAllocator.put("Полулаты", new ArmorDnD.HalfPlateDnD());
+        armorAllocator.put("Шкурный доспех", new ArmorDnD.HideArmorDnD());
+        armorAllocator.put("Кожаный доспех", new ArmorDnD.LeatherArmorDnD());
+        armorAllocator.put("Стёганный доспех", new ArmorDnD.PaddedArmorDnD());
+        armorAllocator.put("Латы", new ArmorDnD.PlateArmorDnD());
+        armorAllocator.put("Колечный доспех", new ArmorDnD.RingMailDnD());
+        armorAllocator.put("Чешуйчатый доспех", new ArmorDnD.ScaleMailDnD());
+        armorAllocator.put("Щит", new ArmorDnD.ShieldDnD());
+        armorAllocator.put("Шипастые доспехи", new ArmorDnD.SpikedArmorDnD());
+        armorAllocator.put("Наборный доспех", new ArmorDnD.SplintArmorDnD());
+        armorAllocator.put("Проклепанный кожаный доспех", new ArmorDnD.StuddedLeatherArmorDnD());
 
-        instrumentsAllocator.put("Новые инструменты", new InstrumentsDnD());
+        instrumentsAllocator.put("Новые инструменты", new InstrumentDnD());
+        instrumentsAllocator.put("Инструменты алхимика", new InstrumentDnD.AlchemistSuppliesDnD());
+        instrumentsAllocator.put("Инструменты пивовара", new InstrumentDnD.BrewerSuppliesDnD());
+        instrumentsAllocator.put("Инструменты каллиграфа", new InstrumentDnD.CalligrapherSuppliesDnD());
+        instrumentsAllocator.put("Инструменты плотника", new InstrumentDnD.CarpenterToolsDnD());
+        instrumentsAllocator.put("Инструменты картографа", new InstrumentDnD.CartographerToolsDnD());
+        instrumentsAllocator.put("Инструменты сапожника", new InstrumentDnD.CobblerToolsDnD());
+        instrumentsAllocator.put("Инструменты повара", new InstrumentDnD.CookUtensilsDnD());
+        instrumentsAllocator.put("Инструменты стеклодува", new InstrumentDnD.GlassblowerToolsDnD());
+        instrumentsAllocator.put("Инструменты ювелира", new InstrumentDnD.JewelerToolsDnD());
+        instrumentsAllocator.put("Инструменты кожевника", new InstrumentDnD.LeatherworkerToolsDnD());
+        instrumentsAllocator.put("Инструменты каменщика", new InstrumentDnD.MasonToolsDnD());
+        instrumentsAllocator.put("Инструменты художника", new InstrumentDnD.PainterToolsDnD());
+        instrumentsAllocator.put("Инструменты гончара", new InstrumentDnD.PotterToolsDnD());
+        instrumentsAllocator.put("Инструменты кузнеца", new InstrumentDnD.SmithToolsDnD());
+        instrumentsAllocator.put("Инструменты ремонтника", new InstrumentDnD.TinkerToolsDnD());
+        instrumentsAllocator.put("Инструменты ткача", new InstrumentDnD.WeaverToolsDnD());
+        instrumentsAllocator.put("Инструменты резчика по дереву", new InstrumentDnD.WoodcarverToolsDnD());
+        instrumentsAllocator.put("Набор для грима", new InstrumentDnD.DisguiseKitDnD());
+        instrumentsAllocator.put("Набор для фальсификации", new InstrumentDnD.ForgeryKitDnD());
+        instrumentsAllocator.put("Кости", new InstrumentDnD.DiceSetDnD());
+        instrumentsAllocator.put("Драконьи шахматы", new InstrumentDnD.DragonchessSetDnD());
+        instrumentsAllocator.put("Карты", new InstrumentDnD.PlayingCardSetDnD());
+        instrumentsAllocator.put("Ставка трех драконов", new InstrumentDnD.ThreeDragonAnteSetDnD());
+        instrumentsAllocator.put("Набор травника", new InstrumentDnD.HerbalismKitDnD());
+        instrumentsAllocator.put("Волынка", new InstrumentDnD.BagpipesDnD());
+        instrumentsAllocator.put("Барабан", new InstrumentDnD.DrumDnD());
+        instrumentsAllocator.put("Цимбалы", new InstrumentDnD.DulcimerDnD());
+        instrumentsAllocator.put("Флейта", new InstrumentDnD.FluteDnD());
+        instrumentsAllocator.put("Лютня", new InstrumentDnD.LuteDnD());
+        instrumentsAllocator.put("Лира", new InstrumentDnD.LyreDnD());
+        instrumentsAllocator.put("Рожок", new InstrumentDnD.HornDnD());
+        instrumentsAllocator.put("Свирель", new InstrumentDnD.PanFluteDnD());
+        instrumentsAllocator.put("Шалмей", new InstrumentDnD.ShawmDnD());
+        instrumentsAllocator.put("Виола", new InstrumentDnD.ViolDnD());
+        instrumentsAllocator.put("Инструменты навигатора", new InstrumentDnD.NavigatorToolsDnD());
+        instrumentsAllocator.put("Инструменты отравителя", new InstrumentDnD.PoisonerKitDnD());
+        instrumentsAllocator.put("Воровские инструменты", new InstrumentDnD.ThievesToolsDnD());
+        instrumentsAllocator.put("Транспорт", new InstrumentDnD.VehicleDnD());
 
         kitAllocator.put("Новый набор", new KitDnD());
+        kitAllocator.put("Набор взломщика", new KitDnD.BurglarPackDnD());
+        kitAllocator.put("Набор дипломата", new KitDnD.DiplomatPackDnD());
+        kitAllocator.put("Набор исследователя подземелий", new KitDnD.DungeoneerPackDnD());
+        kitAllocator.put("Набор артиста", new KitDnD.EntertainerKitDnD());
+        kitAllocator.put("Набор путешественника", new KitDnD.ExplorerPackDnD());
+        kitAllocator.put("Набор священника", new KitDnD.PriestPackDnD());
+        kitAllocator.put("Набор ученого", new KitDnD.ScholarPackDnD());
 
         featAllocator.put("Новая черта", new FeatDnD());
 
