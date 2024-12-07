@@ -55,7 +55,7 @@ public class AbilBot extends AbilityBot {
         this.tableTop = new DnDHandler(knowledge, walkieTalkie, secretMessages);
         this.story = new DnDCampaignHandler(knowledge, walkieTalkie, secretMessages);
         this.characterList = new DnDPlayerHandler(knowledge, walkieTalkie, diceHoarder);
-        this.bagOfHolding = new DnDItemHandler(knowledge, walkieTalkie, secretMessages);
+        this.bagOfHolding = new DnDItemHandler(knowledge, walkieTalkie, archive, secretMessages);
         super.onRegister();
     }
 
