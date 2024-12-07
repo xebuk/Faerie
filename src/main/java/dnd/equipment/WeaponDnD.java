@@ -1,7 +1,7 @@
 package dnd.equipment;
 
 import common.Constants;
-import dnd.values.equipmentids.WeaponsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.aspectvalues.CurrencyDnD;
 import dnd.values.aspectvalues.WeaponTraitsDnD;
 import dnd.values.masteryvalues.DamageTypeDnD;
@@ -10,10 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WeaponDnD extends ItemDnD {
-    public WeaponsDnD id;
-
-    public WeaponsDnD type;
-    public WeaponsDnD range;
+    public ItemsIdsDnD type;
+    public ItemsIdsDnD range;
 
     public String attackDice;
     public String attackDiceVersatile;
@@ -25,11 +23,11 @@ public class WeaponDnD extends ItemDnD {
 
     public int hitBonus;
 
-    public void setType(WeaponsDnD type) {
+    public void setType(ItemsIdsDnD type) {
         this.type = type;
     }
 
-    public void setRange(WeaponsDnD range) {
+    public void setRange(ItemsIdsDnD range) {
         this.range = range;
     }
 
@@ -95,10 +93,10 @@ public class WeaponDnD extends ItemDnD {
 
         this.weight = 1;
 
-        this.id = WeaponsDnD.CUSTOM;
+        this.id = ItemsIdsDnD.CUSTOM_WEAPON;
 
-        this.type = WeaponsDnD.SIMPLE;
-        this.range = WeaponsDnD.MELEE;
+        this.type = ItemsIdsDnD.SIMPLE;
+        this.range = ItemsIdsDnD.MELEE;
 
         this.attackDice = "1d4";
         this.attackDiceVersatile = "1d4";
@@ -126,10 +124,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 4;
 
-            this.id = WeaponsDnD.BATTLEAXE;
+            this.id = ItemsIdsDnD.BATTLEAXE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = "1d10";
@@ -158,10 +156,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 1;
 
-            this.id = WeaponsDnD.BLOWGUN;
+            this.id = ItemsIdsDnD.BLOWGUN;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1";
             this.attackDiceVersatile = this.attackDice;
@@ -191,10 +189,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.CLUB;
+            this.id = ItemsIdsDnD.CLUB;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -223,10 +221,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.DAGGER;
+            this.id = ItemsIdsDnD.DAGGER;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -257,10 +255,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 0.25;
 
-            this.id = WeaponsDnD.DART;
+            this.id = ItemsIdsDnD.DART;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -290,10 +288,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.FLAIL;
+            this.id = ItemsIdsDnD.FLAIL;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -322,10 +320,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 6;
 
-            this.id = WeaponsDnD.GLAIVE;
+            this.id = ItemsIdsDnD.GLAIVE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d10";
             this.attackDiceVersatile = this.attackDice;
@@ -346,7 +344,7 @@ public class WeaponDnD extends ItemDnD {
     public static class GreataxeDnD extends WeaponDnD {
 
         public GreataxeDnD() {
-            this.name = "";
+            this.name = "Секира";
             this.summary = Constants.STANDARD_INVENTORY_SUMMARY;
 
             this.amountInInstance = 1;
@@ -356,10 +354,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 7;
 
-            this.id = WeaponsDnD.GREATAXE;
+            this.id = ItemsIdsDnD.GREATAXE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d12";
             this.attackDiceVersatile = this.attackDice;
@@ -389,10 +387,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 10;
 
-            this.id = WeaponsDnD.GREATCLUB;
+            this.id = ItemsIdsDnD.GREATCLUB;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -421,10 +419,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 6;
 
-            this.id = WeaponsDnD.GREATSWORD;
+            this.id = ItemsIdsDnD.GREATSWORD;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "2d6";
             this.attackDiceVersatile = this.attackDice;
@@ -454,10 +452,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 6;
 
-            this.id = WeaponsDnD.HALBERG;
+            this.id = ItemsIdsDnD.HALBERG;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d10";
             this.attackDiceVersatile = this.attackDice;
@@ -488,10 +486,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.HANDAXE;
+            this.id = ItemsIdsDnD.HANDAXE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -521,10 +519,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.HAND_CROSSBOW;
+            this.id = ItemsIdsDnD.HAND_CROSSBOW;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -555,10 +553,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 18;
 
-            this.id = WeaponsDnD.HEAVY_CROSSBOW;
+            this.id = ItemsIdsDnD.HEAVY_CROSSBOW;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d10";
             this.attackDiceVersatile = this.attackDice;
@@ -590,10 +588,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.JAVELIN;
+            this.id = ItemsIdsDnD.JAVELIN;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -622,10 +620,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 6;
 
-            this.id = WeaponsDnD.LANCE;
+            this.id = ItemsIdsDnD.LANCE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d12";
             this.attackDiceVersatile = this.attackDice;
@@ -655,10 +653,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 5;
 
-            this.id = WeaponsDnD.LIGHT_CROSSBOW;
+            this.id = ItemsIdsDnD.LIGHT_CROSSBOW;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -689,10 +687,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.LIGHT_HAMMER;
+            this.id = ItemsIdsDnD.LIGHT_HAMMER;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -722,10 +720,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.LONGBOW;
+            this.id = ItemsIdsDnD.LONGBOW;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -756,10 +754,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.LONGSWORD;
+            this.id = ItemsIdsDnD.LONGSWORD;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = "1d10";
@@ -788,10 +786,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 4;
 
-            this.id = WeaponsDnD.MACE;
+            this.id = ItemsIdsDnD.MACE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -820,10 +818,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 10;
 
-            this.id = WeaponsDnD.MAUL;
+            this.id = ItemsIdsDnD.MAUL;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "2d6";
             this.attackDiceVersatile = this.attackDice;
@@ -853,10 +851,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 4;
 
-            this.id = WeaponsDnD.MORNINGSTAR;
+            this.id = ItemsIdsDnD.MORNINGSTAR;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -885,10 +883,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.NET;
+            this.id = ItemsIdsDnD.NET;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "0";
             this.attackDiceVersatile = this.attackDice;
@@ -918,10 +916,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 18;
 
-            this.id = WeaponsDnD.PIKE;
+            this.id = ItemsIdsDnD.PIKE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d10";
             this.attackDiceVersatile = this.attackDice;
@@ -952,10 +950,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 4;
 
-            this.id = WeaponsDnD.QUARTERSTAFF;
+            this.id = ItemsIdsDnD.QUARTERSTAFF;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = "1d8";
@@ -984,10 +982,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.RAPIER;
+            this.id = ItemsIdsDnD.RAPIER;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -1016,10 +1014,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.SCIMITAR;
+            this.id = ItemsIdsDnD.SCIMITAR;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -1049,10 +1047,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.SHORTBOW;
+            this.id = ItemsIdsDnD.SHORTBOW;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -1082,10 +1080,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.SHORTSWORD;
+            this.id = ItemsIdsDnD.SHORTSWORD;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = this.attackDice;
@@ -1115,10 +1113,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.SICKLE;
+            this.id = ItemsIdsDnD.SICKLE;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -1147,10 +1145,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 0;
 
-            this.id = WeaponsDnD.SLING;
+            this.id = ItemsIdsDnD.SLING;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;
@@ -1179,10 +1177,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.SPEAR;
+            this.id = ItemsIdsDnD.SPEAR;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = "1d8";
@@ -1212,10 +1210,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 4;
 
-            this.id = WeaponsDnD.TRIDENT;
+            this.id = ItemsIdsDnD.TRIDENT;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d6";
             this.attackDiceVersatile = "1d8";
@@ -1245,10 +1243,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.WARHAMMER;
+            this.id = ItemsIdsDnD.WARHAMMER;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = "1d10";
@@ -1277,10 +1275,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 2;
 
-            this.id = WeaponsDnD.WAR_PICK;
+            this.id = ItemsIdsDnD.WAR_PICK;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d8";
             this.attackDiceVersatile = this.attackDice;
@@ -1309,10 +1307,10 @@ public class WeaponDnD extends ItemDnD {
 
             this.weight = 3;
 
-            this.id = WeaponsDnD.WHIP;
+            this.id = ItemsIdsDnD.WHIP;
 
-            this.type = WeaponsDnD.whatType(this.id);
-            this.range = WeaponsDnD.whatRange(this.id);
+            this.type = ItemsIdsDnD.whatType(this.id);
+            this.range = ItemsIdsDnD.whatRange(this.id);
 
             this.attackDice = "1d4";
             this.attackDiceVersatile = this.attackDice;

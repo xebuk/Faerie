@@ -2,11 +2,10 @@ package dnd.equipment;
 
 import common.Constants;
 import dnd.values.aspectvalues.CurrencyDnD;
-import dnd.values.equipmentids.ArmorsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 
 public class ArmorDnD extends ItemDnD {
-    public ArmorsDnD id;
-    public ArmorsDnD type;
+    public ItemsIdsDnD type;
 
     public int armorClass;
     public int dexterityModMax;
@@ -17,7 +16,7 @@ public class ArmorDnD extends ItemDnD {
 
     public String effects;
 
-    public void setType(ArmorsDnD type) {
+    public void setType(ItemsIdsDnD type) {
         this.type = type;
     }
 
@@ -68,8 +67,8 @@ public class ArmorDnD extends ItemDnD {
 
         this.weight = 1;
 
-        this.id = ArmorsDnD.CUSTOM;
-        this.type = ArmorsDnD.LIGHT;
+        this.id = ItemsIdsDnD.CUSTOM_ARMOR;
+        this.type = ItemsIdsDnD.LIGHT;
 
         this.armorClass = 10;
         this.dexterityModMax = 0;
@@ -94,8 +93,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 20;
 
-            this.id = ArmorsDnD.BREASTPLATE;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.BREASTPLATE;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 14;
             this.dexterityModMax = 2;
@@ -121,8 +120,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 55;
 
-            this.id = ArmorsDnD.CHAIN_MAIL;
-            this.type = ArmorsDnD.HEAVY;
+            this.id = ItemsIdsDnD.CHAIN_MAIL;
+            this.type = ItemsIdsDnD.HEAVY;
 
             this.armorClass = 16;
             this.dexterityModMax = 0;
@@ -148,8 +147,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 20;
 
-            this.id = ArmorsDnD.CHAIN_SHIRT;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.CHAIN_SHIRT;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 13;
             this.dexterityModMax = 2;
@@ -175,8 +174,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 40;
 
-            this.id = ArmorsDnD.HALF_PLATE;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.HALF_PLATE;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 15;
             this.dexterityModMax = 2;
@@ -202,8 +201,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 12;
 
-            this.id = ArmorsDnD.HIDE_ARMOR;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.HIDE_ARMOR;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 12;
             this.dexterityModMax = 2;
@@ -229,8 +228,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 8;
 
-            this.id = ArmorsDnD.LEATHER_ARMOR;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ItemsIdsDnD.LEATHER_ARMOR;
+            this.type = ItemsIdsDnD.LIGHT;
 
             this.armorClass = 11;
             this.dexterityModMax = 999;
@@ -256,8 +255,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 8;
 
-            this.id = ArmorsDnD.PADDED_ARMOR;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ItemsIdsDnD.PADDED_ARMOR;
+            this.type = ItemsIdsDnD.LIGHT;
 
             this.armorClass = 11;
             this.dexterityModMax = 999;
@@ -283,8 +282,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 65;
 
-            this.id = ArmorsDnD.PLATE_ARMOR;
-            this.type = ArmorsDnD.HEAVY;
+            this.id = ItemsIdsDnD.PLATE_ARMOR;
+            this.type = ItemsIdsDnD.HEAVY;
 
             this.armorClass = 18;
             this.dexterityModMax = 0;
@@ -310,8 +309,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 40;
 
-            this.id = ArmorsDnD.RING_MAIL;
-            this.type = ArmorsDnD.HEAVY;
+            this.id = ItemsIdsDnD.RING_MAIL;
+            this.type = ItemsIdsDnD.HEAVY;
 
             this.armorClass = 14;
             this.dexterityModMax = 0;
@@ -337,8 +336,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 45;
 
-            this.id = ArmorsDnD.SCALE_MAIL;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.SCALE_MAIL;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 14;
             this.dexterityModMax = 2;
@@ -364,8 +363,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 6;
 
-            this.id = ArmorsDnD.SHIELD;
-            this.type = ArmorsDnD.SHIELD;
+            this.id = ItemsIdsDnD.SHIELD;
+            this.type = ItemsIdsDnD.SHIELD;
 
             this.armorClass = 2;
             this.dexterityModMax = 0;
@@ -391,8 +390,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 40;
 
-            this.id = ArmorsDnD.SPIKED_ARMOR;
-            this.type = ArmorsDnD.MEDIUM;
+            this.id = ItemsIdsDnD.SPIKED_ARMOR;
+            this.type = ItemsIdsDnD.MEDIUM;
 
             this.armorClass = 14;
             this.dexterityModMax = 2;
@@ -418,8 +417,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 60;
 
-            this.id = ArmorsDnD.SPLINT_ARMOR;
-            this.type = ArmorsDnD.HEAVY;
+            this.id = ItemsIdsDnD.SPLINT_ARMOR;
+            this.type = ItemsIdsDnD.HEAVY;
 
             this.armorClass = 17;
             this.dexterityModMax = 0;
@@ -445,8 +444,8 @@ public class ArmorDnD extends ItemDnD {
 
             this.weight = 13;
 
-            this.id = ArmorsDnD.STUDDED_LEATHER_ARMOR;
-            this.type = ArmorsDnD.LIGHT;
+            this.id = ItemsIdsDnD.STUDDED_LEATHER_ARMOR;
+            this.type = ItemsIdsDnD.LIGHT;
 
             this.armorClass = 12;
             this.dexterityModMax = 999;
