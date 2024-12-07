@@ -1,7 +1,7 @@
 package dnd.characteristics;
 
 import dnd.values.characteristicsvalues.BackgroundsDnD;
-import dnd.values.equipmentids.InstrumentsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.masteryvalues.LanguagesDnD;
 import dnd.values.masteryvalues.ScriptsDnD;
 
@@ -20,7 +20,7 @@ public class BackgroundDnD implements Serializable {
     public int bonusSkills;
     public List<String> learnedSkills;
 
-    public Set<InstrumentsDnD> instrumentMastery;
+    public Set<ItemsIdsDnD> instrumentMastery;
 
     public int bonusLanguages;
     public Set<LanguagesDnD> languages;
@@ -103,7 +103,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Ловкость рук", "Обман");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.DISGUISE_KIT, InstrumentsDnD.FORGERY_KIT);
+            this.instrumentMastery = Set.of(ItemsIdsDnD.DISGUISE_KIT, ItemsIdsDnD.FORGERY_KIT);
 
             this.bonusLanguages = 0;
             this.languages = Set.of();
@@ -161,7 +161,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Обман", "Скрытность");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.THIEF_TOOLS); // ещё один игровой набор
+            this.instrumentMastery = Set.of(ItemsIdsDnD.THIEF_TOOLS); // ещё один игровой набор
 
             this.bonusLanguages = 0;
             this.languages = Set.of();
@@ -224,7 +224,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Акробатика", "Выступление");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.DISGUISE_KIT); // ещё и музыкальный инструмент
+            this.instrumentMastery = Set.of(ItemsIdsDnD.DISGUISE_KIT); // ещё и музыкальный инструмент
 
             this.bonusLanguages = 0;
             this.languages = Set.of();
@@ -432,7 +432,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Медицина", "Религия");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.HERBALISM_KIT);
+            this.instrumentMastery = Set.of(ItemsIdsDnD.HERBALISM_KIT);
 
             this.bonusLanguages = 1;
             this.languages = Set.of();
@@ -640,7 +640,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Атлетика", "Восприятие");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.NAVIGATOR_TOOLS); // водный транспорт
+            this.instrumentMastery = Set.of(ItemsIdsDnD.NAVIGATOR_TOOLS); // водный транспорт
 
             this.bonusLanguages = 0;
             this.languages = Set.of();
@@ -758,7 +758,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Атлетика", "Восприятие");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.NAVIGATOR_TOOLS); // водный транспорт
+            this.instrumentMastery = Set.of(ItemsIdsDnD.NAVIGATOR_TOOLS); // водный транспорт
 
             this.bonusLanguages = 0;
             this.languages = Set.of();
@@ -873,7 +873,7 @@ public class BackgroundDnD implements Serializable {
             this.bonusSkills = 0;
             this.learnedSkills = Arrays.asList("Ловкость рук", "Скрытность");
 
-            this.instrumentMastery = Set.of(InstrumentsDnD.THIEF_TOOLS, InstrumentsDnD.DISGUISE_KIT);
+            this.instrumentMastery = Set.of(ItemsIdsDnD.THIEF_TOOLS, ItemsIdsDnD.DISGUISE_KIT);
 
             this.bonusLanguages = 0;
             this.languages = Set.of();

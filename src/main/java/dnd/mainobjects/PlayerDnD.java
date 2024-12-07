@@ -3,13 +3,12 @@ package dnd.mainobjects;
 import dnd.characteristics.*;
 import dnd.dmtools.NoteDnD;
 import dnd.equipment.*;
-import dnd.equipment.InstrumentsDnD;
+import dnd.equipment.InstrumentDnD;
 import dnd.values.characteristicsvalues.BackgroundsDnD;
 import dnd.values.characteristicsvalues.JobsDnD;
 import dnd.values.characteristicsvalues.RacesDnD;
 import dnd.values.characteristicsvalues.RacesSizeDnD;
-import dnd.values.equipmentids.ArmorsDnD;
-import dnd.values.equipmentids.WeaponsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.masteryvalues.*;
 
 import java.io.Serializable;
@@ -143,13 +142,13 @@ public class PlayerDnD implements Serializable {
     public DamageTypeDnD damageType = DamageTypeDnD.BLUDGEONING;
     public int equippedWeaponIndex = 0;
     public String weaponEffects = "Нет";
-    public HashSet<WeaponsDnD> weaponProficiency = new HashSet<>();
+    public HashSet<ItemsIdsDnD> weaponProficiency = new HashSet<>();
 
     public ArmorDnD equippedArmor;
     public int equippedArmorIndex = 0;
     public int armorClass = 10;
     public String armorEffects = "Нет";
-    public HashSet<ArmorsDnD> armorProficiency = new HashSet<>();
+    public HashSet<ItemsIdsDnD> armorProficiency = new HashSet<>();
 
     public ArrayList<ItemDnD> attunedAccessories = new ArrayList<>();
 
@@ -170,7 +169,7 @@ public class PlayerDnD implements Serializable {
     public ArrayList<ItemDnD> itemCollectionOnHands = new ArrayList<>();
     public ArrayList<WeaponDnD> weaponCollectionOnHands = new ArrayList<>();
     public ArrayList<ArmorDnD> armorCollectionOnHands = new ArrayList<>();
-    public ArrayList<InstrumentsDnD> instrumentsCollectionOnHands = new ArrayList<>();
+    public ArrayList<InstrumentDnD> instrumentsCollectionOnHands = new ArrayList<>();
     public ArrayList<KitDnD> kitCollectionOnHands = new ArrayList<>();
 
     public int gold = 0;
@@ -180,7 +179,7 @@ public class PlayerDnD implements Serializable {
     public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
     public ArrayList<WeaponDnD> weaponCollection = new ArrayList<>();
     public ArrayList<ArmorDnD> armorCollection = new ArrayList<>();
-    public ArrayList<InstrumentsDnD> instrumentsCollection = new ArrayList<>();
+    public ArrayList<InstrumentDnD> instrumentsCollection = new ArrayList<>();
     public ArrayList<KitDnD> kitCollection = new ArrayList<>();
 
     public ArrayList<NoteDnD> notes = new ArrayList<>();
