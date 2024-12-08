@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class CommonMethodsHandler {
+public class GeneralHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final SiteParseHandler archive;
@@ -26,7 +26,7 @@ public class CommonMethodsHandler {
     public final HashMap<String, String> commandsSummariesAllocator = new HashMap<>();
     public final HashMap<String, Consumer<ChatSession>> methodsAllocator = new HashMap<>();
 
-    public CommonMethodsHandler(DataHandler knowledge, TextHandler walkieTalkie,
+    public GeneralHandler(DataHandler knowledge, TextHandler walkieTalkie,
                                 SiteParseHandler archive, DiceHandler diceHoarder) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
@@ -227,32 +227,17 @@ public class CommonMethodsHandler {
 
         else if (matches.size() == 2) {
             ArrayList<String> article;
-            try {
-                switch (cs.sectionId) {
-                    case SPELLS:
-                        article = archive.spellsGrabber(matches.getFirst());
-                        break;
-                    case ITEMS:
-                        article = archive.itemsGrabber(matches.getFirst());
-                        break;
-                    case BESTIARY:
-                        article = archive.bestiaryGrabber(matches.getFirst());
-                        break;
-                    case RACES:
-                        article = archive.racesGrabber(matches.getFirst());
-                        break;
-                    case FEATS:
-                        article = archive.featsGrabber(matches.getFirst());
-                        break;
-                    case BACKGROUNDS:
-                        article = archive.backgroundsGrabber(matches.getFirst());
-                        break;
-                    default:
-                        walkieTalkie.reportImpossible(cs);
-                        return false;
+            switch (cs.sectionId) {
+                case SPELLS -> article = archive.spellsGrabber(matches.getFirst());
+                case ITEMS -> article = archive.itemsGrabber(matches.getFirst());
+                case BESTIARY -> article = archive.bestiaryGrabber(matches.getFirst());
+                case RACES -> article = archive.racesGrabber(matches.getFirst());
+                case FEATS -> article = archive.featsGrabber(matches.getFirst());
+                case BACKGROUNDS -> article = archive.backgroundsGrabber(matches.getFirst());
+                default -> {
+                    walkieTalkie.reportImpossible(cs);
+                    return false;
                 }
-            } catch (Exception e) {
-                return walkieTalkie.reportIncorrect(cs);
             }
 
             walkieTalkie.articleMessaging(article, cs);
@@ -268,36 +253,18 @@ public class CommonMethodsHandler {
 
     public void onSearchSuccess(ChatSession cs, Update update) {
         cs.title = update.getMessage().getText();
-        try {
-            switch (cs.sectionId) {
-                case SPELLS:
-                    walkieTalkie.articleMessaging(archive.spellsGrabber(cs.title), cs);
-                    break;
-                case ITEMS:
-                    walkieTalkie.articleMessaging(archive.itemsGrabber(cs.title), cs);
-                    break;
-                case BESTIARY:
-                    walkieTalkie.articleMessaging(archive.bestiaryGrabber(cs.title), cs);
-                    break;
-                case RACES:
-                    walkieTalkie.articleMessaging(archive.racesGrabber(cs.title), cs);
-                    break;
-                case FEATS:
-                    walkieTalkie.articleMessaging(archive.featsGrabber(cs.title), cs);
-                    break;
-                case BACKGROUNDS:
-                    walkieTalkie.articleMessaging(archive.backgroundsGrabber(cs.title), cs);
-                    break;
-                default:
-                    walkieTalkie.reportImpossible(cs);
-                    break;
-            }
-            cs.sectionId = SearchCategories.NONE;
-            cs.searchSuccess = false;
-            cs.title = "";
-        } catch (IOException e) {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FAIL_SECOND_STAGE, null, false);
+        switch (cs.sectionId) {
+            case SPELLS -> walkieTalkie.articleMessaging(archive.spellsGrabber(cs.title), cs);
+            case ITEMS -> walkieTalkie.articleMessaging(archive.itemsGrabber(cs.title), cs);
+            case BESTIARY -> walkieTalkie.articleMessaging(archive.bestiaryGrabber(cs.title), cs);
+            case RACES -> walkieTalkie.articleMessaging(archive.racesGrabber(cs.title), cs);
+            case FEATS -> walkieTalkie.articleMessaging(archive.featsGrabber(cs.title), cs);
+            case BACKGROUNDS -> walkieTalkie.articleMessaging(archive.backgroundsGrabber(cs.title), cs);
+            default -> walkieTalkie.reportImpossible(cs);
         }
+        cs.sectionId = SearchCategories.NONE;
+        cs.searchSuccess = false;
+        cs.title = "";
         knowledge.renewListChat(cs);
     }
 }

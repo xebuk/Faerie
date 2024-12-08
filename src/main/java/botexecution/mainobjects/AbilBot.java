@@ -16,7 +16,6 @@ import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -30,7 +29,7 @@ public class AbilBot extends AbilityBot {
     private final DataHandler knowledge;
     private final DiceHandler diceHoarder;
 
-    private final CommonMethodsHandler jackOfAllTrades;
+    private final GeneralHandler jackOfAllTrades;
     private final SiteParseHandler archive;
     private final GameHandler dungeonCrawl;
 
@@ -48,7 +47,7 @@ public class AbilBot extends AbilityBot {
         this.diceHoarder = new DiceHandler(knowledge, walkieTalkie);
 
         this.archive = new SiteParseHandler(knowledge);
-        this.jackOfAllTrades = new CommonMethodsHandler(knowledge, walkieTalkie, archive, diceHoarder);
+        this.jackOfAllTrades = new GeneralHandler(knowledge, walkieTalkie, archive, diceHoarder);
         this.dungeonCrawl = new GameHandler(knowledge, walkieTalkie, pager, diceHoarder);
 
         this.secretMessages = new DnDNotificationHandler(knowledge, walkieTalkie);
