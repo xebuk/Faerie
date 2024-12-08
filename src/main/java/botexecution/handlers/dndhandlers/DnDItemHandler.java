@@ -790,8 +790,14 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollection
+                if (currentCampaign.activeDm.lockVault) {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollectionOnHands
                         .add(currentCampaign.activeDm.itemCollection.get(index));
+                }
+                else {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollection
+                        .add(currentCampaign.activeDm.itemCollection.get(index));
+                }
             }
             case "-w" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.weaponCollection.size()) {
@@ -800,8 +806,14 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollection
+                if (currentCampaign.activeDm.lockVault) {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollectionOnHands
                         .add(currentCampaign.activeDm.weaponCollection.get(index));
+                }
+                else {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollection
+                        .add(currentCampaign.activeDm.weaponCollection.get(index));
+                }
             }
             case "-a" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.armorCollection.size()) {
@@ -810,8 +822,14 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollection
+                if (currentCampaign.activeDm.lockVault) {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollectionOnHands
                         .add(currentCampaign.activeDm.armorCollection.get(index));
+                }
+                else {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollection
+                        .add(currentCampaign.activeDm.armorCollection.get(index));
+                }
             }
             case "-in" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.instrumentsCollection.size()) {
@@ -820,8 +838,14 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollection
+                if (currentCampaign.activeDm.lockVault) {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollectionOnHands
                         .add(currentCampaign.activeDm.instrumentsCollection.get(index));
+                }
+                else {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollection
+                        .add(currentCampaign.activeDm.instrumentsCollection.get(index));
+                }
             }
             case "-k" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.kitCollection.size()) {
@@ -830,8 +854,14 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollection
+                if (currentCampaign.activeDm.lockVault) {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollectionOnHands
                         .add(currentCampaign.activeDm.kitCollection.get(index));
+                }
+                else {
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollection
+                        .add(currentCampaign.activeDm.kitCollection.get(index));
+                }
             }
             case "-f" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.featCollection.size()) {
