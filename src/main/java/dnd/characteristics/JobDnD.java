@@ -1,8 +1,6 @@
 package dnd.characteristics;
 
-import dnd.values.equipmentids.ArmorsDnD;
-import dnd.values.equipmentids.WeaponsDnD;
-import dnd.values.equipmentids.InstrumentsDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.characteristicsvalues.JobsDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
 
@@ -20,9 +18,9 @@ public class JobDnD implements Serializable {
     public int startingHealth;
     public String healthDice;
 
-    public Set<ArmorsDnD> armorMastery;
-    public Set<WeaponsDnD> weaponMastery;
-    public Set<InstrumentsDnD> instrumentsMastery;
+    public Set<ItemsIdsDnD> armorMastery;
+    public Set<ItemsIdsDnD> weaponMastery;
+    public Set<ItemsIdsDnD> instrumentsMastery;
     public Set<MasteryTypeDnD> saveMastery;
 
     public int startingSkillAmount;
@@ -39,14 +37,14 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Artificer;
+            this.jobId = JobsDnD.ARTIFICER;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE);
-            this.instrumentsMastery = Set.of(InstrumentsDnD.THIEF_TOOLS, InstrumentsDnD.TINKER_TOOLS);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE);
+            this.instrumentsMastery = Set.of(ItemsIdsDnD.THIEF_TOOLS, ItemsIdsDnD.TINKER_TOOLS);
             // одни инструменты ремесленника на выбор
             this.saveMastery = Set.of(MasteryTypeDnD.CONSTITUTION, MasteryTypeDnD.INTELLIGENCE);
 
@@ -65,13 +63,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Barbarian;
+            this.jobId = JobsDnD.BARBARIAN;
 
             this.startingHealth = 12;
             this.healthDice = "1d12";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.MARTIAL);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.MARTIAL);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.STRENGTH, MasteryTypeDnD.CONSTITUTION);
 
@@ -90,14 +88,14 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Bard;
+            this.jobId = JobsDnD.BARD;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.LONGSWORD,
-                    WeaponsDnD.SHORTSWORD, WeaponsDnD.RAPIER, WeaponsDnD.HAND_CROSSBOW);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.LONGSWORD,
+                    ItemsIdsDnD.SHORTSWORD, ItemsIdsDnD.RAPIER, ItemsIdsDnD.HAND_CROSSBOW);
             this.instrumentsMastery = Set.of(); // три музыкальных инструмента на выбор
             this.saveMastery = Set.of(MasteryTypeDnD.DEXTERITY, MasteryTypeDnD.CHARISMA);
 
@@ -120,13 +118,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Cleric;
+            this.jobId = JobsDnD.CLERIC;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.WISDOM, MasteryTypeDnD.CHARISMA);
 
@@ -145,17 +143,17 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Druid;
+            this.jobId = JobsDnD.DRUID;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.QUARTERSTAFF, WeaponsDnD.MACE,
-                    WeaponsDnD.DART, WeaponsDnD.CLUB, WeaponsDnD.DAGGER,
-                    WeaponsDnD.SPEAR, WeaponsDnD.JAVELIN, WeaponsDnD.SLING,
-                    WeaponsDnD.SICKLE, WeaponsDnD.SCIMITAR);
-            this.instrumentsMastery = Set.of(InstrumentsDnD.HERBALISM_KIT);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.QUARTERSTAFF, ItemsIdsDnD.MACE,
+                    ItemsIdsDnD.DART, ItemsIdsDnD.CLUB, ItemsIdsDnD.DAGGER,
+                    ItemsIdsDnD.SPEAR, ItemsIdsDnD.JAVELIN, ItemsIdsDnD.SLING,
+                    ItemsIdsDnD.SICKLE, ItemsIdsDnD.SCIMITAR);
+            this.instrumentsMastery = Set.of(ItemsIdsDnD.HERBALISM_KIT);
             this.saveMastery = Set.of(MasteryTypeDnD.INTELLIGENCE, MasteryTypeDnD.WISDOM);
 
             this.startingSkillAmount = 2;
@@ -174,13 +172,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Fighter;
+            this.jobId = JobsDnD.FIGHTER;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.HEAVY, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.MARTIAL);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.HEAVY, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.MARTIAL);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.STRENGTH, MasteryTypeDnD.CONSTITUTION);
 
@@ -201,7 +199,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Homebrew;
+            this.jobId = JobsDnD.HOMEBREW;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -230,13 +228,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Monk;
+            this.jobId = JobsDnD.MONK;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
             this.armorMastery = Set.of();
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.SHORTSWORD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.SHORTSWORD);
             this.instrumentsMastery = Set.of(); // либо инструмент ремесленника, либо музыкальный инструмент
             this.saveMastery = Set.of(MasteryTypeDnD.STRENGTH, MasteryTypeDnD.DEXTERITY);
 
@@ -256,13 +254,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Paladin;
+            this.jobId = JobsDnD.PALADIN;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.HEAVY, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.MARTIAL);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.HEAVY, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.MARTIAL);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.WISDOM, MasteryTypeDnD.CHARISMA);
 
@@ -281,13 +279,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Ranger;
+            this.jobId = JobsDnD.RANGER;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT, ArmorsDnD.MEDIUM, ArmorsDnD.SHIELD);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.MARTIAL);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT, ItemsIdsDnD.MEDIUM, ItemsIdsDnD.SHIELD);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.MARTIAL);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.STRENGTH, MasteryTypeDnD.DEXTERITY);
 
@@ -308,15 +306,15 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Rogue;
+            this.jobId = JobsDnD.ROGUE;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE, WeaponsDnD.HAND_CROSSBOW,
-                    WeaponsDnD.LONGSWORD, WeaponsDnD.RAPIER, WeaponsDnD.SHORTSWORD);
-            this.instrumentsMastery = Set.of(InstrumentsDnD.THIEF_TOOLS);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE, ItemsIdsDnD.HAND_CROSSBOW,
+                    ItemsIdsDnD.LONGSWORD, ItemsIdsDnD.RAPIER, ItemsIdsDnD.SHORTSWORD);
+            this.instrumentsMastery = Set.of(ItemsIdsDnD.THIEF_TOOLS);
             this.saveMastery = Set.of(MasteryTypeDnD.DEXTERITY, MasteryTypeDnD.INTELLIGENCE);
 
             this.startingSkillAmount = 4;
@@ -336,14 +334,14 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Sorcerer;
+            this.jobId = JobsDnD.SORCERER;
 
             this.startingHealth = 6;
             this.healthDice = "1d6";
 
             this.armorMastery = Set.of();
-            this.weaponMastery = Set.of(WeaponsDnD.QUARTERSTAFF, WeaponsDnD.DART,
-                    WeaponsDnD.DAGGER, WeaponsDnD.LIGHT_CROSSBOW, WeaponsDnD.SLING);
+            this.weaponMastery = Set.of(ItemsIdsDnD.QUARTERSTAFF, ItemsIdsDnD.DART,
+                    ItemsIdsDnD.DAGGER, ItemsIdsDnD.LIGHT_CROSSBOW, ItemsIdsDnD.SLING);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.CONSTITUTION, MasteryTypeDnD.CHARISMA);
 
@@ -362,13 +360,13 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Warlock;
+            this.jobId = JobsDnD.WARLOCK;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
 
-            this.armorMastery = Set.of(ArmorsDnD.LIGHT);
-            this.weaponMastery = Set.of(WeaponsDnD.SIMPLE);
+            this.armorMastery = Set.of(ItemsIdsDnD.LIGHT);
+            this.weaponMastery = Set.of(ItemsIdsDnD.SIMPLE);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.WISDOM, MasteryTypeDnD.CHARISMA);
 
@@ -391,11 +389,11 @@ public class JobDnD implements Serializable {
             this.startingHealth = 6;
             this.healthDice = "1d6";
 
-            this.jobId = JobsDnD.Wizard;
+            this.jobId = JobsDnD.WIZARD;
 
             this.armorMastery = Set.of();
-            this.weaponMastery = Set.of(WeaponsDnD.DAGGER, WeaponsDnD.SLING,
-                    WeaponsDnD.QUARTERSTAFF, WeaponsDnD.LIGHT_CROSSBOW);
+            this.weaponMastery = Set.of(ItemsIdsDnD.DAGGER, ItemsIdsDnD.SLING,
+                    ItemsIdsDnD.QUARTERSTAFF, ItemsIdsDnD.LIGHT_CROSSBOW);
             this.instrumentsMastery = Set.of();
             this.saveMastery = Set.of(MasteryTypeDnD.INTELLIGENCE, MasteryTypeDnD.WISDOM);
 

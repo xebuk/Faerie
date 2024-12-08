@@ -171,7 +171,7 @@ public class DiceHandler {
 
         int luck = 0;
         for (int i = 0; i < numberOfDice; i++) {
-            luck = luck + die.throwDice(numberOfSides);;
+            luck = luck + die.throwDice(numberOfSides);
         }
 
         return luck;
