@@ -74,6 +74,9 @@ public class WeaponDnD extends ItemDnD {
         weapon.append("Тип: ").append(type.toString()).append("\n");
         weapon.append("Специальность: ").append(range.toString()).append("\n");
         weapon.append("Кость атаки: ").append(attackDice).append("\n");
+        if (this.traits.contains(WeaponTraitsDnD.VERSATILE)) {
+            weapon.append("Кость атаки (двуручный хват): ").append(attackDiceVersatile).append("\n");
+        }
         weapon.append("Тип урона: ").append(damageType.toString()).append("\n");
         weapon.append("Черты оружия: ").append(traits).append("\n");
         weapon.append("Минимальное расстояние: ").append(minDistance).append("\n");
