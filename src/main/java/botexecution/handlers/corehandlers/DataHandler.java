@@ -13,6 +13,7 @@ public class DataHandler {
     private final HashMap<String, String> listOfUsernames;
     private final HashMap<String, Integer> listOfArticleIds;
     private final Timer saver;
+    private final LevenshteinDistance env;
 
     public DataHandler(boolean noTimer) {
         this.listOfSessions = new HashMap<>();
@@ -39,6 +40,8 @@ public class DataHandler {
         } else {
             this.saver = null;
         }
+
+        this.env = new LevenshteinDistance();
     }
 
     public void renewListChat(ChatSession cs) {
@@ -82,8 +85,6 @@ public class DataHandler {
         } catch (NumberFormatException ignored) {}
 
         Set<String> articleNames = this.listOfArticleIds.keySet();
-
-        LevenshteinDistance env = new LevenshteinDistance();
         int minSimilarityDistance = Integer.MAX_VALUE;
         int resArticleId = 1;
 
@@ -132,7 +133,8 @@ public class DataHandler {
             }
             clearName = articleName.substring(sectionEnd + 1);
 
-            if (clearName.toLowerCase().contains(name.toLowerCase())) {
+            if (clearName.toLowerCase().contains(name.toLowerCase())
+                    || env.apply(clearName.toLowerCase(), name.toLowerCase()) <= 3) {
                 results.add(String.valueOf(this.listOfArticleIds.get(articleName)));
                 results.add(clearName);
             }
