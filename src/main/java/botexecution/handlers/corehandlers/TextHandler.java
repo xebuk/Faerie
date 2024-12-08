@@ -31,11 +31,6 @@ public class TextHandler  {
         return false;
     }
 
-    public boolean reportIncorrect(ChatSession cs) {
-        silent.send(Constants.SEARCH_MESSAGE_INCORRECT, cs.getChatId());
-        return false;
-    }
-
     public boolean reportFail(ChatSession cs) {
         silent.send(Constants.SEARCH_MESSAGE_FAIL, cs.getChatId());
         return false;
