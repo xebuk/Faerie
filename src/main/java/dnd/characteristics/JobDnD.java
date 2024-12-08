@@ -37,7 +37,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Artificer;
+            this.jobId = JobsDnD.ARTIFICER;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -63,7 +63,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Barbarian;
+            this.jobId = JobsDnD.BARBARIAN;
 
             this.startingHealth = 12;
             this.healthDice = "1d12";
@@ -88,7 +88,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Bard;
+            this.jobId = JobsDnD.BARD;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -118,7 +118,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Cleric;
+            this.jobId = JobsDnD.CLERIC;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -143,7 +143,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Druid;
+            this.jobId = JobsDnD.DRUID;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -172,7 +172,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Fighter;
+            this.jobId = JobsDnD.FIGHTER;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
@@ -199,7 +199,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Homebrew;
+            this.jobId = JobsDnD.HOMEBREW;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -228,7 +228,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Monk;
+            this.jobId = JobsDnD.MONK;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -254,7 +254,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Paladin;
+            this.jobId = JobsDnD.PALADIN;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
@@ -279,7 +279,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Ranger;
+            this.jobId = JobsDnD.RANGER;
 
             this.startingHealth = 10;
             this.healthDice = "1d10";
@@ -306,7 +306,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = false;
 
-            this.jobId = JobsDnD.Rogue;
+            this.jobId = JobsDnD.ROGUE;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -334,7 +334,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Sorcerer;
+            this.jobId = JobsDnD.SORCERER;
 
             this.startingHealth = 6;
             this.healthDice = "1d6";
@@ -360,7 +360,7 @@ public class JobDnD implements Serializable {
             this.advancedTitle = "Не выбран";
             this.usesMagic = true;
 
-            this.jobId = JobsDnD.Warlock;
+            this.jobId = JobsDnD.WARLOCK;
 
             this.startingHealth = 8;
             this.healthDice = "1d8";
@@ -389,7 +389,7 @@ public class JobDnD implements Serializable {
             this.startingHealth = 6;
             this.healthDice = "1d6";
 
-            this.jobId = JobsDnD.Wizard;
+            this.jobId = JobsDnD.WIZARD;
 
             this.armorMastery = Set.of();
             this.weaponMastery = Set.of(ItemsIdsDnD.DAGGER, ItemsIdsDnD.SLING,
