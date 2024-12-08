@@ -22,14 +22,18 @@ public class SiteParseHandler {
         this.knowledge = knowledge;
     }
 
-    public ArrayList<String> spellsGrabber(String id) throws IOException {
+    public ArrayList<String> spellsGrabber(String id) {
         String article = knowledge.searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по заклинанию. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -64,14 +68,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> itemsGrabber(String id) throws IOException {
+    public ArrayList<String> itemsGrabber(String id) {
         String article = knowledge.searchArticleId("items", id);
 
         Connection link = Jsoup.connect(URL + "items/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по предмету. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -101,14 +109,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> bestiaryGrabber(String id) throws IOException {
+    public ArrayList<String> bestiaryGrabber(String id) {
         String article = knowledge.searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по существу. Попробуйте позже."));
+        }
 
         Elements check = page.select("div").select("span");
         //System.out.println(check.text());
@@ -195,14 +207,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> racesGrabber(String id) throws IOException {
+    public ArrayList<String> racesGrabber(String id) {
         String article = knowledge.searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по расе. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -227,14 +243,18 @@ public class SiteParseHandler {
 
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
-    public ArrayList<String> ClassesGrabber(String id) throws IOException {
+    public ArrayList<String> ClassesGrabber(String id) {
         String article = knowledge.searchArticleId("class", id);
 
         Connection link = Jsoup.connect(URL + "class/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по классу. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -262,14 +282,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> featsGrabber(String id) throws IOException {
+    public ArrayList<String> featsGrabber(String id) {
         String article = knowledge.searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по черте. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -289,14 +313,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> backgroundsGrabber(String id) throws IOException {
+    public ArrayList<String> backgroundsGrabber(String id) {
         String article = knowledge.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по предыстории. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("div[itemprop=description]");
@@ -350,6 +378,31 @@ public class SiteParseHandler {
                 line.setLength(0);
             }
         }
+        return result;
+    }
+
+    public ArrayList<String> mainFormulasGrabber() {
+        Connection link = Jsoup.connect(URL + "articles/newbie/26-main-formulas/");
+        Document page;
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по главным формулам. Попробуйте позже."));
+        }
+
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements body = page.select("div.desc.card__article-body");
+
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text() + "\n");
+
+        for (Element i : body) {
+            result.add(i.text());
+        }
+
+        result.add("Информация взята с " + URL + "articles/newbie/26-main-formulas/");
         return result;
     }
 
