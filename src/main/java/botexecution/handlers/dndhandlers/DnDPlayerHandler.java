@@ -15,7 +15,6 @@ import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -45,11 +44,11 @@ public class DnDPlayerHandler {
         }
 //        if (Objects.equals(currentGroup.activeDm.dungeonMasterUsername, currentGroup.dungeonMasterUsername)) {
 //            walkieTalkie.patternExecute(currentGroup,
-//                    "Произошла ошибка - вы являетесь ДМ-ом этой группы.", null, false);
+//                    "Произошла ошибка - вы являетесь ДМ-ом этой группы.");
 //            return;
 //        }
 
-        walkieTalkie.patternExecute(currentGroup, Constants.PLAYER_CREATION_START, null, false);
+        walkieTalkie.patternExecute(currentGroup, Constants.PLAYER_CREATION_START);
         currentGroup.activeDm.campaignParty.put(currentGroup.username, new PlayerDnD());
         currentUser.campaignsAsPlayer.put(currentGroup.activeDm.campaignName, currentGroup.getChatId());
 
@@ -57,7 +56,7 @@ public class DnDPlayerHandler {
         currentUser.activePc.playerName = currentGroup.username;
         currentUser.activePc.campaignChatId = currentGroup.getChatId();
         currentUser.creationOfPlayerDnD = true;
-        walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_NAME, null, false);
+        walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_NAME);
 
         knowledge.renewListChat(currentGroup);
         knowledge.renewListChat(currentUser);
@@ -68,11 +67,11 @@ public class DnDPlayerHandler {
         currentUser.creationOfPlayerDnD = !currentUser.creationOfPlayerDnD;
 
         if (!currentUser.creationOfPlayerDnD) {
-            walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_PAUSE, null, false);
+            walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_PAUSE);
         }
         else {
             currentUser.haltCreation = true;
-            walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_CONTINUE, null, false);
+            walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_CONTINUE);
             playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, "");
 
         }
@@ -89,7 +88,7 @@ public class DnDPlayerHandler {
     public void nameSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, Constants.PLAYER_CREATION_NAME, null, false);
+            walkieTalkie.patternExecute(cs, Constants.PLAYER_CREATION_NAME);
             return;
         }
         cs.activePc.name = response;
@@ -428,7 +427,7 @@ public class DnDPlayerHandler {
         }
         cs.activePc.alignment = response;
 
-        walkieTalkie.patternExecute(cs, "Распределите характеристики.", null, false);
+        walkieTalkie.patternExecute(cs, "Распределите характеристики.");
 
         cs.activePc.luck = diceHoarder.D6FourTimesCreation();
         walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.activePc.luck), KeyboardFactory.assignStatsBoardDnD(cs.activePc.allocatedStats), false);
@@ -487,7 +486,7 @@ public class DnDPlayerHandler {
             knowledge.renewListChat(cs);
         }
         else if (cs.activePc.bonusLanguages == 0) {
-            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.");
             cs.creationStage = AGE;
             knowledge.renewListChat(cs);
         }
@@ -512,7 +511,7 @@ public class DnDPlayerHandler {
         cs.activePc.bonusLanguages--;
 
         if (cs.activePc.bonusLanguages <= 0) {
-            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.");
             cs.creationStage = AGE;
             knowledge.renewListChat(cs);
         } else {
@@ -526,11 +525,11 @@ public class DnDPlayerHandler {
     public void ageSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите возраст персонажа.");
             return;
         }
         cs.activePc.age = response;
-        walkieTalkie.patternExecute(cs, "Введите рост персонажа.", null, false);
+        walkieTalkie.patternExecute(cs, "Введите рост персонажа.");
 
         cs.creationStage = HEIGHT;
         knowledge.renewListChat(cs);
@@ -539,11 +538,11 @@ public class DnDPlayerHandler {
     public void heightSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите рост персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите рост персонажа.");
             return;
         }
         cs.activePc.height = response;
-        walkieTalkie.patternExecute(cs, "Введите вес персонажа.", null, false);
+        walkieTalkie.patternExecute(cs, "Введите вес персонажа.");
 
         cs.creationStage = WEIGHT;
         knowledge.renewListChat(cs);
@@ -552,11 +551,11 @@ public class DnDPlayerHandler {
     public void weightSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите вес персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите вес персонажа.");
             return;
         }
         cs.activePc.weight = response;
-        walkieTalkie.patternExecute(cs, "Введите описание глаз персонажа.", null, false);
+        walkieTalkie.patternExecute(cs, "Введите описание глаз персонажа.");
 
         cs.creationStage = EYES;
         knowledge.renewListChat(cs);
@@ -565,11 +564,11 @@ public class DnDPlayerHandler {
     public void eyesSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите описание глаз персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите описание глаз персонажа.");
             return;
         }
         cs.activePc.eyes = response;
-        walkieTalkie.patternExecute(cs, "Введите описание кожи персонажа.", null, false);
+        walkieTalkie.patternExecute(cs, "Введите описание кожи персонажа.");
 
         cs.creationStage = SKIN;
         knowledge.renewListChat(cs);
@@ -578,11 +577,11 @@ public class DnDPlayerHandler {
     public void skinSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите описание кожи персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите описание кожи персонажа.");
             return;
         }
         cs.activePc.skin = response;
-        walkieTalkie.patternExecute(cs, "Введите описание волос персонажа.", null, false);
+        walkieTalkie.patternExecute(cs, "Введите описание волос персонажа.");
 
         cs.creationStage = HAIR;
         knowledge.renewListChat(cs);
@@ -591,10 +590,11 @@ public class DnDPlayerHandler {
     public void hairSetter(ChatSession cs, String response) {
         if (cs.haltCreation) {
             cs.haltCreation = false;
-            walkieTalkie.patternExecute(cs, "Введите описание волос персонажа.", null, false);
+            walkieTalkie.patternExecute(cs, "Введите описание волос персонажа.");
             return;
         }
         cs.activePc.hair = response;
+        inventoryRefusal(cs);
         ChatSession currentGroup = knowledge.getSession(cs.activePc.campaignChatId.toString());
         currentGroup.activeDm.campaignParty.put(cs.username, cs.activePc);
 
@@ -605,7 +605,26 @@ public class DnDPlayerHandler {
         knowledge.renewListChat(currentGroup); // небезопасная вещь, надо либо вывесить предупреждение (сделано), либо что-то с этим решить
         knowledge.renewListChat(cs);
 
-        walkieTalkie.patternExecute(cs, Constants.PLAYER_CREATION_END, null, false);
+        walkieTalkie.patternExecute(cs, Constants.PLAYER_CREATION_END);
+    }
+
+    //секция для выбора предметов
+    public void inventoryRefusal(ChatSession cs) {
+        String refusalDice = JobsDnD.getJobAsClass(cs.activePc.mainJob).inventoryRefusalMoney;
+        cs.activePc.itemCollectionOnHands.clear();
+        cs.activePc.weaponCollectionOnHands.clear();
+        cs.activePc.armorCollectionOnHands.clear();
+        cs.activePc.instrumentsCollectionOnHands.clear();
+        cs.activePc.kitCollectionOnHands.clear();
+
+        cs.activePc.gold = diceHoarder.customDiceResult(refusalDice);
+        if (cs.activePc.mainJob != JobsDnD.MONK) {
+            cs.activePc.gold = cs.activePc.gold * 10;
+        }
+
+        walkieTalkie.patternExecute(cs, "Вы получили "
+                + cs.activePc.gold
+                + " золотых по причине отказа от снаряжения.");
     }
 
     public DnDPlayerHandler(DataHandler knowledge, TextHandler walkieTalkie, DiceHandler diceHoarder) {
@@ -684,20 +703,5 @@ public class DnDPlayerHandler {
         playerDnDGeneratorAllocator.put(EYES, this::eyesSetter);
         playerDnDGeneratorAllocator.put(SKIN, this::skinSetter);
         playerDnDGeneratorAllocator.put(HAIR, this::hairSetter);
-    }
-
-    public class StarterInventorySelectorDnD {
-
-        public void inventoryRefusal(PlayerDnD pc) {
-//            pc.itemCollection.clear();
-//            pc.valuables = diceHoarder.customDiceResult(JobsDnD.getJobAsClass(pc.mainJob).inventoryRefusalMoney);
-//            if (!Objects.equals(JobsDnD.getJobAsClass(pc.mainJob).title, "Монах")) {
-//                pc.valuables = pc.valuables * 10;
-//            }
-        }
-
-        public void acolyteInventoryStart(PlayerDnD pc) {
-//            pc.valuables = pc.valuables + 15;
-        }
     }
 }
