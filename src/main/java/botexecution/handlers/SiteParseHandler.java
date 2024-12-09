@@ -393,10 +393,10 @@ public class SiteParseHandler {
         }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
-        Elements body = page.select("div.desc.card__article-body");
+        Elements body = page.select("div.desc.card__article-body p");
 
         ArrayList<String> result = new ArrayList<>();
-        result.add(name.text() + "\n");
+        result.add(name.text());
 
         for (Element i : body) {
             result.add(i.text());
@@ -507,7 +507,7 @@ public class SiteParseHandler {
         DataHandler knowledge = new DataHandler(true);
         SiteParseHandler parse = new SiteParseHandler(knowledge);
 
-        ArrayList<String> article = parse.toolGrabber(ItemsIdsDnD.THIEF_TOOLS);
+        ArrayList<String> article = parse.mainFormulasGrabber();
         for (String i: article) {
             System.out.println(i);
         }
