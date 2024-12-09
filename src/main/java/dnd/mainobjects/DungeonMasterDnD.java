@@ -36,7 +36,7 @@ public class DungeonMasterDnD implements Serializable {
     public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
     public ArrayList<WeaponDnD> weaponCollection = new ArrayList<>();
     public ArrayList<ArmorDnD> armorCollection = new ArrayList<>();
-    public ArrayList<InstrumentsDnD> instrumentsCollection = new ArrayList<>();
+    public ArrayList<InstrumentDnD> instrumentsCollection = new ArrayList<>();
     public ArrayList<KitDnD> kitCollection = new ArrayList<>();
     public ArrayList<FeatDnD> featCollection = new ArrayList<>();
     public ArrayList<AbilityDnD> abilityCollection = new ArrayList<>();
@@ -51,7 +51,7 @@ public class DungeonMasterDnD implements Serializable {
     public ItemDnD editItem;
     public WeaponDnD editWeapon;
     public ArmorDnD editArmor;
-    public InstrumentsDnD editInstruments;
+    public InstrumentDnD editInstruments;
     public KitDnD editKit;
     public FeatDnD editFeat;
     public AbilityDnD editAbility;
