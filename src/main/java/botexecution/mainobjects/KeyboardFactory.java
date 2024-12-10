@@ -768,11 +768,13 @@ public class KeyboardFactory {
         KeyboardRow keyRow1 = new KeyboardRow("/changehealth");
         KeyboardRow keyRow2 = new KeyboardRow("/changedeathcounters");
         KeyboardRow keyRow3 = new KeyboardRow("/changeexp", "/levelup");
-        KeyboardRow keyRow4 = new KeyboardRow("/giveinsp");
-        KeyboardRow keyRow5 = new KeyboardRow("/setsecondaryjob", "/setprestigejob");
-        KeyboardRow keyRow6 = new KeyboardRow("/help");
-        KeyboardRow keyRow7 = new KeyboardRow("/itemboard", "/campaignboard", "/dmboard", "/questboard");
-        KeyboardRow keyRow8 = new KeyboardRow("/common", "/game", "/dnd");
+        KeyboardRow keyRow4 = new KeyboardRow("/changestats", "/changeadv");
+        KeyboardRow keyRow5 = new KeyboardRow("/giveinsp");
+        KeyboardRow keyRow6 = new KeyboardRow("/setsecondaryjob", "/setprestigejob");
+        KeyboardRow keyRow7 = new KeyboardRow("/changelook");
+        KeyboardRow keyRow8 = new KeyboardRow("/help");
+        KeyboardRow keyRow9 = new KeyboardRow("/itemboard", "/campaignboard", "/dmboard", "/questboard");
+        KeyboardRow keyRow10 = new KeyboardRow("/common", "/game", "/dnd");
 
         ArrayList<KeyboardRow> keyRowList = new ArrayList<>();
         keyRowList.add(keyRow1);
@@ -783,6 +785,8 @@ public class KeyboardFactory {
         keyRowList.add(keyRow6);
         keyRowList.add(keyRow7);
         keyRowList.add(keyRow8);
+        keyRowList.add(keyRow9);
+        keyRowList.add(keyRow10);
 
         ReplyKeyboardMarkup keyBoard = new ReplyKeyboardMarkup(keyRowList);
         keyBoard.setResizeKeyboard(true);

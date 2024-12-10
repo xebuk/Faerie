@@ -934,6 +934,34 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability changeStat() {
+        Consumer<MessageContext> stats = tableTop::changeStat;
+
+        return Ability
+                .builder()
+                .name("changestats")
+                .info("changes character's stats")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(stats)
+                .build();
+    }
+
+    public Ability changeAdvantages() {
+        Consumer<MessageContext> adv = tableTop::changeAdvantages;
+
+        return Ability
+                .builder()
+                .name("changeadv")
+                .info("changes character's advantages")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(adv)
+                .build();
+    }
+
     public Ability giveASecondaryJob() {
         Consumer<MessageContext> secondaryJob = tableTop::giveASecondaryJob;
 
@@ -967,6 +995,20 @@ public class AbilBot extends AbilityBot {
                 .build();
     }
 
+    public Ability changeLook() {
+        Consumer<MessageContext> look = tableTop::changeLook;
+
+        return Ability
+                .builder()
+                .name("changelook")
+                .info("changes character's looks")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(look)
+                .build();
+    }
+
     @Override
     public void consume(Update update) {
         super.consume(update);
@@ -984,6 +1026,10 @@ public class AbilBot extends AbilityBot {
         if (currentUser.role == RoleParameters.DUNGEON_MASTER
                 && update.hasCallbackQuery() && update.getCallbackQuery().getData().contains("@")) {
             tableTop.askDmForARollResponse(currentUser, update.getCallbackQuery().getData());
+        }
+
+        if (currentUser.editingALook && update.hasMessage() && update.getMessage().hasText()) {
+            tableTop.changeLookSecondStage(currentUser, update.getMessage().getText());
         }
 
         if (currentUser.editingANote && currentUser.editNote != EditingParameters.NONE

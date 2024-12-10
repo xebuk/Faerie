@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -139,9 +138,12 @@ public class GeneralHandler {
         commandsSummariesAllocator.put("changedeathcounters", CoreMessages.COMMAND_MESSAGE_CHANGE_DEATH_COUNTERS);
         commandsSummariesAllocator.put("changeexp", CoreMessages.COMMAND_MESSAGE_CHANGE_EXPERIENCE);
         commandsSummariesAllocator.put("levelup", CoreMessages.COMMAND_MESSAGE_LEVEL_UP);
+        commandsSummariesAllocator.put("changestats", CoreMessages.COMMAND_MESSAGE_CHANGE_STATS);
+        commandsSummariesAllocator.put("changeadv", CoreMessages.COMMAND_MESSAGE_CHANGE_ADVANTAGES);
         commandsSummariesAllocator.put("giveinsp", CoreMessages.COMMAND_MESSAGE_GIVE_INSPIRATION);
         commandsSummariesAllocator.put("setasecondaryjob", CoreMessages.COMMAND_MESSAGE_SET_SECONDARY_JOB);
         commandsSummariesAllocator.put("setprestigejob", CoreMessages.COMMAND_MESSAGE_SET_PRESTIGE_JOB);
+        commandsSummariesAllocator.put("changelook", CoreMessages.COMMAND_MESSAGE_CHANGE_LOOKS);
 
         commandsSummariesAllocator.put("addaquest", CoreMessages.COMMAND_MESSAGE_ADD_A_QUEST);
         commandsSummariesAllocator.put("editaquest", CoreMessages.COMMAND_MESSAGE_EDIT_A_QUEST);
