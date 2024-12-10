@@ -12,12 +12,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class CommonMethodsHandler {
+public class GeneralHandler {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final SiteParseHandler archive;
@@ -26,7 +25,7 @@ public class CommonMethodsHandler {
     public final HashMap<String, String> commandsSummariesAllocator = new HashMap<>();
     public final HashMap<String, Consumer<ChatSession>> methodsAllocator = new HashMap<>();
 
-    public CommonMethodsHandler(DataHandler knowledge, TextHandler walkieTalkie,
+    public GeneralHandler(DataHandler knowledge, TextHandler walkieTalkie,
                                 SiteParseHandler archive, DiceHandler diceHoarder) {
         this.knowledge = knowledge;
         this.walkieTalkie = walkieTalkie;
@@ -139,9 +138,12 @@ public class CommonMethodsHandler {
         commandsSummariesAllocator.put("changedeathcounters", CoreMessages.COMMAND_MESSAGE_CHANGE_DEATH_COUNTERS);
         commandsSummariesAllocator.put("changeexp", CoreMessages.COMMAND_MESSAGE_CHANGE_EXPERIENCE);
         commandsSummariesAllocator.put("levelup", CoreMessages.COMMAND_MESSAGE_LEVEL_UP);
+        commandsSummariesAllocator.put("changestats", CoreMessages.COMMAND_MESSAGE_CHANGE_STATS);
+        commandsSummariesAllocator.put("changeadv", CoreMessages.COMMAND_MESSAGE_CHANGE_ADVANTAGES);
         commandsSummariesAllocator.put("giveinsp", CoreMessages.COMMAND_MESSAGE_GIVE_INSPIRATION);
         commandsSummariesAllocator.put("setasecondaryjob", CoreMessages.COMMAND_MESSAGE_SET_SECONDARY_JOB);
         commandsSummariesAllocator.put("setprestigejob", CoreMessages.COMMAND_MESSAGE_SET_PRESTIGE_JOB);
+        commandsSummariesAllocator.put("changelook", CoreMessages.COMMAND_MESSAGE_CHANGE_LOOKS);
 
         commandsSummariesAllocator.put("addaquest", CoreMessages.COMMAND_MESSAGE_ADD_A_QUEST);
         commandsSummariesAllocator.put("editaquest", CoreMessages.COMMAND_MESSAGE_EDIT_A_QUEST);
@@ -227,32 +229,17 @@ public class CommonMethodsHandler {
 
         else if (matches.size() == 2) {
             ArrayList<String> article;
-            try {
-                switch (cs.sectionId) {
-                    case SPELLS:
-                        article = archive.SpellsGrabber(matches.getFirst());
-                        break;
-                    case ITEMS:
-                        article = archive.ItemsGrabber(matches.getFirst());
-                        break;
-                    case BESTIARY:
-                        article = archive.BestiaryGrabber(matches.getFirst());
-                        break;
-                    case RACES:
-                        article = archive.RacesGrabber(matches.getFirst());
-                        break;
-                    case FEATS:
-                        article = archive.FeatsGrabber(matches.getFirst());
-                        break;
-                    case BACKGROUNDS:
-                        article = archive.BackgroundsGrabber(matches.getFirst());
-                        break;
-                    default:
-                        walkieTalkie.reportImpossible(cs);
-                        return false;
+            switch (cs.sectionId) {
+                case SPELLS -> article = archive.spellsGrabber(matches.getFirst());
+                case ITEMS -> article = archive.itemsGrabber(matches.getFirst());
+                case BESTIARY -> article = archive.bestiaryGrabber(matches.getFirst());
+                case RACES -> article = archive.racesGrabber(matches.getFirst());
+                case FEATS -> article = archive.featsGrabber(matches.getFirst());
+                case BACKGROUNDS -> article = archive.backgroundsGrabber(matches.getFirst());
+                default -> {
+                    walkieTalkie.reportImpossible(cs);
+                    return false;
                 }
-            } catch (Exception e) {
-                return walkieTalkie.reportIncorrect(cs);
             }
 
             walkieTalkie.articleMessaging(article, cs);
@@ -268,36 +255,18 @@ public class CommonMethodsHandler {
 
     public void onSearchSuccess(ChatSession cs, Update update) {
         cs.title = update.getMessage().getText();
-        try {
-            switch (cs.sectionId) {
-                case SPELLS:
-                    walkieTalkie.articleMessaging(archive.SpellsGrabber(cs.title), cs);
-                    break;
-                case ITEMS:
-                    walkieTalkie.articleMessaging(archive.ItemsGrabber(cs.title), cs);
-                    break;
-                case BESTIARY:
-                    walkieTalkie.articleMessaging(archive.BestiaryGrabber(cs.title), cs);
-                    break;
-                case RACES:
-                    walkieTalkie.articleMessaging(archive.RacesGrabber(cs.title), cs);
-                    break;
-                case FEATS:
-                    walkieTalkie.articleMessaging(archive.FeatsGrabber(cs.title), cs);
-                    break;
-                case BACKGROUNDS:
-                    walkieTalkie.articleMessaging(archive.BackgroundsGrabber(cs.title), cs);
-                    break;
-                default:
-                    walkieTalkie.reportImpossible(cs);
-                    break;
-            }
-            cs.sectionId = SearchCategories.NONE;
-            cs.searchSuccess = false;
-            cs.title = "";
-        } catch (IOException e) {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FAIL_SECOND_STAGE, null, false);
+        switch (cs.sectionId) {
+            case SPELLS -> walkieTalkie.articleMessaging(archive.spellsGrabber(cs.title), cs);
+            case ITEMS -> walkieTalkie.articleMessaging(archive.itemsGrabber(cs.title), cs);
+            case BESTIARY -> walkieTalkie.articleMessaging(archive.bestiaryGrabber(cs.title), cs);
+            case RACES -> walkieTalkie.articleMessaging(archive.racesGrabber(cs.title), cs);
+            case FEATS -> walkieTalkie.articleMessaging(archive.featsGrabber(cs.title), cs);
+            case BACKGROUNDS -> walkieTalkie.articleMessaging(archive.backgroundsGrabber(cs.title), cs);
+            default -> walkieTalkie.reportImpossible(cs);
         }
+        cs.sectionId = SearchCategories.NONE;
+        cs.searchSuccess = false;
+        cs.title = "";
         knowledge.renewListChat(cs);
     }
 }

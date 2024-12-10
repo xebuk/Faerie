@@ -2,6 +2,7 @@ package dnd.equipment;
 
 import common.Constants;
 import dnd.values.aspectvalues.CurrencyDnD;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 
 import java.io.Serializable;
 
@@ -16,6 +17,8 @@ public class ItemDnD implements Serializable {
 
     public double weight;
 
+    public ItemsIdsDnD id;
+
     public String effects;
 
     public ItemDnD() {
@@ -28,6 +31,8 @@ public class ItemDnD implements Serializable {
         this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
         this.weight = 1;
+
+        this.id = ItemsIdsDnD.CUSTOM_ITEM;
 
         this.effects = "Нет.";
     }
@@ -65,8 +70,8 @@ public class ItemDnD implements Serializable {
         StringBuilder item = new StringBuilder();
         item.append(name).append("\n").append(summary).append("\n");
         item.append("Количество в одном наборе: ").append(amountInInstance).append("\n");
-        item.append("Цена: ").append(value).append(" ").append(currencyGrade).append("\n");
-        item.append("Масса: ").append(weight).append("\n");
+        item.append("Цена на единицу: ").append(value).append(" ").append(currencyGrade.toString()).append("\n");
+        item.append("Масса на единицу: ").append(weight).append("\n");
         item.append("Эффекты: ").append(effects).append("\n");
         return item.toString();
     }
@@ -84,6 +89,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.ABACUS;
 
             this.effects = "Нет.";
         }
@@ -117,6 +124,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.FLASK_OF_ALCHEMIST_FIRE;
+
             this.effects = "Нет.";
         }
     }
@@ -135,6 +144,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.ARROW;
+
             this.effects = "Нет.";
         }
     }
@@ -150,6 +161,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.BLOWGUN_NEEDLE;
 
             this.effects = "Нет.";
         }
@@ -167,6 +180,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1.5;
 
+            this.id = ItemsIdsDnD.CROSSBOW_BOLT;
+
             this.effects = "Нет.";
         }
     }
@@ -182,6 +197,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1.5;
+
+            this.id = ItemsIdsDnD.SLING_BULLET;
 
             this.effects = "Нет.";
         }
@@ -199,6 +216,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.VIAL_OF_ANTITOXIN;
 
             this.effects = "Нет.";
         }
@@ -218,6 +237,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.CRYSTAL;
+
             this.effects = "Нет.";
         }
     }
@@ -233,6 +254,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.id = ItemsIdsDnD.ORB;
 
             this.effects = "Нет.";
         }
@@ -250,6 +273,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.ROD;
+
             this.effects = "Нет.";
         }
     }
@@ -266,6 +291,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.STAFF;
+
             this.effects = "Нет.";
         }
     }
@@ -281,6 +308,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.WAND;
 
             this.effects = "Нет.";
         }
@@ -299,6 +328,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 5;
 
+            this.id = ItemsIdsDnD.BACKPACK;
+
             this.effects = "Нет.";
         }
     }
@@ -314,6 +345,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.BALL_BEARING;
 
             this.effects = "Нет.";
         }
@@ -331,6 +364,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 70;
 
+            this.id = ItemsIdsDnD.BARREL;
+
             this.effects = "Нет.";
         }
     }
@@ -346,6 +381,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.BASKET;
 
             this.effects = "Нет.";
         }
@@ -363,6 +400,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 7;
 
+            this.id = ItemsIdsDnD.BEDROLL;
+
             this.effects = "Нет.";
         }
     }
@@ -378,6 +417,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.BELL;
 
             this.effects = "Нет.";
         }
@@ -395,6 +436,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 3;
 
+            this.id = ItemsIdsDnD.BLANKET;
+
             this.effects = "Нет.";
         }
     }
@@ -410,6 +453,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.id = ItemsIdsDnD.BLOCK_AND_TACKLE;
 
             this.effects = "Нет.";
         }
@@ -427,6 +472,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 5;
 
+            this.id = ItemsIdsDnD.BOOK;
+
             this.effects = "Нет.";
         }
     }
@@ -442,6 +489,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.GLASS_BOTTLE;
 
             this.effects = "Нет.";
         }
@@ -459,6 +508,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 2;
 
+            this.id = ItemsIdsDnD.BUCKET;
+
             this.effects = "Нет.";
         }
     }
@@ -474,6 +525,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.CALTROP;
 
             this.effects = "Нет.";
         }
@@ -491,6 +544,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.CANDLE;
+
             this.effects = "Нет.";
         }
     }
@@ -506,6 +561,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.CASE_FOR_CROSSBOW_BOLTS;
 
             this.effects = "Нет.";
         }
@@ -523,6 +580,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.CASE_FOR_CROSSBOW_BOLTS;
+
             this.effects = "Нет.";
         }
     }
@@ -538,6 +597,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.id = ItemsIdsDnD.CHAIN;
 
             this.effects = "Нет.";
         }
@@ -555,6 +616,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.CHALK;
+
             this.effects = "Нет.";
         }
     }
@@ -570,6 +633,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 25;
+
+            this.id = ItemsIdsDnD.CHEST;
 
             this.effects = "Нет.";
         }
@@ -587,6 +652,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 12;
 
+            this.id = ItemsIdsDnD.CLIMBER_KIT;
+
             this.effects = "Нет.";
         }
     }
@@ -602,6 +669,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 3;
+
+            this.id = ItemsIdsDnD.COMMON_CLOTHES;
 
             this.effects = "Нет.";
         }
@@ -619,6 +688,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.COSTUME_CLOTHES;
+
             this.effects = "Нет.";
         }
     }
@@ -634,6 +705,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 6;
+
+            this.id = ItemsIdsDnD.FINE_CLOTHES;
 
             this.effects = "Нет.";
         }
@@ -651,6 +724,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.TRAVELER_CLOTHES;
+
             this.effects = "Нет.";
         }
     }
@@ -667,6 +742,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 2;
 
+            this.id = ItemsIdsDnD.COMPONENT_POUCH;
+
             this.effects = "Нет.";
         }
     }
@@ -682,6 +759,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.id = ItemsIdsDnD.CROWBAR;
 
             this.effects = "Нет.";
         }
@@ -701,6 +780,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.SPRIG_OF_MISTLETOE;
+
             this.effects = "Нет.";
         }
     }
@@ -716,6 +797,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.TOTEM;
 
             this.effects = "Нет.";
         }
@@ -733,6 +816,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.WOODEN_STAFF;
+
             this.effects = "Нет.";
         }
     }
@@ -748,6 +833,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.YEW_WAND;
 
             this.effects = "Нет.";
         }
@@ -766,6 +853,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.FISHING_TACKLE;
+
             this.effects = "Нет.";
         }
     }
@@ -781,6 +870,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.FLASK_OR_TANKARD;
 
             this.effects = "Нет.";
         }
@@ -798,6 +889,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.GRAPPLING_HOOK;
+
             this.effects = "Нет.";
         }
     }
@@ -813,6 +906,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.id = ItemsIdsDnD.HAMMER;
 
             this.effects = "Нет.";
         }
@@ -830,6 +925,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 10;
 
+            this.id = ItemsIdsDnD.SLEDGEHAMMER;
+
             this.effects = "Нет.";
         }
     }
@@ -845,6 +942,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 3;
+
+            this.id = ItemsIdsDnD.HEALER_KIT;
 
             this.effects = "Нет.";
         }
@@ -864,6 +963,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.AMULET;
+
             this.effects = "Нет.";
         }
     }
@@ -880,6 +981,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.EMBLEM;
+
             this.effects = "Нет.";
         }
     }
@@ -895,6 +998,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.RELIQUARY;
 
             this.effects = "Нет.";
         }
@@ -913,6 +1018,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.FLASK_OF_HOLY_WATER;
+
             this.effects = "Нет.";
         }
     }
@@ -928,6 +1035,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.HOURGLASS;
 
             this.effects = "Нет.";
         }
@@ -945,6 +1054,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 25;
 
+            this.id = ItemsIdsDnD.HUNTING_TRAP;
+
             this.effects = "Нет.";
         }
     }
@@ -960,6 +1071,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.INK;
 
             this.effects = "Нет.";
         }
@@ -977,6 +1090,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.INK_PEN;
+
             this.effects = "Нет.";
         }
     }
@@ -992,6 +1107,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 4;
+
+            this.id = ItemsIdsDnD.JUG_OR_PITCHER;
 
             this.effects = "Нет.";
         }
@@ -1009,6 +1126,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 25;
 
+            this.id = ItemsIdsDnD.LADDER;
+
             this.effects = "Нет.";
         }
     }
@@ -1024,6 +1143,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.LAMP;
 
             this.effects = "Нет.";
         }
@@ -1041,6 +1162,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 2;
 
+            this.id = ItemsIdsDnD.BULLSEYE_LANTERN;
+
             this.effects = "Нет.";
         }
     }
@@ -1056,6 +1179,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.HOODED_LANTERN;
 
             this.effects = "Нет.";
         }
@@ -1073,6 +1198,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.LOCK;
+
             this.effects = "Нет.";
         }
     }
@@ -1088,6 +1215,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.MAGNIFYING_GLASS;
 
             this.effects = "Нет.";
         }
@@ -1105,6 +1234,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 6;
 
+            this.id = ItemsIdsDnD.MANACLES;
+
             this.effects = "Нет.";
         }
     }
@@ -1120,6 +1251,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.MESS_KIT;
 
             this.effects = "Нет.";
         }
@@ -1137,6 +1270,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0.5;
 
+            this.id = ItemsIdsDnD.STEEL_MIRROR;
+
             this.effects = "Нет.";
         }
     }
@@ -1152,6 +1287,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.FLASK_OF_OIL;
 
             this.effects = "Нет.";
         }
@@ -1169,6 +1306,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.PAPER;
+
             this.effects = "Нет.";
         }
     }
@@ -1184,6 +1323,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.PARCHMENT;
 
             this.effects = "Нет.";
         }
@@ -1201,6 +1342,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.VIAL_OF_PERFUME;
+
             this.effects = "Нет.";
         }
     }
@@ -1216,6 +1359,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.id = ItemsIdsDnD.MINERS_PICK;
 
             this.effects = "Нет.";
         }
@@ -1233,6 +1378,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0.25;
 
+            this.id = ItemsIdsDnD.PITON;
+
             this.effects = "Нет.";
         }
     }
@@ -1248,6 +1395,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.VIAL_OF_BASIC_POISON;
 
             this.effects = "Нет.";
         }
@@ -1265,6 +1414,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 10;
 
+            this.id = ItemsIdsDnD.POLE;
+
             this.effects = "Нет.";
         }
     }
@@ -1281,11 +1432,12 @@ public class ItemDnD implements Serializable {
 
             this.weight = 10;
 
+            this.id = ItemsIdsDnD.IRON_POT;
+
             this.effects = "Нет.";
         }
     }
     public static class PotionOfHealingDnD extends ItemDnD {
-        public String grade = "Неизвестно";
 
         public PotionOfHealingDnD() {
             this.name = "Зелье лечения";
@@ -1297,6 +1449,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 0.5;
+
+            this.id = ItemsIdsDnD.POTION_OF_HEALING;
 
             this.effects = "Нет.";
         }
@@ -1314,6 +1468,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.POUCH;
+
             this.effects = "Нет.";
         }
     }
@@ -1329,6 +1485,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.QUIVER;
 
             this.effects = "Нет.";
         }
@@ -1346,6 +1504,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 35;
 
+            this.id = ItemsIdsDnD.PORTABLE_RAM;
+
             this.effects = "Нет.";
         }
     }
@@ -1361,6 +1521,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 2;
+
+            this.id = ItemsIdsDnD.RATIONS;
 
             this.effects = "Нет.";
         }
@@ -1378,6 +1540,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 4;
 
+            this.id = ItemsIdsDnD.ROBES;
+
             this.effects = "Нет.";
         }
     }
@@ -1393,6 +1557,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 10;
+
+            this.id = ItemsIdsDnD.HEMPEN_ROPE;
 
             this.effects = "Нет.";
         }
@@ -1410,6 +1576,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 5;
 
+            this.id = ItemsIdsDnD.SILK_ROPE;
+
             this.effects = "Нет.";
         }
     }
@@ -1425,6 +1593,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0.5;
+
+            this.id = ItemsIdsDnD.SACK;
 
             this.effects = "Нет.";
         }
@@ -1442,6 +1612,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 3;
 
+            this.id = ItemsIdsDnD.MERCHANT_SCALE;
+
             this.effects = "Нет.";
         }
     }
@@ -1457,6 +1629,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.SILVER_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.SEALING_WAX;
 
             this.effects = "Нет.";
         }
@@ -1474,6 +1648,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 5;
 
+            this.id = ItemsIdsDnD.SHOVEL;
+
             this.effects = "Нет.";
         }
     }
@@ -1489,6 +1665,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.SIGNAL_WHISTLE;
 
             this.effects = "Нет.";
         }
@@ -1506,6 +1684,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.SIGNET_RING;
+
             this.effects = "Нет.";
         }
     }
@@ -1521,6 +1701,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 0;
+
+            this.id = ItemsIdsDnD.SOAP;
 
             this.effects = "Нет.";
         }
@@ -1538,6 +1720,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 3;
 
+            this.id = ItemsIdsDnD.SPELL_BOOK;
+
             this.effects = "Нет.";
         }
     }
@@ -1553,6 +1737,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 5;
+
+            this.id = ItemsIdsDnD.IRON_SPIKE;
 
             this.effects = "Нет.";
         }
@@ -1570,6 +1756,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.SPYGLASS;
+
             this.effects = "Нет.";
         }
     }
@@ -1585,6 +1773,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.GOLD_COINS;
 
             this.weight = 20;
+
+            this.id = ItemsIdsDnD.TWO_PERSON_TENT;
 
             this.effects = "Нет.";
         }
@@ -1602,6 +1792,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 1;
 
+            this.id = ItemsIdsDnD.TINDERBOX;
+
             this.effects = "Нет.";
         }
     }
@@ -1617,6 +1809,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.TORCH;
 
             this.effects = "Нет.";
         }
@@ -1634,6 +1828,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.VIAL;
+
             this.effects = "Нет.";
         }
     }
@@ -1650,6 +1846,8 @@ public class ItemDnD implements Serializable {
 
             this.weight = 0;
 
+            this.id = ItemsIdsDnD.WATERSKIN;
+
             this.effects = "Нет.";
         }
     }
@@ -1665,6 +1863,8 @@ public class ItemDnD implements Serializable {
             this.currencyGrade = CurrencyDnD.COPPER_COINS;
 
             this.weight = 1;
+
+            this.id = ItemsIdsDnD.WHETSTONE;
 
             this.effects = "Нет.";
         }

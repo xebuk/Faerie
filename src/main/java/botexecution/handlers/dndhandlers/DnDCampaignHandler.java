@@ -54,6 +54,7 @@ public class DnDCampaignHandler {
         currentGroup.role = RoleParameters.CAMPAIGN;
 
         currentGroup.activeDm.campaignName = "Новая_кампания";
+        currentGroup.activeDm.lockVault = true;
         currentGroup.activeDm.dungeonMasterChatId = currentUser.getChatId();
         currentGroup.activeDm.dungeonMasterUsername = currentUser.username;
         currentGroup.currentCampaign = currentGroup.getChatId();

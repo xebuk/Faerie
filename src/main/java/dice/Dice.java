@@ -94,10 +94,36 @@ public class Dice {
             List.of(6, 2, 3, 4, 5)
     );
 
+    public int generateGaussian(double min, double max) {
+        int res;
+        while (true) {
+            res = (int) Math.round(pointer.nextGaussian(
+                    (min + max) / 2,
+                    (max - min) / (2 * 1.41421356237)));
+
+            if (res <= max && res >= min) {
+                return res;
+            }
+        }
+    }
+
+    public int generateGaussian(double bound) {
+        int res;
+        while (true) {
+            res = (int) Math.round(pointer.nextGaussian(
+                    bound / 2,
+                    bound / (2 * 1.41421356237)));
+
+            if (res <= bound && res >= 0) {
+                return res;
+            }
+        }
+    }
+
     public int throwDice(int diceSides) {
-        int index = pointer.nextInt(diceSides);
+        int index = generateGaussian(diceSides - 1);
         int result = 0;
-        List<List<Integer>> activeList = null;
+        List<List<Integer>> activeList;
 
         switch (diceSides) {
             case 20 -> activeList = d20;
@@ -110,8 +136,8 @@ public class Dice {
                 int dice1 = 0;
                 int dice2 = 0;
                 for (int i = 0; i < 10000; i++) {
-                    dice1 = pointer.nextInt(4) + 1;
-                    dice2 = pointer.nextInt(4) + 1;
+                    dice1 = generateGaussian(1, 4);
+                    dice2 = generateGaussian(1, 4);
                     if (dice1 == dice2) {
                         break;
                     }
@@ -119,14 +145,14 @@ public class Dice {
                 return dice1;
             }
             default -> {
-                return pointer.nextInt(diceSides) + 1;
+                return generateGaussian(1, diceSides);
             }
         }
 
 
         int neighbours = activeList.getFirst().size();
         for (int i = 0; i < 10000; i++) {
-            result = activeList.get(index).get(pointer.nextInt(neighbours));
+            result = activeList.get(index).get(generateGaussian(neighbours - 1));
             if (result != index + 1) {
                 index = result - 1;
             } else {

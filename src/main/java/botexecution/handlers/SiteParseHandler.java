@@ -1,7 +1,7 @@
 package botexecution.handlers;
 
 import botexecution.handlers.corehandlers.DataHandler;
-import org.apache.commons.text.similarity.LevenshteinDistance;
+import dnd.values.aspectvalues.ItemsIdsDnD;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,12 +9,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static common.Constants.URL;
 
@@ -25,14 +22,18 @@ public class SiteParseHandler {
         this.knowledge = knowledge;
     }
 
-    public ArrayList<String> SpellsGrabber(String id) throws IOException {
+    public ArrayList<String> spellsGrabber(String id) {
         String article = knowledge.searchArticleId("spells", id);
 
         Connection link = Jsoup.connect(URL + "spells/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по заклинанию. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -67,14 +68,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> ItemsGrabber(String id) throws IOException {
+    public ArrayList<String> itemsGrabber(String id) {
         String article = knowledge.searchArticleId("items", id);
 
         Connection link = Jsoup.connect(URL + "items/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по предмету. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -104,14 +109,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> BestiaryGrabber(String id) throws IOException {
+    public ArrayList<String> bestiaryGrabber(String id) {
         String article = knowledge.searchArticleId("bestiary", id);
 
         Connection link = Jsoup.connect(URL + "bestiary/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по существу. Попробуйте позже."));
+        }
 
         Elements check = page.select("div").select("span");
         //System.out.println(check.text());
@@ -198,14 +207,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> RacesGrabber(String id) throws IOException {
+    public ArrayList<String> racesGrabber(String id) {
         String article = knowledge.searchArticleId("race", id);
 
         Connection link = Jsoup.connect(URL + "race/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по расе. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -230,14 +243,18 @@ public class SiteParseHandler {
 
     // Классы слишком длинные для чата, так что пока использую CLASSES_LIST в Constants
     // В будущем, если получится сделать какие-то короткие выдержки, то использую
-    public ArrayList<String> ClassesGrabber(String id) throws IOException {
+    public ArrayList<String> ClassesGrabber(String id) {
         String article = knowledge.searchArticleId("class", id);
 
         Connection link = Jsoup.connect(URL + "class/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по классу. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements source = page.select("ul.params.card__article-body");
@@ -265,14 +282,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> FeatsGrabber(String id) throws IOException {
+    public ArrayList<String> featsGrabber(String id) {
         String article = knowledge.searchArticleId("feats", id);
 
         Connection link = Jsoup.connect(URL + "feats/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по черте. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("ul.params.card__article-body");
@@ -292,14 +313,18 @@ public class SiteParseHandler {
         return result;
     }
 
-    public ArrayList<String> BackgroundsGrabber(String id) throws IOException {
+    public ArrayList<String> backgroundsGrabber(String id) {
         String article = knowledge.searchArticleId("backgrounds", id);
 
         Connection link = Jsoup.connect(URL + "backgrounds/" + article);
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по предыстории. Попробуйте позже."));
+        }
 
         Elements name = page.select("h2.card-title[itemprop=name]");
         Elements body = page.select("div[itemprop=description]");
@@ -316,45 +341,72 @@ public class SiteParseHandler {
         return result;
     }
 
-    public void BackgroundsPersonalityIdealBondFlawGrabber(String id) throws IOException {
-        String article = knowledge.searchArticleId("backgrounds", id);
+    public ArrayList<String> toolGrabber(ItemsIdsDnD instrument) {
+        String id = ItemsIdsDnD.getParserId(instrument);
 
-        Connection link = Jsoup.connect(URL + "backgrounds/" + article);
+        Connection link = Jsoup.connect(URL + "articles/inventory/100-tools/");
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
-
-        Elements body = page.select("div[itemprop=description]");
-
-        Elements tables = body.select("tr");
-
-        for (Element i : tables) {
-            String result = "\"" + i.text().substring(i.text().indexOf(" ") + 1).trim() + "\",";
-            System.out.println(result);
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по инструменту. Попробуйте позже."));
         }
+
+        Elements contents = page.select(
+                "h2.bigSectionTitle.hide-next.hide-next-h2:contains(" + id +
+                ") + div.hide-wrapper");
+
+        Elements paragraphs = contents.select("p");
+        Elements table = contents.select("td");
+
+        ArrayList<String> result = new ArrayList<>();
+        for (Element i : paragraphs) {
+            result.add(i.text());
+        }
+        result.add("Возможные действия:");
+        StringBuilder line = new StringBuilder();
+        int step = 0;
+        for (Element i : table) {
+            line.append(i.text()).append(" | ");
+            step += 1;
+            if (step == 2) {
+                step = 0;
+                line.setLength(line.length() - 3);
+                result.add(line.toString());
+                line.setLength(0);
+            }
+        }
+        return result;
     }
 
-    public void BackgroundSpecialAbilityGrabber(String id) throws IOException {
-        String article = knowledge.searchArticleId("backgrounds", id);
-
-        Connection link = Jsoup.connect(URL + "backgrounds/" + article);
+    public ArrayList<String> mainFormulasGrabber() {
+        Connection link = Jsoup.connect(URL + "articles/newbie/26-main-formulas/");
         Document page;
-        do {
-            page = link.get();
-        } while (!page.hasText());
-
-        Elements body = page.select("div[itemprop=description]");
-
-        Elements ability = body.select("h3.smallSectionTitle,h3.smallSectionTitle + p,p + p");
-
-        for (Element i : ability) {
-            String result = "\"" + i.text().trim() + "\",";
-            System.out.println(result);
+        try {
+            do {
+                page = link.get();
+            } while (!page.hasText());
+        } catch (IOException e) {
+            return new ArrayList<>(List.of("Не удалось получить справку по главным формулам. Попробуйте позже."));
         }
+
+        Elements name = page.select("h2.card-title[itemprop=name]");
+        Elements body = page.select("div.desc.card__article-body p");
+
+        ArrayList<String> result = new ArrayList<>();
+        result.add(name.text());
+
+        for (Element i : body) {
+            result.add(i.text());
+        }
+
+        result.add("Информация взята с " + URL + "articles/newbie/26-main-formulas/");
+        return result;
     }
 
-    public void DictWriter(String section) {
+    public void dictWriter(String section) {
         Connection link;
         Connection.Response response;
         Document page = null;
@@ -449,5 +501,15 @@ public class SiteParseHandler {
         result.append("Введите индекс или имя статьи, которую вы хотите получить.");
 //        result.append("Send an index or a name of an article that you want to get.");
         return result.toString();
+    }
+
+    public static void main(String[] args) throws IOException {
+        DataHandler knowledge = new DataHandler(true);
+        SiteParseHandler parse = new SiteParseHandler(knowledge);
+
+        ArrayList<String> article = parse.mainFormulasGrabber();
+        for (String i: article) {
+            System.out.println(i);
+        }
     }
 }

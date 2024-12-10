@@ -1029,6 +1029,10 @@ public class DnDHandler {
             case "-int" -> affectedPlayer.setIntelligence(Integer.parseInt(ctx.thirdArg()));
             case "-wis" -> affectedPlayer.setWisdom(Integer.parseInt(ctx.thirdArg()));
             case "-cha" -> affectedPlayer.setCharisma(Integer.parseInt(ctx.thirdArg()));
+            default -> {
+                walkieTalkie.patternExecute(currentUser, "Произошла ошибка - введен некорректный параметр.");
+                return;
+            }
         }
 
         currentCampaign.activeDm.campaignParty.put(ctx.firstArg(), affectedPlayer);
@@ -1119,6 +1123,9 @@ public class DnDHandler {
                 return;
             }
         }
+
+        cs.editingALook = false;
+        cs.whoIsEdited = "";
 
         walkieTalkie.patternExecute(cs, "Изменение прошло успешно.");
         knowledge.renewListChat(currentCampaign);
