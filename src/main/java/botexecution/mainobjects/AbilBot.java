@@ -25,6 +25,8 @@ import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
 
 public class AbilBot extends AbilityBot {
+    private boolean active;
+
     private final TextHandler walkieTalkie;
     private final MediaHandler pager;
     private final DataHandler knowledge;
@@ -42,6 +44,9 @@ public class AbilBot extends AbilityBot {
 
     public AbilBot() {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
+
+        this.active = true;
+
         this.walkieTalkie = new TextHandler(this.getSilent());
         this.pager = new MediaHandler(this.getTelegramClient());
         this.knowledge = new DataHandler(false);
@@ -970,6 +975,10 @@ public class AbilBot extends AbilityBot {
 
     @Override
     public void consume(Update update) {
+        /*if (!active) {
+            return;
+        }*/
+
         super.consume(update);
 
         ChatSession currentUser = knowledge.getSession(getChatId(update).toString());
@@ -1099,5 +1108,13 @@ public class AbilBot extends AbilityBot {
             }
         }
     knowledge.renewListChat(currentUser);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
