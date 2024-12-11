@@ -10,6 +10,7 @@ import common.*;
 
 import dnd.values.EditingParameters;
 import dnd.values.RoleParameters;
+import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
@@ -43,6 +44,7 @@ public class AbilBot extends AbilityBot {
 
     public AbilBot() {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
+        BotLogger.info("Bot called super constructor");
 
         this.active = true;
 
@@ -50,25 +52,32 @@ public class AbilBot extends AbilityBot {
         this.pager = new MediaHandler(this.getTelegramClient());
         this.knowledge = new DataHandler(false);
         this.diceHoarder = new DiceHandler(knowledge, walkieTalkie);
+        BotLogger.info("Bot initialised core handlers");
 
         this.archive = new SiteParseHandler(knowledge);
         this.jackOfAllTrades = new GeneralHandler(knowledge, walkieTalkie, archive, diceHoarder);
         this.dungeonCrawl = new GameHandler(knowledge, walkieTalkie, pager, diceHoarder);
+        BotLogger.info("Bot initialised common handlers");
 
         this.secretMessages = new DnDNotificationHandler(knowledge, walkieTalkie);
         this.tableTop = new DnDHandler(knowledge, walkieTalkie, secretMessages);
         this.story = new DnDCampaignHandler(knowledge, walkieTalkie, secretMessages);
         this.characterList = new DnDPlayerHandler(knowledge, walkieTalkie, diceHoarder);
         this.bagOfHolding = new DnDItemHandler(knowledge, walkieTalkie, archive, secretMessages);
+        BotLogger.info("Bot initialised DnD handlers");
+
         super.onRegister();
+        BotLogger.info("Bot registered abilities and states");
     }
 
     @Override
     public long creatorId() {
+        BotLogger.warning("Bot is accessing a Creator ID");
         long id = DataReader.readCreatorId();
         if (id < 0) {
             id = 0;
         }
+        BotLogger.warning("Bot read a Creator ID");
         return id;
     }
 

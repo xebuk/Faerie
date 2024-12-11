@@ -19,13 +19,14 @@ public class ControlPanel {
     private static BotSession botSession;
     private static AbilBot bot;
 
-    private static void startBot() {
+    private static void setupBot() {
         try {
             bot = new AbilBot();
             application = new TelegramBotsLongPollingApplication();
             botSession = application.registerBot(DataReader.readToken(), bot);
+            BotLogger.info("Bot started");
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
     }
 
@@ -35,7 +36,7 @@ public class ControlPanel {
                 List.of("st"),
                 Map.of(),
                 (Map<String, String> options) -> {
-                    startBot();
+                    setupBot();
                     BotLogger.info("Bot started");
                 }
         );

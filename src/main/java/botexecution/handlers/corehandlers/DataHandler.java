@@ -1,6 +1,7 @@
 package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
+import logger.BotLogger;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.io.*;
@@ -12,7 +13,7 @@ public class DataHandler {
     private final HashMap<String, ChatSession> listOfSessions;
     private final HashMap<String, String> listOfUsernames;
     private final HashMap<String, Integer> listOfArticleIds;
-    private final Timer saver;
+    private final Timer saveDataTimer;
     private final LevenshteinDistance env;
 
     public DataHandler(boolean noTimer) {
@@ -23,22 +24,22 @@ public class DataHandler {
         readSessions();
 
         if (!noTimer) {
-            this.saver = new Timer("Храни_Меня_Господь", true);
-            saver.schedule(new TimerTask() {
+            this.saveDataTimer = new Timer("DataHandler(SaveDataTimer)", true);
+            saveDataTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Сохраняю ники");
+                    BotLogger.info("Users' tags being saved");
                     saveUsernames();
-                    System.out.println("Сохраняю сессии");
+                    BotLogger.info("Users' sessions being saved");
                     if (listOfSessions.isEmpty()) {
-                        System.out.println("Сессий для сохранения нет");
+                        BotLogger.info("There's no users' sessions");
                         return;
                     }
                     saveSessions();
                 }
             }, 60000, 60000);
         } else {
-            this.saver = null;
+            this.saveDataTimer = null;
         }
 
         this.env = new LevenshteinDistance();
@@ -152,14 +153,17 @@ public class DataHandler {
             chatPath.append("../token_dir/userData/").append(chatId).append("/session.txt");
             chatFile = new File(chatPath.toString());
 
-            System.out.println(chatId);
-
             try (FileOutputStream chatOut = new FileOutputStream(chatFile);
                  ObjectOutputStream chatOutput = new ObjectOutputStream(chatOut)) {
                 chatOutput.writeObject(listOfSessions.get(chatId));
-            } catch (IOException ignored) {}
 
-            chatPath.setLength(0);
+                BotLogger.info("Saved session ID: " + chatId);
+            } catch (IOException e) {
+                BotLogger.severe(e.getMessage());
+            }
+            finally {
+                chatPath.setLength(0);
+            }
         }
 
         listOfSessions.clear();
@@ -174,7 +178,9 @@ public class DataHandler {
         try (FileOutputStream usernamesOut = new FileOutputStream(usernamesFile);
              ObjectOutputStream usernamesOutput = new ObjectOutputStream(usernamesOut)) {
             usernamesOutput.writeObject(listOfUsernamesInFile);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            BotLogger.severe(e.getMessage());
+        }
     }
 
     public void saveArticleIds() {
@@ -186,7 +192,9 @@ public class DataHandler {
         try (FileOutputStream articleIdsOut = new FileOutputStream(articleIdsFile);
              ObjectOutputStream articleIdsOutput = new ObjectOutputStream(articleIdsOut)) {
             articleIdsOutput.writeObject(listOfArticleIdsInFile);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            BotLogger.severe(e.getMessage());
+        }
     }
 
     public void readSessions() {
@@ -212,7 +220,9 @@ public class DataHandler {
                  ObjectInputStream chatInput = new ObjectInputStream(chatIn)) {
                 listOfSessions.put(i, (ChatSession) chatInput.readObject());
 
-            } catch (IOException | ClassNotFoundException ignored) {}
+            } catch (IOException | ClassNotFoundException e) {
+                BotLogger.severe(e.getMessage());
+            }
         }
     }
 
@@ -224,7 +234,9 @@ public class DataHandler {
         try (FileInputStream usernamesIn = new FileInputStream(usernamesFile);
              ObjectInputStream usernamesInput = new ObjectInputStream(usernamesIn)) {
             listOfUsernamesFile = (HashMap<String, String>) usernamesInput.readObject();
-        } catch (IOException | ClassNotFoundException ignored) {}
+        } catch (IOException | ClassNotFoundException e) {
+            BotLogger.severe(e.getMessage());
+        }
 
         return listOfUsernamesFile;
     }
@@ -237,7 +249,9 @@ public class DataHandler {
         try (FileInputStream articleIdsIn = new FileInputStream(articleIdsFile);
              ObjectInputStream articleIdsInput = new ObjectInputStream(articleIdsIn)) {
             articleIds = (HashMap<String, Integer>) articleIdsInput.readObject();
-        } catch (IOException | ClassNotFoundException ignored) {}
+        } catch (IOException | ClassNotFoundException e) {
+            BotLogger.severe(e.getMessage());
+        }
 
         return articleIds;
     }
@@ -253,7 +267,7 @@ public class DataHandler {
             try {
                 newUserSessionFile.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BotLogger.severe(e.getMessage());
             }
         }
     }
@@ -273,19 +287,20 @@ public class DataHandler {
             List<String> ids;
             try {
                 ids = Files.readAllLines(searchFile);
+
+                for (String id : ids) {
+                    String[] info = id.split("~ ");
+
+                    String modifiedId = "[" + i.substring(0, i.length() - 4) + "]" + info[1];
+                    System.out.println(modifiedId);
+                    this.listOfArticleIds.put(modifiedId, Integer.parseInt(info[0]));
+                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BotLogger.severe(e.getMessage());
             }
-
-            for (String id : ids) {
-                String[] info = id.split("~ ");
-
-                String modifiedId = "[" + i.substring(0, i.length() - 4) + "]" + info[1];
-                System.out.println(modifiedId);
-                this.listOfArticleIds.put(modifiedId, Integer.parseInt(info[0]));
+            finally {
+                searchFileName.setLength(0);
             }
-
-            searchFileName.setLength(0);
         }
     }
 }
