@@ -3,6 +3,7 @@ package botexecution.handlers.corehandlers;
 import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
+import logger.BotLogger;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -33,7 +34,7 @@ public class MediaHandler {
         try {
             sent = telegramClient.execute(pic);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
         assert sent != null;
         return sent.getMessageId();
@@ -48,7 +49,7 @@ public class MediaHandler {
         try {
             telegramClient.execute(photoEdit);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
     }
 }
