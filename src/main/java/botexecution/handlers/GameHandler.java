@@ -11,7 +11,9 @@ import game.characteristics.jobs.*;
 import game.entities.PlayerCharacter;
 import game.environment.Drawer;
 import game.environment.DungeonController;
+import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -20,7 +22,10 @@ import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class GameHandler {
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.ALL;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.PUBLIC;
+
+public class GameHandler implements AbilityExtension {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final MediaHandler pager;
@@ -149,38 +154,96 @@ public class GameHandler {
 
     public void characterCreationMainLoop(ChatSession cs, Update update) {
         if (cs.statProgress.isEmpty()) {
-                cs.playerCharacter.setJob(jobAllocatorGame.get(update.getCallbackQuery().getData()));
-                walkieTalkie.patternExecute(cs, Constants.CREATION_MENU_SET_STATS, null, false);
+            cs.playerCharacter.setJob(jobAllocatorGame.get(update.getCallbackQuery().getData()));
+            walkieTalkie.patternExecute(cs, Constants.CREATION_MENU_SET_STATS, null, false);
 
+            cs.statProgress.add(update.getCallbackQuery().getData());
+            cs.luck = diceHoarder.D6FourTimesCreation();
+
+            walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
+            knowledge.renewListChat(cs);
+        } else {
+            if (cs.statProgress.size() == 6) {
+                statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
+
+                cs.playerCharacter.initHealth();
+                cs.playerCharacter.setArmorClass();
+                cs.playerCharacter.setAttackDice();
+
+                walkieTalkie.patternExecute(cs, cs.playerCharacter.statWindow(), null, false);
+
+                cs.statProgress.clear();
+                cs.creationOfPlayerCharacter = false;
+                cs.nameIsChosen = false;
+                knowledge.renewListChat(cs);
+            } else {
+                statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
                 cs.statProgress.add(update.getCallbackQuery().getData());
                 cs.luck = diceHoarder.D6FourTimesCreation();
 
                 walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
                 knowledge.renewListChat(cs);
             }
-            else {
-                if (cs.statProgress.size() == 6) {
-                    statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
+        }
+    }
+    
+    public Ability createPlayerCharacter() {
+        Consumer<MessageContext> createNewPc = this::createPlayer;
+        //есть в coremessages
 
-                    cs.playerCharacter.initHealth();
-                    cs.playerCharacter.setArmorClass();
-                    cs.playerCharacter.setAttackDice();
+        return Ability
+                .builder()
+                .name("createacharacter")
+                .info("creates a player character")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(createNewPc)
+                .build();
+    }
 
-                    walkieTalkie.patternExecute(cs, cs.playerCharacter.statWindow(), null, false);
+    public Ability startAGame() {
+        Consumer<MessageContext> game = this::startGame;
+        //есть в coremessages
 
-                    cs.statProgress.clear();
-                    cs.creationOfPlayerCharacter = false;
-                    cs.nameIsChosen = false;
-                    knowledge.renewListChat(cs);
-                }
-                else {
-                    statAllocatorGame.get(update.getCallbackQuery().getData()).accept(cs.playerCharacter, cs.luck.get(4));
-                    cs.statProgress.add(update.getCallbackQuery().getData());
-                    cs.luck = diceHoarder.D6FourTimesCreation();
+        return Ability
+                .builder()
+                .name("startagame")
+                .info("starts a game")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(game)
+                .build();
+    }
 
-                    walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(cs.luck), KeyboardFactory.assignStatsBoardGame(cs.statProgress), false);
-                    knowledge.renewListChat(cs);
-                }
-            }
+    public Ability pauseGame() {
+        Consumer<MessageContext> pause = this::pauseGame;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("pauseagame")
+                .info("pauses a game")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(pause)
+                .build();
+    }
+
+    public Ability expungeGame() {
+        Consumer<MessageContext> expunge = this::expungeGame;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("endagame")
+                .info("ends a game prematurely")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(expunge)
+                .build();
     }
 }
