@@ -16,6 +16,10 @@ public enum SearchCategories implements Serializable {
             ITEMS, "items", BESTIARY, "bestiary", RACES, "race",
             FEATS, "feats", BACKGROUNDS, "backgrounds");
 
+    public static Map<SearchCategories, String> getSiteSearchCategories() {
+        return siteSearchCategories;
+    }
+
     public boolean isEmpty() {
         return this == NONE;
     }

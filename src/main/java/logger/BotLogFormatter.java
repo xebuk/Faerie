@@ -32,8 +32,7 @@ public class BotLogFormatter extends Formatter {
             exception = "\nException: " + record.getThrown().getMessage();
         }
 
-
-        return String.format(consoleColor.toString() + logFormat, timestamp, level, threadName,
+        return String.format(consoleColor.toString() + logFormat, timestamp, level.getName(), threadName,
                 source, message, exception);
     }
 

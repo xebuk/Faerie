@@ -1,19 +1,28 @@
 package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
+import common.SearchCategories;
 import logger.BotLogger;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
+
+import static common.Constants.URL;
 
 public class DataHandler {
     private final HashMap<String, ChatSession> listOfSessions;
     private final HashMap<String, String> listOfUsernames;
     private final HashMap<String, Integer> listOfArticleIds;
     private final Timer saveDataTimer;
+    private final Timer updateArticlesTimer;
     private final LevenshteinDistance env;
 
     public DataHandler(boolean noTimer) {
@@ -38,8 +47,21 @@ public class DataHandler {
                     saveSessions();
                 }
             }, 60000, 60000);
+
+            this.updateArticlesTimer = new Timer("DataHandler(UpdateArticlesTimer)", true);
+            updateArticlesTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    BotLogger.info("Updating list of article IDs");
+                    updateArticleIds();
+                    BotLogger.info("Saving list of article IDs");
+                    saveArticleIds();
+                    BotLogger.info("List of article IDs saved successfully");
+                }
+            }, 0, 7200000);
         } else {
             this.saveDataTimer = null;
+            this.updateArticlesTimer = null;
         }
 
         this.env = new LevenshteinDistance();
@@ -107,7 +129,11 @@ public class DataHandler {
                 try {
                     distance = env.apply(articleName.substring(categoryEnd + 1, englishNameStart - 1), name);
                 } catch (StringIndexOutOfBoundsException e) {
-                    distance = env.apply(articleName.substring(categoryEnd + 1, categoryEnd + 1 + name.length()), name);
+                    try {
+                        distance = env.apply(articleName.substring(categoryEnd + 1, categoryEnd + 1 + name.length()), name);
+                    } catch (StringIndexOutOfBoundsException ex) {
+                        continue;
+                    }
                 }
             }
 
@@ -144,8 +170,80 @@ public class DataHandler {
         return results;
     }
 
+    private void updateArticleIds() {
+        Connection link;
+        Connection.Response response;
+        Document page;
+
+        String result;
+        int counter;
+        Elements name;
+        boolean pageNotFound;
+
+        for (SearchCategories section : SearchCategories.getSiteSearchCategories().keySet()) {
+            if (section.isEmpty()) {
+                continue;
+            }
+
+            BotLogger.fine("Current section: " + section.toString());
+
+            for (int i = 1; i <= 8000; i++) {
+                name = null;
+                pageNotFound = false;
+                counter = 0;
+
+                do {
+                    if (counter > 10) {
+                        pageNotFound = true;
+                        break;
+                    }
+
+                    link = Jsoup.connect(URL + section + "/" + i);
+                    try {
+                        response = Jsoup.connect(URL + section + "/" + i).followRedirects(true).execute();
+                        if (response.url().toString().contains("homebrew")
+                                || Objects.equals(response.url().toString(), "https://dnd.su")) {
+                            pageNotFound = true;
+                            break;
+                        }
+                    } catch (IOException e) {
+                        pageNotFound = true;
+                        break;
+                    }
+
+                    try {
+                        page = link.get();
+                    } catch (IOException e) {
+                        pageNotFound = true;
+                        break;
+                    }
+
+                    name = page.select("h2.card-title[itemprop=name]");
+
+                    if (name.text().length() > 150) {
+                        pageNotFound = true;
+                        break;
+                    }
+
+                    if (name.text().isEmpty()) {
+                        counter++;
+                    }
+                } while (name.text().isEmpty());
+
+                if (pageNotFound) {
+                    continue;
+                }
+
+                result = String.format("[%s]%s", section.toString(), name.text());
+                BotLogger.fine("Current entry: " + result + " " + i);
+                this.listOfArticleIds.put(result, i);
+                BotLogger.fine("Added entry to listOfArticleIds: " + result + " " + i);
+            }
+        }
+    }
+
     //сохранение и чтение всего
-    public void saveSessions() {
+    private void saveSessions() {
         StringBuilder chatPath = new StringBuilder();
         File chatFile;
 
@@ -169,7 +267,7 @@ public class DataHandler {
         listOfSessions.clear();
     }
 
-    public void saveUsernames() {
+    private void saveUsernames() {
         File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
 
         HashMap<String, String> listOfUsernamesInFile = readUsernames();
@@ -183,7 +281,7 @@ public class DataHandler {
         }
     }
 
-    public void saveArticleIds() {
+    private void saveArticleIds() {
         File articleIdsFile = new File("../token_dir/articleIDs.txt");
 
         HashMap<String, Integer> listOfArticleIdsInFile = readArticleIds();
@@ -197,7 +295,7 @@ public class DataHandler {
         }
     }
 
-    public void readSessions() {
+    private void readSessions() {
         String mainRoute = "../token_dir/userData/";
 
         File chatIds = new File(mainRoute);
@@ -226,7 +324,7 @@ public class DataHandler {
         }
     }
 
-    public HashMap<String, String> readUsernames() {
+    private HashMap<String, String> readUsernames() {
         File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
 
         HashMap<String, String> listOfUsernamesFile = new HashMap<>();
@@ -241,7 +339,7 @@ public class DataHandler {
         return listOfUsernamesFile;
     }
 
-    public HashMap<String, Integer> readArticleIds() {
+    private HashMap<String, Integer> readArticleIds() {
         File articleIdsFile = new File("../token_dir/articleIDs.txt");
 
         HashMap<String, Integer> articleIds = new HashMap<>();
@@ -272,7 +370,7 @@ public class DataHandler {
         }
     }
 
-    public void readArticleIdsBackUp() {
+    private void readArticleIdsBackUp() {
         String searchIDRoute = "../token_dir/searchID/";
 
         File articleIdsFile = new File(searchIDRoute);
