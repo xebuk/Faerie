@@ -33,7 +33,8 @@ public class BotLogFormatter extends Formatter {
         }
 
 
-        return String.format(consoleColor.toString() + logFormat, timestamp, level, threadName, source, message, exception);
+        return String.format(consoleColor.toString() + logFormat, timestamp, level, threadName,
+                source, message, exception);
     }
 
     private static String getCallerInfo() {
