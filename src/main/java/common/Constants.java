@@ -23,9 +23,10 @@ public interface Constants {
     String SEARCH_MESSAGE_FEATS = "Введите название черты.";
     String SEARCH_MESSAGE_BACKGROUNDS = "Введите название предыстории.";
 
+    String SEARCH_MESSAGE_RESTRICT = "Завершите предыдущий поиск.";
     String SEARCH_MESSAGE_FAIL = """
             Такой статьи не было найдено. Вероятно, в запросе есть ошибка.
-            Поиск был отменен, попробуйте ещё раз.
+            Процесс поиска продолжается, попробуйте ещё раз или введите что-то другое.
             """;
     String SEARCH_MESSAGE_IMPOSSIBLE = "Там, где ошибка невозможна, случилась ошибка. Сообщите об этом авторам бота.";
 

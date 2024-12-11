@@ -39,28 +39,52 @@ public class GeneralHandler implements AbilityExtension {
         this.diceHoarder = diceHoarder;
 
         Consumer<ChatSession> Spell = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_SPELLS, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_SPELLS);
             cs.sectionId = SearchCategories.SPELLS;
         };
         Consumer<ChatSession> Item = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_ITEMS, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_ITEMS);
             cs.sectionId = SearchCategories.ITEMS;
         };
         Consumer<ChatSession> Bestiary = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BESTIARY, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BESTIARY);
             cs.sectionId = SearchCategories.BESTIARY;
         };
         Consumer<ChatSession> Race = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RACES, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RACES);
             cs.sectionId = SearchCategories.RACES;
         };
         Consumer<ChatSession> Class = cs -> walkieTalkie.patternExecute(cs, Constants.CLASSES_LIST, null, true);
         Consumer<ChatSession> Feat = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FEATS, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FEATS);
             cs.sectionId = SearchCategories.FEATS;
         };
         Consumer<ChatSession> Background = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BACKGROUNDS, null, false);
+            if (cs.sectionId != SearchCategories.NONE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BACKGROUNDS);
             cs.sectionId = SearchCategories.BACKGROUNDS;
         };
 
@@ -70,7 +94,7 @@ public class GeneralHandler implements AbilityExtension {
         Consumer<ChatSession> RollDisadvantage = cs -> diceHoarder.D20TwoTimes(cs,false);
         Consumer<ChatSession> RollD8 = diceHoarder::D8;
         Consumer<ChatSession> RollD6 = diceHoarder::D6;
-        Consumer<ChatSession> Roll4D6 = cs -> walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(), null, false);
+        Consumer<ChatSession> Roll4D6 = cs -> walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes());
         Consumer<ChatSession> RollD4 = diceHoarder::D4;
         Consumer<ChatSession> CustomDice = this::rollCustom;
 
@@ -170,9 +194,9 @@ public class GeneralHandler implements AbilityExtension {
     public void sendHelp(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         if (ctx.arguments().length == 0 || commandsSummariesAllocator.get(ctx.firstArg()) == null) {
-            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString(), null, false);
+            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString());
         } else {
-            walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()), null, false);
+            walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()));
         }
         knowledge.renewListChat(currentUser);
     }
@@ -208,7 +232,7 @@ public class GeneralHandler implements AbilityExtension {
             line = "1" + line;
         }
         String[] dices = line.split("d");
-        walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
+        walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])));
 
         cs.rollCustom = false;
         knowledge.renewListChat(cs);
@@ -217,9 +241,9 @@ public class GeneralHandler implements AbilityExtension {
     public void onRollCustomPreset(ChatSession cs, String responseQuery) {
         String[] dices = responseQuery.trim().split("d");
         try {
-            walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
+            walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])));
         } catch (NumberFormatException e) {
-            walkieTalkie.patternExecute(cs, Constants.CUSTOM_DICE_ERROR, null, false);
+            walkieTalkie.patternExecute(cs, Constants.CUSTOM_DICE_ERROR);
         }
         cs.rollCustom = false;
         knowledge.renewListChat(cs);
@@ -231,6 +255,7 @@ public class GeneralHandler implements AbilityExtension {
 
         if (matches.isEmpty()) {
             walkieTalkie.reportFail(cs);
+            return false;
         }
 
         else if (matches.size() == 2) {
