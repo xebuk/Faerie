@@ -32,21 +32,14 @@ public class ControlPanel {
 
     static {
         ControlPanel.registerCommand(
-                "start",
-                List.of("st"),
-                Map.of(),
-                (Map<String, String> options) -> {
-                    setupBot();
-                    BotLogger.info("Bot started");
-                }
-        );
-
-        ControlPanel.registerCommand(
                 "toggle",
                 List.of("tg", "tgb", "toggle_bot"),
                 Map.of(),
                 (Map<String, String> options) -> {
-                    if (bot.isActive()) {
+                    if (bot == null) {
+                        setupBot();
+                    }
+                    else if (bot.isActive()) {
                         bot.setActive(false);
                         botSession.getRunningPolling().cancel(true);
                         botSession.setRunningPolling(null);
