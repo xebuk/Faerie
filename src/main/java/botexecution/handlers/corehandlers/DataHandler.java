@@ -185,8 +185,6 @@ public class DataHandler {
                 continue;
             }
 
-            BotLogger.fine("Current section: " + section.toString());
-
             for (int i = 1; i <= 8000; i++) {
                 name = null;
                 pageNotFound = false;
@@ -235,9 +233,7 @@ public class DataHandler {
                 }
 
                 result = String.format("[%s]%s", section.toString(), name.text());
-                BotLogger.fine("Current entry: " + result + " " + i);
                 this.listOfArticleIds.put(result, i);
-                BotLogger.fine("Added entry to listOfArticleIds: " + result + " " + i);
             }
         }
     }
