@@ -166,6 +166,10 @@ public class DnDCampaignHandler {
             return;
         }
 
+        if (secretMessages.isNotLegal(ctx, "2")) {
+            return;
+        }
+
         switch (ctx.firstArg()) {
             case "-p" -> {
                 currentUser.role = RoleParameters.PLAYER;
