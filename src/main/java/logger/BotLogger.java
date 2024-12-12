@@ -12,37 +12,40 @@ public class BotLogger {
     private static final long ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
     static {
+        BotLogFormatter botLogFormatter = new BotLogFormatter();
+
+        // Console logging
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.INFO);
+        consoleHandler.setFormatter(botLogFormatter);
+        logger.addHandler(consoleHandler);
+
         try {
-            BotLogFormatter botLogFormatter = new BotLogFormatter();
-
-            // Console logging
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setLevel(Level.INFO);
-            consoleHandler.setFormatter(botLogFormatter);
-            logger.addHandler(consoleHandler);
-
             // File logging
             DailyRotatingFileHandler rotatingFileHandler = new DailyRotatingFileHandler();
             rotatingFileHandler.setLevel(Level.ALL);
             rotatingFileHandler.setFormatter(botLogFormatter);
             logger.addHandler(rotatingFileHandler);
 
-            logger.setUseParentHandlers(false);
-
             // Rotation every day at midnight
-            Timer timer = new Timer(true);
+            Timer timer = new Timer("LogRotator", true);
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     try {
                         DailyRotatingFileHandler.rotate(logger);
+                        BotLogger.info("Log file was successfully rotated");
                     } catch (IOException e) {
                         logger.log(Level.SEVERE, "Error rotating log file", e);
                     }
                 }
             }, getMidnightTime(), ONE_DAY_MS);
         } catch (IOException e) {
+            BotLogger.severe("File logging crashed");
             throw new RuntimeException(e);
+        }
+        finally {
+            logger.setUseParentHandlers(false);
         }
     }
 

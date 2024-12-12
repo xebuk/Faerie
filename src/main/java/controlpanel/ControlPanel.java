@@ -19,33 +19,27 @@ public class ControlPanel {
     private static BotSession botSession;
     private static AbilBot bot;
 
-    private static void startBot() {
+    private static void setupBot() {
         try {
             bot = new AbilBot();
             application = new TelegramBotsLongPollingApplication();
             botSession = application.registerBot(DataReader.readToken(), bot);
+            BotLogger.info("Bot started");
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
     }
 
     static {
         ControlPanel.registerCommand(
-                "start",
-                List.of("st"),
-                Map.of(),
-                (Map<String, String> options) -> {
-                    startBot();
-                    BotLogger.info("Bot started");
-                }
-        );
-
-        ControlPanel.registerCommand(
                 "toggle",
                 List.of("tg", "tgb", "toggle_bot"),
                 Map.of(),
                 (Map<String, String> options) -> {
-                    if (bot.isActive()) {
+                    if (bot == null) {
+                        setupBot();
+                    }
+                    else if (bot.isActive()) {
                         bot.setActive(false);
                         botSession.getRunningPolling().cancel(true);
                         botSession.setRunningPolling(null);

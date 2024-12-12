@@ -1,15 +1,22 @@
 package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
+import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
+import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.sender.SilentSender;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public class TextHandler  {
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.ALL;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.PUBLIC;
+
+public class TextHandler implements AbilityExtension {
     private final SilentSender silent;
 
     private final int MAX_MESSAGE_SIZE = 4096;
@@ -152,5 +159,52 @@ public class TextHandler  {
         }
 
         return text.toString();
+    }
+
+    public Ability sayMofu() {
+        Consumer<MessageContext> mofu = ctx -> silent.send("Mofu Mofu!", ctx.chatId());
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("mofu")
+                .info("mofu")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(mofu)
+                .build();
+    }
+
+    public Ability requestArticle() {
+        Consumer<MessageContext> search = ctx -> patternExecute(ctx,
+                Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard(), false);
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("search")
+                .info("searches article on DnD.su")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(search)
+                .build();
+    }
+
+    public Ability diceRoll() {
+        Consumer<MessageContext> roll = ctx -> patternExecute(ctx,
+                Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard(), false);
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("roll")
+                .info("rolls a dice")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(roll)
+                .build();
     }
 }
