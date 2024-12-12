@@ -21,8 +21,11 @@ public class DataHandler {
     private final HashMap<String, ChatSession> listOfSessions;
     private final HashMap<String, String> listOfUsernames;
     private final HashMap<String, Integer> listOfArticleIds;
-    private final Timer saveDataTimer;
-    private final Timer updateArticlesTimer;
+
+    private int[] articleUpdateContext;
+    private File articleContext;
+    private final Timer dataRefreshTimer;
+
     private final LevenshteinDistance env;
 
     public DataHandler(boolean noTimer) {
@@ -30,11 +33,19 @@ public class DataHandler {
         this.listOfUsernames = readUsernames();
         this.listOfArticleIds = readArticleIds();
 
+        this.articleContext  = new File("../token_dir/articleContext.txt");
+
         readSessions();
+        try (FileInputStream articleIn = new FileInputStream(articleContext);
+             ObjectInputStream articleInput = new ObjectInputStream(articleIn)) {
+            this.articleUpdateContext = (int[]) articleInput.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            this.articleUpdateContext = new int[]{0, -200, 1};
+        }
 
         if (!noTimer) {
-            this.saveDataTimer = new Timer("DataHandler(SaveDataTimer)", true);
-            saveDataTimer.schedule(new TimerTask() {
+            this.dataRefreshTimer = new Timer("DataHandler(SaveDataTimer)", true);
+            dataRefreshTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     BotLogger.info("Users' tags being saved");
@@ -47,9 +58,7 @@ public class DataHandler {
                     saveSessions();
                 }
             }, 60000, 60000);
-
-            this.updateArticlesTimer = new Timer("DataHandler(UpdateArticlesTimer)", true);
-            updateArticlesTimer.schedule(new TimerTask() {
+            dataRefreshTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     BotLogger.info("Updating list of article IDs");
@@ -58,10 +67,9 @@ public class DataHandler {
                     saveArticleIds();
                     BotLogger.info("List of article IDs saved successfully");
                 }
-            }, 0, 7200000);
+            }, 0, 1800000);
         } else {
-            this.saveDataTimer = null;
-            this.updateArticlesTimer = null;
+            this.dataRefreshTimer = null;
         }
 
         this.env = new LevenshteinDistance();
@@ -171,70 +179,77 @@ public class DataHandler {
     }
 
     private void updateArticleIds() {
-        Connection link;
         Connection.Response response;
         Document page;
 
         String result;
-        int counter;
-        Elements name;
+        int retries;
+        Elements name = null;
         boolean pageNotFound;
 
-        for (SearchCategories section : SearchCategories.getSiteSearchCategories().keySet()) {
-            if (section.isEmpty()) {
+        SearchCategories currentUpdatedSection = SearchCategories.getSearchCategory(articleUpdateContext[0]);
+        if (articleUpdateContext[2] == 8000) {
+            articleUpdateContext[0] = (articleUpdateContext[0] + 1) % 6;
+            articleUpdateContext[1] = 1;
+            articleUpdateContext[2] = 200;
+        }
+        else {
+            articleUpdateContext[1] = articleUpdateContext[2];
+            articleUpdateContext[2] += 200;
+        }
+
+        try (FileOutputStream articleContextOut = new FileOutputStream(articleContext);
+             ObjectOutputStream articleContextOutput = new ObjectOutputStream(articleContextOut)) {
+            articleContextOutput.writeObject(articleUpdateContext);
+        } catch (IOException ignored) {}
+
+        for (int i = articleUpdateContext[1]; i <= articleUpdateContext[2]; i++) {
+            pageNotFound = false;
+            retries = 0;
+
+            do {
+                try {
+                    response = Jsoup.connect(URL + currentUpdatedSection + "/" + i).execute();
+                    if (response.url().toString().contains("homebrew")
+                            || Objects.equals(response.url().toString(), URL)
+                            || response.url().toString().contains("404")) {
+                        BotLogger.info("Page made a redirection to either homebrew, home or 404 page - "
+                                + URL + currentUpdatedSection + "/" + i);
+                        pageNotFound = true;
+                        break;
+                    }
+                    page = response.parse();
+
+                } catch (IOException e) {
+                    BotLogger.info("Page is not found (Error 404) - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+
+                name = page.select("h2.card-title[itemprop=name]");
+
+                if (name.text().length() > 150) {
+                    BotLogger.info("Name of a page is bigger than 150 characters - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+
+                retries++;
+                if (retries > 10) {
+                    BotLogger.info("Retry counter is more than 10 - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+            } while (name.text().isEmpty());
+
+            if (pageNotFound) {
                 continue;
             }
 
-            for (int i = 1; i <= 8000; i++) {
-                name = null;
-                pageNotFound = false;
-                counter = 0;
-
-                do {
-                    if (counter > 10) {
-                        pageNotFound = true;
-                        break;
-                    }
-
-                    link = Jsoup.connect(URL + section + "/" + i);
-                    try {
-                        response = Jsoup.connect(URL + section + "/" + i).followRedirects(true).execute();
-                        if (response.url().toString().contains("homebrew")
-                                || Objects.equals(response.url().toString(), "https://dnd.su")) {
-                            pageNotFound = true;
-                            break;
-                        }
-                    } catch (IOException e) {
-                        pageNotFound = true;
-                        break;
-                    }
-
-                    try {
-                        page = link.get();
-                    } catch (IOException e) {
-                        pageNotFound = true;
-                        break;
-                    }
-
-                    name = page.select("h2.card-title[itemprop=name]");
-
-                    if (name.text().length() > 150) {
-                        pageNotFound = true;
-                        break;
-                    }
-
-                    if (name.text().isEmpty()) {
-                        counter++;
-                    }
-                } while (name.text().isEmpty());
-
-                if (pageNotFound) {
-                    continue;
-                }
-
-                result = String.format("[%s]%s", section.toString(), name.text());
-                this.listOfArticleIds.put(result, i);
-            }
+            result = String.format("[%s]%s", currentUpdatedSection.toString(), name.text());
+            this.listOfArticleIds.put(result, i);
+            BotLogger.info("Current updated entry: " + result + " - " + i);
+            BotLogger.log(Level.FINE, "Current updated entry as URL: " + URL + currentUpdatedSection + "/" + i);
         }
     }
 
