@@ -14,6 +14,7 @@ import game.entities.PlayerCharacter;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.io.Serializable;
 import java.util.*;
@@ -28,6 +29,7 @@ public class ChatSession implements Serializable {
 
     //общие настройки
     public KeyboardValues currentKeyboard = KeyboardValues.COMMON;
+    public ArrayDeque<Message> messagesOnDeletion = new ArrayDeque<>();
 
     //параметры для поисковика
     public SearchCategories sectionId = SearchCategories.NONE;
@@ -48,7 +50,6 @@ public class ChatSession implements Serializable {
     public boolean gameInSession = false;
     public boolean pauseGame = false;
     public DungeonController crawler;
-    public int lastDungeonMessageId;
 
     //параметры для менеджера компаний
     public boolean creationOfPlayerDnD = false;
@@ -86,6 +87,12 @@ public class ChatSession implements Serializable {
     public PlayerDnD activePc;
 
     //функции
+    public ChatSession(String chatId) {
+        this.chatId = Long.parseLong(chatId);
+        this.isPM = !(this.chatId < 0);
+        DataHandler.createChatFile(chatId);
+    }
+
     public ChatSession(Update update) {
         this.chatId = AbilityUtils.getChatId(update);
         this.isPM = !(this.chatId < 0);

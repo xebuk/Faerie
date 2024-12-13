@@ -23,7 +23,7 @@ public class DataHandler {
     private final HashMap<String, Integer> listOfArticleIds;
 
     private int[] articleUpdateContext;
-    private File articleContext;
+    private final File articleContext;
     private final Timer dataRefreshTimer;
 
     private final LevenshteinDistance env;
@@ -90,6 +90,10 @@ public class DataHandler {
         if (cs == null) {
             readSessionToList(chatId);
             cs = listOfSessions.get(chatId);
+        }
+        if (cs == null) {
+            cs = new ChatSession(chatId);
+            renewListChat(cs);
         }
         return cs;
     }

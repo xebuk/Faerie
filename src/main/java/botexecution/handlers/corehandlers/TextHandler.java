@@ -8,9 +8,12 @@ import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.sender.SilentSender;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.ALL;
@@ -82,27 +85,27 @@ public class TextHandler implements AbilityExtension {
         patternExecute(cs, partOfArticle.toString(), function, false);
     }
 
-    public void patternExecute(ChatSession cs, String message) {
+    public Optional<Message> patternExecute(ChatSession cs, String message) {
         StringBuilder sign = new StringBuilder();
         if (!cs.isPM()) {
             sign.append(cs.username).append("\n").append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(MessageContext ctx, String message) {
+    public Optional<Message> patternExecute(MessageContext ctx, String message) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
             sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (!cs.isPM()) {
             sign.append(cs.username).append("\n").append("----------------------------------").append("\n");
@@ -116,10 +119,10 @@ public class TextHandler implements AbilityExtension {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         sign.append(username).append("\n").append("----------------------------------").append("\n");
         sign.append(message);
@@ -131,10 +134,10 @@ public class TextHandler implements AbilityExtension {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
             sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
@@ -148,7 +151,7 @@ public class TextHandler implements AbilityExtension {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
     public String variantsMessageConfigurator(List<String> variants) {
@@ -159,6 +162,18 @@ public class TextHandler implements AbilityExtension {
         }
 
         return text.toString();
+    }
+
+    public void deleteMessages(ChatSession cs) {
+        if (cs.messagesOnDeletion.isEmpty()) {
+            return;
+        }
+        DeleteMessage onDeletion;
+        while (!cs.messagesOnDeletion.isEmpty()) {
+            onDeletion = new DeleteMessage(cs.getChatId().toString(),
+                    cs.messagesOnDeletion.removeFirst().getMessageId());
+            silent.execute(onDeletion);
+        }
     }
 
     public Ability sayMofu() {

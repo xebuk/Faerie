@@ -119,9 +119,7 @@ public interface Constants {
     String CREATION_MENU_WISDOM = "Perception!";
     String CREATION_MENU_CHARISMA = "Intimidation!";
 
-    String CREATION_MENU_HEALTH = "Ваше здоровье равно: ";
-    String CREATION_MENU_ARMOR = "Ваш класс брони равен: ";
-    String CREATION_MENU_ATTACK = "Ваш кубик атаки: ";
+    String CREATION_MENU_RESTRICTION = "Завершите создание текущего персонажа.";
 
     int gameMazeWidth = 50;
     int gameMazeHeight = 50;

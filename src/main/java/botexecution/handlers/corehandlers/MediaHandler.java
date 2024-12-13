@@ -26,7 +26,7 @@ public class MediaHandler {
         return frame;
     }
 
-    public int sendPic(ChatSession cs) {
+    public Message sendPic(ChatSession cs) {
         InputFile photo = new InputFile(getFrame(cs.getChatId().toString()));
         SendPhoto pic = new SendPhoto(cs.getChatId().toString(), photo);
         pic.setReplyMarkup(KeyboardFactory.movementBoardGame());
@@ -36,8 +36,7 @@ public class MediaHandler {
         } catch (TelegramApiException e) {
             BotLogger.severe(e.getMessage());
         }
-        assert sent != null;
-        return sent.getMessageId();
+        return sent;
     }
 
     public void gamePovUpdater(ChatSession cs, int messageId) {
