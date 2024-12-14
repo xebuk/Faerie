@@ -3,6 +3,7 @@ package botexecution.handlers.dndhandlers;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
 import dnd.dmtools.NoteDnD;
@@ -434,6 +435,9 @@ public class DnDHandler {
         if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
             walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
             return;
+        } else if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
         }
 
         ChatSession currentCampaign = getCampaignSession(currentUser);
@@ -455,7 +459,7 @@ public class DnDHandler {
             return;
         }
 
-        currentUser.editingAQuest = true;
+        currentUser.currentContext = CurrentProcess.EDITING_A_QUEST_DND;
         currentUser.editQuestParameter = ctx.firstArg();
         walkieTalkie.patternExecute(currentUser, "Введите изменения, применяемые к заданию.");
         knowledge.renewListChat(currentCampaign);
@@ -480,6 +484,8 @@ public class DnDHandler {
             case "-s" -> currentCampaign.activeDm.questRoster.get(currentCampaign.activeDm.editQuestIndex).setSummary(response);
             case "-n" -> currentCampaign.activeDm.questRoster.get(currentCampaign.activeDm.editQuestIndex).setNotes(response);
         }
+
+        cs.currentContext = CurrentProcess.FREE;
 
         walkieTalkie.patternExecute(cs, "Изменение задания прошло успешно.");
         knowledge.renewListChat(currentCampaign);
@@ -670,7 +676,11 @@ public class DnDHandler {
     public void editNote(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "int<2")) {
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+        else if (currentCampaign == null || secretMessages.isNotLegal(ctx, "int<2")) {
             return;
         }
 
@@ -683,7 +693,7 @@ public class DnDHandler {
                 walkieTalkie.patternExecute(currentUser, "Перейдите в личные сообщения перед редакцией заметок.");
             }
             case PLAYER, DUNGEON_MASTER -> {
-                currentUser.editingANote = true;
+                currentUser.currentContext = CurrentProcess.EDITING_A_NOTE_DND;
                 currentUser.editNoteIndex = Integer.parseInt(ctx.secondArg()) - 1;
                 switch (ctx.firstArg()) {
                     case "-t" -> currentUser.editNote = EditingParameters.NOTE_TITLE;
@@ -701,7 +711,7 @@ public class DnDHandler {
     public void editNoteSecondStage(ChatSession cs, String response) {
         switch (cs.role) {
             case DUNGEON_MASTER -> {
-                cs.editingANote = false;
+                cs.currentContext = CurrentProcess.FREE;
                 ChatSession currentCampaign = knowledge.getSession(cs.currentCampaign.toString());
                 switch (cs.editNote) {
                     case NOTE_TITLE -> currentCampaign.activeDm.settingNotes.get(cs.editNoteIndex).title =
@@ -719,7 +729,7 @@ public class DnDHandler {
                 cs.editNote = EditingParameters.NONE;
             }
             case PLAYER -> {
-                cs.editingANote = false;
+                cs.currentContext = CurrentProcess.FREE;
                 ChatSession currentCampaign = knowledge.getSession(cs.currentCampaign.toString());
                 switch (cs.editNote) {
                     case NOTE_TITLE -> currentCampaign.activeDm.campaignParty.get(cs.username)
@@ -747,8 +757,11 @@ public class DnDHandler {
 
     public void setPrestigeJob(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-
-        if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+        else if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
             walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
             return;
         }
@@ -774,7 +787,7 @@ public class DnDHandler {
             currentUser.editPrestigeJobIndex = Integer.parseInt(ctx.thirdArg());
         }
 
-        currentUser.editingAPrestigeJob = true;
+        currentUser.currentContext = CurrentProcess.EDITING_A_PRESTIGE_JOB_DND;
         currentUser.whoIsEdited = ctx.firstArg();
 
         walkieTalkie.patternExecute(currentUser, "Введите название подкласса персонажа.");
@@ -836,7 +849,7 @@ public class DnDHandler {
                 walkieTalkie.patternExecute(dungeonMaster,
                         "Произошла ошибка - введено число вне возможного набора индексов.\n" +
                                 "Попробуйте заново.");
-                dungeonMaster.editingAPrestigeJob = false;
+                dungeonMaster.currentContext = CurrentProcess.FREE;
                 return;
             }
             currentCampaign.activeDm.campaignParty.get(dungeonMaster.whoIsEdited).secondaryJobsPrestigeTitles
@@ -845,6 +858,7 @@ public class DnDHandler {
 
         walkieTalkie.patternExecute(dungeonMaster,
                 "Изменение подкласса прошло успешно.");
+        dungeonMaster.currentContext = CurrentProcess.FREE;
         knowledge.renewListChat(dungeonMaster);
         knowledge.renewListChat(currentCampaign);
     }
@@ -1091,6 +1105,9 @@ public class DnDHandler {
         if (currentUser.role != RoleParameters.DUNGEON_MASTER) {
             walkieTalkie.patternExecute(currentUser, "Доступ запрещен - вы не ДМ данной компании.");
             return;
+        } else if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
         }
 
         ChatSession currentCampaign = getCampaignSession(currentUser);
@@ -1098,7 +1115,7 @@ public class DnDHandler {
             return;
         }
 
-        currentUser.editingALook = true;
+        currentUser.currentContext = CurrentProcess.EDITING_A_LOOK_DND;
         currentUser.whoIsEdited = ctx.secondArg() + ctx.firstArg();
         walkieTalkie.patternExecute(currentUser, "Введите изменения.");
     }
@@ -1124,7 +1141,7 @@ public class DnDHandler {
             }
         }
 
-        cs.editingALook = false;
+        cs.currentContext = CurrentProcess.FREE;
         cs.whoIsEdited = "";
 
         walkieTalkie.patternExecute(cs, "Изменение прошло успешно.");

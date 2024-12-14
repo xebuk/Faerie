@@ -4,6 +4,7 @@ import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.MediaHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
 import game.characteristics.Job;
@@ -66,24 +67,35 @@ public class GameHandler implements AbilityExtension {
     }
 
     public void createPlayer(MessageContext ctx) {
-        ChatSession newUser = knowledge.getSession(ctx.chatId().toString());
-        if (newUser.creationOfPlayerCharacter) {
-            walkieTalkie.patternExecute(newUser, Constants.CREATION_MENU_RESTRICTION);
+        ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER) {
+            walkieTalkie.patternExecute(currentUser, Constants.CREATION_MENU_RESTRICTION);
+            return;
+        }
+        else if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
             return;
         }
 
-        walkieTalkie.patternExecute(newUser, Constants.CREATION_MENU_CHOOSE_NAME, null, false);
+        Optional<Message> characterCreationText = walkieTalkie.patternExecute(currentUser, Constants.CREATION_MENU_CHOOSE_NAME);
+        characterCreationText.ifPresent(message -> currentUser.messagesOnDeletion.add(message));
 
-        newUser.creationOfPlayerCharacter = true;
-        knowledge.renewListChat(newUser);
+        currentUser.currentContext = CurrentProcess.CREATING_A_CHARACTER;
+        knowledge.renewListChat(currentUser);
     }
 
     public void startGame(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (currentUser.playerCharacter == null || currentUser.creationOfPlayerCharacter) {
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+        else if (currentUser.playerCharacter == null) {
             walkieTalkie.patternExecute(currentUser, Constants.GAME_RESTRICTED, null, false);
             return;
         }
+
+        currentUser.currentContext = CurrentProcess.IN_GAME;
 
         currentUser.crawler = new DungeonController(Constants.gameMazeWidth, Constants.gameMazeHeight,
                             Constants.gameRoomMinSize, Constants.gameRoomMaxSize, Constants.gameRoomCount);
@@ -97,14 +109,17 @@ public class GameHandler implements AbilityExtension {
         walkieTalkie.patternExecute(currentUser, Constants.GAME_START);
         currentUser.messagesOnDeletion.add(pager.sendPic(currentUser));
 
-        currentUser.gameInSession = true;
-
         knowledge.renewListChat(currentUser);
     }
 
     public void pauseGame(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.currentContext != CurrentProcess.IN_GAME) {
+            walkieTalkie.patternExecute(currentUser, Constants.GAME_PAUSE_RESTRICTED);
+        }
+
         currentUser.pauseGame = !currentUser.pauseGame;
+        currentUser.currentContext = CurrentProcess.FREE;
 
         if (currentUser.pauseGame) {
             walkieTalkie.deleteMessages(currentUser);
@@ -125,8 +140,11 @@ public class GameHandler implements AbilityExtension {
 
     public void expungeGame(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
+        if (currentUser.currentContext == CurrentProcess.IN_GAME) {
+            walkieTalkie.patternExecute(currentUser, Constants.GAME_EXPUNGE_RESTRICTED);
+        }
+
         currentUser.pauseGame = false;
-        currentUser.gameInSession = false;
         currentUser.crawler = null;
 
         walkieTalkie.patternExecute(currentUser, Constants.GAME_EXPUNGE, null, false);
@@ -151,6 +169,13 @@ public class GameHandler implements AbilityExtension {
     }
 
     public void characterCreationStart(ChatSession cs, Update update) {
+        if (cs.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+
+        cs.currentContext = CurrentProcess.CREATING_A_CHARACTER;
+
         cs.playerCharacter = new PlayerCharacter();
         cs.playerCharacter.setName(update.getMessage().getText());
         cs.nameIsChosen = true;
@@ -191,8 +216,8 @@ public class GameHandler implements AbilityExtension {
             walkieTalkie.patternExecute(cs, cs.playerCharacter.statWindow());
 
             cs.statProgress.clear();
-            cs.creationOfPlayerCharacter = false;
             cs.nameIsChosen = false;
+            cs.currentContext = CurrentProcess.FREE;
             knowledge.renewListChat(cs);
         }
         else {

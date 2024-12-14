@@ -5,8 +5,10 @@ import botexecution.commands.KeyboardValues;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import botexecution.mainobjects.KeyboardFactory;
 import common.*;
+import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
@@ -39,57 +41,88 @@ public class GeneralHandler implements AbilityExtension {
         this.diceHoarder = diceHoarder;
 
         Consumer<ChatSession> Spell = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_SPELLS);
             cs.sectionId = SearchCategories.SPELLS;
         };
         Consumer<ChatSession> Item = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_ITEMS);
             cs.sectionId = SearchCategories.ITEMS;
         };
         Consumer<ChatSession> Bestiary = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BESTIARY);
             cs.sectionId = SearchCategories.BESTIARY;
         };
         Consumer<ChatSession> Race = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RACES);
             cs.sectionId = SearchCategories.RACES;
         };
         Consumer<ChatSession> Class = cs -> walkieTalkie.patternExecute(cs, Constants.CLASSES_LIST, null, true);
         Consumer<ChatSession> Feat = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FEATS);
             cs.sectionId = SearchCategories.FEATS;
         };
         Consumer<ChatSession> Background = cs -> {
-            if (cs.sectionId != SearchCategories.NONE) {
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
                 walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
                 return;
             }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
             walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BACKGROUNDS);
             cs.sectionId = SearchCategories.BACKGROUNDS;
         };
 
         Consumer<ChatSession> RollD20 = diceHoarder::D20;
-        Consumer<ChatSession> Roll2D20 = cs -> walkieTalkie.patternExecute(cs, Constants.ROLL_MESSAGE_ADVANTAGE, KeyboardFactory.rollAdvantageBoard(), false);
+        Consumer<ChatSession> Roll2D20 = cs -> walkieTalkie.patternExecute(cs, Constants.ROLL_MESSAGE_ADVANTAGE,
+                KeyboardFactory.rollAdvantageBoard(), false);
         Consumer<ChatSession> RollAdvantage = cs -> diceHoarder.D20TwoTimes(cs,true);
         Consumer<ChatSession> RollDisadvantage = cs -> diceHoarder.D20TwoTimes(cs,false);
         Consumer<ChatSession> RollD8 = diceHoarder::D8;
@@ -186,16 +219,22 @@ public class GeneralHandler implements AbilityExtension {
         walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE, KeyboardFactory.commonSetOfCommandsBoard(), false);
 
         DataHandler.createChatFile(ctx.chatId().toString());
-        newUser.setUsername(ctx.user().getUserName());
+        newUser.setUsername("@" + ctx.user().getUserName());
         knowledge.renewListChat(newUser);
         knowledge.renewListUsername(newUser);
     }
 
     public void sendHelp(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (ctx.arguments().length == 0 || commandsSummariesAllocator.get(ctx.firstArg()) == null) {
+
+        if (commandsSummariesAllocator.get(ctx.firstArg()) == null) {
+            BotLogger.severe("Help doesn't recognise this argument: " + ctx.firstArg());
             walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString());
-        } else {
+        }
+        else if (ctx.arguments().length == 0) {
+            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString());
+        }
+        else {
             walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()));
         }
         knowledge.renewListChat(currentUser);
@@ -275,7 +314,6 @@ public class GeneralHandler implements AbilityExtension {
 
             walkieTalkie.articleMessaging(article, cs);
             cs.sectionId = SearchCategories.NONE;
-            cs.searchSuccess = false;
             cs.title = "";
             return false;
         }
@@ -296,6 +334,7 @@ public class GeneralHandler implements AbilityExtension {
             default -> walkieTalkie.reportImpossible(cs);
         }
         cs.sectionId = SearchCategories.NONE;
+        cs.currentContext = CurrentProcess.FREE;
         cs.searchSuccess = false;
         cs.title = "";
         knowledge.renewListChat(cs);

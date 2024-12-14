@@ -1,5 +1,6 @@
 package botexecution.mainobjects;
 
+import botexecution.commands.CurrentProcess;
 import botexecution.handlers.*;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.MediaHandler;
@@ -7,7 +8,6 @@ import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.handlers.dndhandlers.*;
 import common.*;
 
-import dnd.values.EditingParameters;
 import dnd.values.RoleParameters;
 import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
@@ -97,63 +97,9 @@ public class AbilBot extends AbilityBot {
     }
 
     //функции для менеджера компаний
-    public Ability createCampaign() {
-        Consumer<MessageContext> campaign = story::createCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("createacampaign")
-                .info("creates a campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(GROUP_ADMIN)
-                .action(campaign)
-                .build();
-    }
-
-    public Ability endCampaign() {
-        Consumer<MessageContext> end = story::endCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("endacampaign")
-                .info("ends a campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(GROUP_ADMIN)
-                .action(end)
-                .build();
-    }
-
-    public Ability showCampaigns() {
-        Consumer<MessageContext> campaigns = story::showCampaigns;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showcampaigns")
-                .info("shows your campaigns")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaigns)
-                .build();
-    }
-
-    public Ability showCampaignsGroup() {
-        Consumer<MessageContext> campaign = story::showCampaignGroup;
-
-        return Ability
-                .builder()
-                .name("showcurcampaign")
-                .info("shows current campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(PUBLIC)
-                .action(campaign)
-                .build();
+    public AbilityExtension getCampaignAbilities() {
+        //настройка кампании
+        return story;
     }
 
     public Ability createPlayerDnD() {
@@ -183,96 +129,6 @@ public class AbilBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(halt)
-                .build();
-    }
-
-    public Ability setCampaign() {
-        Consumer<MessageContext> campaign = story::setCurrentCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setcampaign")
-                .info("sets current campaign")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(campaign)
-                .build();
-    }
-
-    public Ability setCampaignName() {
-        Consumer<MessageContext> campaignName = story::setCampaignName;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setcampaignname")
-                .info("sets a campaign name")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaignName)
-                .build();
-    }
-
-    public Ability setPassword() {
-        Consumer<MessageContext> password = story::setPassword;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setpassword")
-                .info("sets a campaign password")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(password)
-                .build();
-    }
-
-    public Ability setMulticlassLimit() {
-        Consumer<MessageContext> multi = story::setMulticlassLimit;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setmulticlasslimit")
-                .info("sets a campaign multiclass limit")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(multi)
-                .build();
-    }
-
-    public Ability showPlayers() {
-        Consumer<MessageContext> playersList = story::showPlayers;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showplayers")
-                .info("show a players list")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(playersList)
-                .build();
-    }
-
-    public Ability showPlayerProfile() {
-        Consumer<MessageContext> profile = story::showPlayerProfile;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showplayerprofile")
-                .info("show a players list")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(profile)
                 .build();
     }
 
@@ -763,7 +619,7 @@ public class AbilBot extends AbilityBot {
             knowledge.renewListChat(currentUser);
         }
 
-        else if (currentUser.creationOfPlayerDnD) {
+        if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER_DND) {
             String response;
             try {
                 if (update.hasMessage() && update.getMessage().hasText()) {
@@ -791,10 +647,10 @@ public class AbilBot extends AbilityBot {
             if (currentUser.role == RoleParameters.DUNGEON_MASTER && responseQuery.contains("@")) {
                 tableTop.askDmForARollResponse(currentUser, responseQuery);
             }
-            else if (currentUser.creationOfPlayerCharacter) {
+            else if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER) {
                 dungeonCrawl.characterCreationMainLoop(currentUser, update);
             }
-            else if (currentUser.gameInSession && !currentUser.pauseGame) {
+            else if (currentUser.currentContext == CurrentProcess.IN_GAME && !currentUser.pauseGame) {
                 dungeonCrawl.gameMainLoop(currentUser, update);
             }
             else if (Objects.equals(currentUser.whoIsRolling, "@" + query.getFrom().getUserName())) {
@@ -810,20 +666,13 @@ public class AbilBot extends AbilityBot {
                     silent.send(Constants.CAMPAIGN_END_RESTRICTION, currentUser.getChatId());
                 }
                 else {
-                    switch (responseQuery) {
-                        case "Да":
-                            currentUser.activeDm = null;
-                            currentUser.role = RoleParameters.NONE;
-                            silent.send(Constants.CAMPAIGN_END, currentUser.getChatId());
-                            break;
-                        case "Нет":
-                            currentUser.role = RoleParameters.CAMPAIGN;
-                            silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
-                            break;
-                        default:
-                            currentUser.role = RoleParameters.CAMPAIGN;
-                            silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
-                            break;
+                    if (responseQuery.equals("Да")) {
+                        currentUser.activeDm = null;
+                        currentUser.role = RoleParameters.NONE;
+                        silent.send(Constants.CAMPAIGN_END, currentUser.getChatId());
+                    } else {
+                        currentUser.role = RoleParameters.CAMPAIGN;
+                        silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
                     }
                 }
             }
@@ -832,37 +681,22 @@ public class AbilBot extends AbilityBot {
             }
         } else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()
                 && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-
-            if (currentUser.editingALook) {
-                tableTop.changeLookSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.editingANote && currentUser.editNote != EditingParameters.NONE) {
-                tableTop.editNoteSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.addingAnAspect) {
-                bagOfHolding.addAspectSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.editingAnAspect) {
-                bagOfHolding.editAspectSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.editingAQuest) {
-                tableTop.editQuestSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.editingAPrestigeJob) {
-                tableTop.setPrestigeJobSecondStage(currentUser, update.getMessage().getText());
-            }
-            else if (currentUser.creationOfPlayerCharacter && !currentUser.nameIsChosen) {
-                dungeonCrawl.characterCreationStart(currentUser, update);
-            }
-            else if (currentUser.rollCustom) {
-                jackOfAllTrades.onRollCustom(currentUser, update);
-            }
-            else if (currentUser.searchSuccess) {
-                jackOfAllTrades.onSearchSuccess(currentUser, update);
-            }
-            else if (!currentUser.sectionId.isEmpty()) {
-                currentUser.searchSuccess = jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
-                knowledge.renewListChat(currentUser);
+            switch (currentUser.currentContext) {
+                case EDITING_A_LOOK_DND -> tableTop.changeLookSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_NOTE_DND -> tableTop.editNoteSecondStage(currentUser, update.getMessage().getText());
+                case ADDING_AN_ASPECT_DND -> bagOfHolding.addAspectSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_AN_ASPECT_DND -> bagOfHolding.editAspectSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_QUEST_DND -> tableTop.editQuestSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_PRESTIGE_JOB_DND -> tableTop.setPrestigeJobSecondStage(currentUser, update.getMessage().getText());
+                case CREATING_A_CHARACTER -> dungeonCrawl.characterCreationStart(currentUser, update);
+                case SEARCHING_AN_ARTICLE -> currentUser.searchSuccess = jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
+                default -> {
+                    if (currentUser.rollCustom) {
+                        jackOfAllTrades.onRollCustom(currentUser, update);
+                    } else if (currentUser.searchSuccess) {
+                        jackOfAllTrades.onSearchSuccess(currentUser, update);
+                    }
+                }
             }
         }
         knowledge.renewListChat(currentUser);

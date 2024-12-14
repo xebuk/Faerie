@@ -1,5 +1,6 @@
 package botexecution.mainobjects;
 
+import botexecution.commands.CurrentProcess;
 import botexecution.commands.KeyboardValues;
 import botexecution.handlers.corehandlers.DataHandler;
 import common.Constants;
@@ -30,6 +31,7 @@ public class ChatSession implements Serializable {
     //общие настройки
     public KeyboardValues currentKeyboard = KeyboardValues.COMMON;
     public ArrayDeque<Message> messagesOnDeletion = new ArrayDeque<>();
+    public CurrentProcess currentContext = CurrentProcess.FREE;
 
     //параметры для поисковика
     public SearchCategories sectionId = SearchCategories.NONE;
@@ -41,18 +43,15 @@ public class ChatSession implements Serializable {
     public ArrayDeque<String> dicePresets = new ArrayDeque<>();
 
     //параметры для игры
-    public boolean creationOfPlayerCharacter = false;
     public boolean nameIsChosen = false;
     public HashSet<String> statProgress = new HashSet<>();
     public PlayerCharacter playerCharacter;
     public ArrayList<Integer> luck;
 
-    public boolean gameInSession = false;
     public boolean pauseGame = false;
     public DungeonController crawler;
 
     //параметры для менеджера компаний
-    public boolean creationOfPlayerDnD = false;
     public boolean haltCreation = false;
     public PlayerDnDCreationStage creationStage = NAME;
 
@@ -63,21 +62,13 @@ public class ChatSession implements Serializable {
     public RoleParameters role = RoleParameters.NONE;
     public Long currentCampaign;
 
-    public boolean editingANote = false;
     public EditingParameters editNote = EditingParameters.NONE;
     public int editNoteIndex = 0;
 
-    public boolean editingALook = false;
     public String whoIsStyling = "";
 
-    public boolean editingAQuest = false;
     public String editQuestParameter = "";
 
-    public boolean addingAnAspect = false;
-
-    public boolean editingAnAspect = false;
-
-    public boolean editingAPrestigeJob = false;
     public int editPrestigeJobIndex = 0;
 
     public String whoIsEdited = "";

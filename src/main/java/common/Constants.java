@@ -14,6 +14,8 @@ public interface Constants {
     String CHANGE_TO_STATS_KEYBOARD = "Вы перешли на клавиатуру изменения статов!";
     String CHANGE_TO_QUEST_KEYBOARD = "Вы перешли на клавиатуру заданий!";
 
+    String CURRENT_COMMAND_RESTRICT = "Завершите предыдущее действие перед тем, как начинать новое.";
+
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
     String SEARCH_MESSAGE_ITEMS = "Введите название предмета.";
@@ -137,8 +139,14 @@ public interface Constants {
     String GAME_PAUSE = """
             Сеанс приостановлен.
             """;
+    String GAME_PAUSE_RESTRICTED = """
+            Нет сеанса, который можно приостановить.
+            """;
     String GAME_CONTINUE = """
             Сеанс возобновлен.
+            """;
+    String GAME_EXPUNGE_RESTRICTED = """
+            Выйдите из игры перед тем, как её сбрасывать.
             """;
     String GAME_EXPUNGE = """
             Сеанс удален.
@@ -168,6 +176,7 @@ public interface Constants {
             Их количество высветится в конце создания персонажа.
             Попросите ДМ-а самостоятельно выдать вам снаряжение.
             """;
+    String PLAYER_CREATION_RESTRICTED = "У вас нет активного процесса создания персонажа DND для его прерывания.";
     String PLAYER_CREATION_PAUSE = "Процесс создания персонажа ДнД был поставлен на паузу.";
     String PLAYER_CREATION_CONTINUE = "Процесс создания персонажа ДнД был возобновлен.";
     String PLAYER_CREATION_WARNING = """

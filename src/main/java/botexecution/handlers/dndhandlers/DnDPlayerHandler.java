@@ -4,6 +4,7 @@ import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.DiceHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
 import dnd.mainobjects.PlayerDnD;
@@ -37,6 +38,11 @@ public class DnDPlayerHandler {
             return;
         }
 
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentGroup, "Закончите процесс внутри личной беседы с ботом перед созданием персонажа.");
+            return;
+        }
+
         if (currentGroup.activeDm == null) {
             walkieTalkie.patternExecute(currentGroup,
                     "Произошла ошибка - в данной группе нет компании.");
@@ -55,7 +61,7 @@ public class DnDPlayerHandler {
         currentUser.activePc = new PlayerDnD();
         currentUser.activePc.playerName = currentGroup.username;
         currentUser.activePc.campaignChatId = currentGroup.getChatId();
-        currentUser.creationOfPlayerDnD = true;
+        currentUser.currentContext = CurrentProcess.CREATING_A_CHARACTER_DND;
         walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_NAME);
 
         knowledge.renewListChat(currentGroup);
@@ -64,16 +70,18 @@ public class DnDPlayerHandler {
 
     public void haltCreationOfPlayerDnD(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        currentUser.creationOfPlayerDnD = !currentUser.creationOfPlayerDnD;
-
-        if (!currentUser.creationOfPlayerDnD) {
+        if (currentUser.currentContext == CurrentProcess.FREE && !currentUser.haltCreation) {
+            walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_RESTRICTED);
+            return;
+        }
+        if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER_DND) {
+            currentUser.currentContext = CurrentProcess.FREE;
+            currentUser.haltCreation = true;
             walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_PAUSE);
         }
         else {
-            currentUser.haltCreation = true;
             walkieTalkie.patternExecute(currentUser, Constants.PLAYER_CREATION_CONTINUE);
             playerDnDGeneratorAllocator.get(currentUser.creationStage).accept(currentUser, "");
-
         }
 
         knowledge.renewListChat(currentUser);
@@ -599,7 +607,7 @@ public class DnDPlayerHandler {
         currentGroup.activeDm.campaignParty.put(cs.username, cs.activePc);
 
         cs.activePc = null;
-        cs.creationOfPlayerDnD = false;
+        cs.currentContext = CurrentProcess.FREE;
         cs.creationStage = NAME;
 
         knowledge.renewListChat(currentGroup); // небезопасная вещь, надо либо вывесить предупреждение (сделано), либо что-то с этим решить
