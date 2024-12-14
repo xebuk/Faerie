@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public class ControlPanel {
     private static final Map<String, Command> commands = new HashMap<>();
 
-    private static BotThread faerie = new BotThread();
+    private static final BotThread faerie = new BotThread();
 
     static {
         ControlPanel.registerCommand(
