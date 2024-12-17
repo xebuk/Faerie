@@ -5,9 +5,13 @@ import botexecution.commands.KeyboardValues;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import botexecution.mainobjects.KeyboardFactory;
 import common.*;
+import logger.BotLogger;
+import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -16,7 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class GeneralHandler {
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.ALL;
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.USER;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.PUBLIC;
+
+public class GeneralHandler implements AbilityExtension {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final SiteParseHandler archive;
@@ -33,38 +41,93 @@ public class GeneralHandler {
         this.diceHoarder = diceHoarder;
 
         Consumer<ChatSession> Spell = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_SPELLS, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_SPELLS);
             cs.sectionId = SearchCategories.SPELLS;
         };
         Consumer<ChatSession> Item = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_ITEMS, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_ITEMS);
             cs.sectionId = SearchCategories.ITEMS;
         };
         Consumer<ChatSession> Bestiary = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BESTIARY, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BESTIARY);
             cs.sectionId = SearchCategories.BESTIARY;
         };
         Consumer<ChatSession> Race = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RACES, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RACES);
             cs.sectionId = SearchCategories.RACES;
         };
         Consumer<ChatSession> Class = cs -> walkieTalkie.patternExecute(cs, Constants.CLASSES_LIST, null, true);
         Consumer<ChatSession> Feat = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FEATS, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_FEATS);
             cs.sectionId = SearchCategories.FEATS;
         };
         Consumer<ChatSession> Background = cs -> {
-            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BACKGROUNDS, null, false);
+            if (cs.currentContext == CurrentProcess.SEARCHING_AN_ARTICLE) {
+                walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_RESTRICT);
+                return;
+            }
+            else if (cs.currentContext != CurrentProcess.FREE) {
+                walkieTalkie.patternExecute(cs, Constants.CURRENT_COMMAND_RESTRICT);
+                return;
+            }
+            cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE;
+            walkieTalkie.patternExecute(cs, Constants.SEARCH_MESSAGE_BACKGROUNDS);
             cs.sectionId = SearchCategories.BACKGROUNDS;
         };
 
         Consumer<ChatSession> RollD20 = diceHoarder::D20;
-        Consumer<ChatSession> Roll2D20 = cs -> walkieTalkie.patternExecute(cs, Constants.ROLL_MESSAGE_ADVANTAGE, KeyboardFactory.rollAdvantageBoard(), false);
+        Consumer<ChatSession> Roll2D20 = cs -> walkieTalkie.patternExecute(cs, Constants.ROLL_MESSAGE_ADVANTAGE,
+                KeyboardFactory.rollAdvantageBoard(), false);
         Consumer<ChatSession> RollAdvantage = cs -> diceHoarder.D20TwoTimes(cs,true);
         Consumer<ChatSession> RollDisadvantage = cs -> diceHoarder.D20TwoTimes(cs,false);
         Consumer<ChatSession> RollD8 = diceHoarder::D8;
         Consumer<ChatSession> RollD6 = diceHoarder::D6;
-        Consumer<ChatSession> Roll4D6 = cs -> walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes(), null, false);
+        Consumer<ChatSession> Roll4D6 = cs -> walkieTalkie.patternExecute(cs, diceHoarder.D6FourTimes());
         Consumer<ChatSession> RollD4 = diceHoarder::D4;
         Consumer<ChatSession> CustomDice = this::rollCustom;
 
@@ -153,21 +216,30 @@ public class GeneralHandler {
 
     public void startNewUser(MessageContext ctx) {
         ChatSession newUser = new ChatSession(ctx);
-        walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE, KeyboardFactory.commonSetOfCommandsBoard(), false);
-
+        walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE,
+                KeyboardFactory.commonSetOfCommandsBoard(), false);
         DataHandler.createChatFile(ctx.chatId().toString());
-        newUser.setUsername(ctx.user().getUserName());
+
+        newUser.setUsername("@" + ctx.user().getUserName());
+
         knowledge.renewListChat(newUser);
         knowledge.renewListUsername(newUser);
     }
 
     public void sendHelp(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
-        if (ctx.arguments().length == 0 || commandsSummariesAllocator.get(ctx.firstArg()) == null) {
-            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString(), null, false);
-        } else {
-            walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()), null, false);
+
+        if (commandsSummariesAllocator.get(ctx.firstArg()) == null) {
+            BotLogger.severe("Help doesn't recognise this argument: " + ctx.firstArg());
+            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString());
         }
+        else if (ctx.arguments().length == 0) {
+            walkieTalkie.patternExecute(currentUser, currentUser.currentKeyboard.toString());
+        }
+        else {
+            walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()));
+        }
+
         knowledge.renewListChat(currentUser);
     }
 
@@ -175,6 +247,7 @@ public class GeneralHandler {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         currentUser.currentKeyboard = keys;
         walkieTalkie.patternExecute(currentUser, changeMessage, function, false);
+
         knowledge.renewListChat(currentUser);
     }
 
@@ -202,7 +275,7 @@ public class GeneralHandler {
             line = "1" + line;
         }
         String[] dices = line.split("d");
-        walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
+        walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])));
 
         cs.rollCustom = false;
         knowledge.renewListChat(cs);
@@ -211,20 +284,21 @@ public class GeneralHandler {
     public void onRollCustomPreset(ChatSession cs, String responseQuery) {
         String[] dices = responseQuery.trim().split("d");
         try {
-            walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])), null, false);
+            walkieTalkie.patternExecute(cs, diceHoarder.customDice(Integer.parseInt(dices[0]), Integer.parseInt(dices[1])));
         } catch (NumberFormatException e) {
-            walkieTalkie.patternExecute(cs, Constants.CUSTOM_DICE_ERROR, null, false);
+            walkieTalkie.patternExecute(cs, Constants.CUSTOM_DICE_ERROR);
         }
         cs.rollCustom = false;
         knowledge.renewListChat(cs);
     }
 
-    public boolean searchEngine(ChatSession cs, String entry) {
+    public void searchEngine(ChatSession cs, String entry) {
         ArrayList<String> matches;
         matches = knowledge.searchArticleIds(cs.sectionId.toString(), entry);
 
         if (matches.isEmpty()) {
             walkieTalkie.reportFail(cs);
+            return;
         }
 
         else if (matches.size() == 2) {
@@ -238,19 +312,19 @@ public class GeneralHandler {
                 case BACKGROUNDS -> article = archive.backgroundsGrabber(matches.getFirst());
                 default -> {
                     walkieTalkie.reportImpossible(cs);
-                    return false;
+                    return;
                 }
             }
 
             walkieTalkie.articleMessaging(article, cs);
             cs.sectionId = SearchCategories.NONE;
-            cs.searchSuccess = false;
+            cs.currentContext = CurrentProcess.FREE;
             cs.title = "";
-            return false;
+            return;
         }
 
         walkieTalkie.patternExecute(cs, archive.addressWriter(matches, cs.sectionId.toString()), null, true);
-        return true;
+        cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE_SUCCESS;
     }
 
     public void onSearchSuccess(ChatSession cs, Update update) {
@@ -265,8 +339,174 @@ public class GeneralHandler {
             default -> walkieTalkie.reportImpossible(cs);
         }
         cs.sectionId = SearchCategories.NONE;
-        cs.searchSuccess = false;
+        cs.currentContext = CurrentProcess.FREE;
         cs.title = "";
         knowledge.renewListChat(cs);
+    }
+    
+    public Ability startOut() {
+        Consumer<MessageContext> start = this::startNewUser;
+        //нет в coremessages
+
+        return Ability
+                .builder()
+                .name("start")
+                .info("starts up the bot")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(start)
+                .build();
+    }
+
+    public Ability showHelp() {
+        Consumer<MessageContext> helpHand = this::sendHelp;
+        //есть в coremessages
+
+        return Ability.builder()
+                .name("help")
+                .info("shows all commands")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(helpHand)
+                .build();
+    }
+
+    //команды для вызова клавиатур
+    public Ability moveToCommonKeyboard() {
+        Consumer<MessageContext> commonKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.COMMON, KeyboardFactory.commonSetOfCommandsBoard(), Constants.CHANGE_TO_COMMON_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("common")
+                .info("shows a common keyboard")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(commonKeyboard)
+                .build();
+    }
+
+    public Ability moveToGameKeyboard() {
+        Consumer<MessageContext> gameKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.GAME, KeyboardFactory.gameSetOfCommandsBoard(), Constants.CHANGE_TO_GAME_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("game")
+                .info("shows a game keyboard")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(gameKeyboard)
+                .build();
+    }
+
+    public Ability moveToDndKeyboard() {
+        Consumer<MessageContext> dndKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.DND, KeyboardFactory.dndSetOfCommandsBoard(), Constants.CHANGE_TO_DND_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("dnd")
+                .info("shows a dnd keyboard")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(dndKeyboard)
+                .build();
+    }
+
+    public Ability moveToPlayerBoard() {
+        Consumer<MessageContext> playerKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.PLAYER, KeyboardFactory.playerSetOfCommands(), Constants.CHANGE_TO_PLAYER_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("playerboard")
+                .info("shows a player board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(playerKeyboard)
+                .build();
+    }
+
+    public Ability moveToDMBoard() {
+        Consumer<MessageContext> dmKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.DM, KeyboardFactory.dmSetOfCommandsBoard(), Constants.CHANGE_TO_DM_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("dmboard")
+                .info("shows a dm board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(dmKeyboard)
+                .build();
+    }
+
+    public Ability moveToItemBoard() {
+        Consumer<MessageContext> itemKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.ITEMS, KeyboardFactory.itemSetOfCommands(), Constants.CHANGE_TO_ITEMS_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("itemboard")
+                .info("shows a item board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(itemKeyboard)
+                .build();
+    }
+
+    public Ability moveToCampaignBoard() {
+        Consumer<MessageContext> campaignKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.CAMPAIGN, KeyboardFactory.campaignSetOfCommandsBoard(), Constants.CHANGE_TO_CAMPAIGN_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("campaignboard")
+                .info("shows a campaign board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignKeyboard)
+                .build();
+    }
+
+    public Ability moveToStatBoard() {
+        Consumer<MessageContext> campaignKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.STAT, KeyboardFactory.statSetOfCommands(), Constants.CHANGE_TO_STATS_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("statboard")
+                .info("shows a stat board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignKeyboard)
+                .build();
+    }
+
+    public Ability moveToQuestBoard() {
+        Consumer<MessageContext> campaignKeyboard = ctx -> changeKeyboard(ctx,
+                KeyboardValues.QUEST, KeyboardFactory.questSetOfCommands(), Constants.CHANGE_TO_QUEST_KEYBOARD);
+
+        return Ability
+                .builder()
+                .name("questboard")
+                .info("shows a quest" +
+                        " board")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignKeyboard)
+                .build();
     }
 }

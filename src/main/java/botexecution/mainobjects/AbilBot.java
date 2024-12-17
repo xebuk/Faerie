@@ -1,6 +1,6 @@
 package botexecution.mainobjects;
 
-import botexecution.commands.KeyboardValues;
+import botexecution.commands.CurrentProcess;
 import botexecution.handlers.*;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.MediaHandler;
@@ -8,9 +8,11 @@ import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.handlers.dndhandlers.*;
 import common.*;
 
-import dnd.values.EditingParameters;
 import dnd.values.RoleParameters;
+import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -22,6 +24,7 @@ import java.util.function.Consumer;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
+import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getUser;
 
 public class AbilBot extends AbilityBot {
     private boolean active;
@@ -43,6 +46,7 @@ public class AbilBot extends AbilityBot {
 
     public AbilBot() {
         super(new OkHttpTelegramClient(DataReader.readToken()), "Faerie");
+        BotLogger.info("Bot called super constructor");
 
         this.active = true;
 
@@ -50,379 +54,54 @@ public class AbilBot extends AbilityBot {
         this.pager = new MediaHandler(this.getTelegramClient());
         this.knowledge = new DataHandler(false);
         this.diceHoarder = new DiceHandler(knowledge, walkieTalkie);
+        BotLogger.info("Bot initialised core handlers");
 
         this.archive = new SiteParseHandler(knowledge);
         this.jackOfAllTrades = new GeneralHandler(knowledge, walkieTalkie, archive, diceHoarder);
         this.dungeonCrawl = new GameHandler(knowledge, walkieTalkie, pager, diceHoarder);
+        BotLogger.info("Bot initialised common handlers");
 
         this.secretMessages = new DnDNotificationHandler(knowledge, walkieTalkie);
         this.tableTop = new DnDHandler(knowledge, walkieTalkie, secretMessages);
         this.story = new DnDCampaignHandler(knowledge, walkieTalkie, secretMessages);
         this.characterList = new DnDPlayerHandler(knowledge, walkieTalkie, diceHoarder);
         this.bagOfHolding = new DnDItemHandler(knowledge, walkieTalkie, archive, secretMessages);
+        BotLogger.info("Bot initialised DnD handlers");
+
         super.onRegister();
+        BotLogger.info("Bot registered abilities and states");
     }
 
     @Override
     public long creatorId() {
+        BotLogger.warning("Bot is accessing a Creator ID");
         long id = DataReader.readCreatorId();
         if (id < 0) {
             id = 0;
         }
+        BotLogger.warning("Bot read a Creator ID");
         return id;
     }
 
+    //центральные функции
+    public AbilityExtension getCoreAbilities() {
+        return jackOfAllTrades;
+    }
+
     //основные функции
-    public Ability startOut() {
-        Consumer<MessageContext> start = jackOfAllTrades::startNewUser;
-        //нет в coremessages
-
-        return Ability
-                .builder()
-                .name("start")
-                .info("starts up the bot")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(start)
-                .build();
-    }
-
-    public Ability showHelp() {
-        Consumer<MessageContext> helpHand = jackOfAllTrades::sendHelp;
-        //есть в coremessages
-
-        return Ability.builder()
-                .name("help")
-                .info("shows all commands")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(helpHand)
-                .build();
-    }
-
-    public Ability showCredits() {
-        Consumer<MessageContext> credits =
-                ctx -> silent.send(Constants.CREDITS, ctx.chatId());
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("credits")
-                .info("shows authors and coders for this bot")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(credits)
-                .build();
-    }
-
-    //команды для вызова клавиатур
-    public Ability moveToCommonKeyboard() {
-        Consumer<MessageContext> commonKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.COMMON, KeyboardFactory.commonSetOfCommandsBoard(), Constants.CHANGE_TO_COMMON_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("common")
-                .info("shows a common keyboard")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(commonKeyboard)
-                .build();
-    }
-
-    public Ability moveToGameKeyboard() {
-        Consumer<MessageContext> gameKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.GAME, KeyboardFactory.gameSetOfCommandsBoard(), Constants.CHANGE_TO_GAME_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("game")
-                .info("shows a game keyboard")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(gameKeyboard)
-                .build();
-    }
-
-    public Ability moveToDndKeyboard() {
-        Consumer<MessageContext> dndKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.DND, KeyboardFactory.dndSetOfCommandsBoard(), Constants.CHANGE_TO_DND_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("dnd")
-                .info("shows a dnd keyboard")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(dndKeyboard)
-                .build();
-    }
-
-    public Ability moveToPlayerBoard() {
-        Consumer<MessageContext> playerKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.PLAYER, KeyboardFactory.playerSetOfCommands(), Constants.CHANGE_TO_PLAYER_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("playerboard")
-                .info("shows a player board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(playerKeyboard)
-                .build();
-    }
-
-    public Ability moveToDMBoard() {
-        Consumer<MessageContext> dmKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.DM, KeyboardFactory.dmSetOfCommandsBoard(), Constants.CHANGE_TO_DM_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("dmboard")
-                .info("shows a dm board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(dmKeyboard)
-                .build();
-    }
-
-    public Ability moveToItemBoard() {
-        Consumer<MessageContext> itemKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.ITEMS, KeyboardFactory.itemSetOfCommands(), Constants.CHANGE_TO_ITEMS_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("itemboard")
-                .info("shows a item board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(itemKeyboard)
-                .build();
-    }
-
-    public Ability moveToCampaignBoard() {
-        Consumer<MessageContext> campaignKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.CAMPAIGN, KeyboardFactory.campaignSetOfCommandsBoard(), Constants.CHANGE_TO_CAMPAIGN_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("campaignboard")
-                .info("shows a campaign board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaignKeyboard)
-                .build();
-    }
-
-    public Ability moveToStatBoard() {
-        Consumer<MessageContext> campaignKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.STAT, KeyboardFactory.statSetOfCommands(), Constants.CHANGE_TO_STATS_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("statboard")
-                .info("shows a stat board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaignKeyboard)
-                .build();
-    }
-
-    public Ability moveToQuestBoard() {
-        Consumer<MessageContext> campaignKeyboard = ctx -> jackOfAllTrades.changeKeyboard(ctx,
-                KeyboardValues.QUEST, KeyboardFactory.questSetOfCommands(), Constants.CHANGE_TO_QUEST_KEYBOARD);
-
-        return Ability
-                .builder()
-                .name("questboard")
-                .info("shows a quest" +
-                        " board")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaignKeyboard)
-                .build();
-    }
-
-    //основной функционал
-    public Ability sayMofu() {
-        Consumer<MessageContext> mofu =
-                ctx -> silent.send("Mofu Mofu!", ctx.chatId());
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("mofu")
-                .info("mofu")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(mofu)
-                .build();
-    }
-
-    public Ability requestArticle() {
-        Consumer<MessageContext> search = ctx -> walkieTalkie.patternExecute(ctx,
-                Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard(), false);
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("search")
-                .info("searches article on DnD.su")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(search)
-                .build();
-    }
-
-    public Ability diceRoll() {
-        Consumer<MessageContext> roll = ctx -> walkieTalkie.patternExecute(ctx,
-                Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard(), false);
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("roll")
-                .info("rolls a dice")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(roll)
-                .build();
+    public AbilityExtension getGeneralAbilities() {
+        return walkieTalkie;
     }
 
     //функции для игры
-    public Ability createPlayerCharacter() {
-        Consumer<MessageContext> createNewPc = dungeonCrawl::createPlayer;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("createacharacter")
-                .info("creates a player character")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(createNewPc)
-                .build();
-    }
-
-    public Ability startAGame() {
-        Consumer<MessageContext> game = dungeonCrawl::startGame;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("startagame")
-                .info("starts a game")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(game)
-                .build();
-    }
-
-    public Ability pauseGame() {
-        Consumer<MessageContext> pause = dungeonCrawl::pauseGame;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("pauseagame")
-                .info("pauses a game")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(pause)
-                .build();
-    }
-
-    public Ability expungeGame() {
-        Consumer<MessageContext> expunge = dungeonCrawl::expungeGame;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("endagame")
-                .info("ends a game prematurely")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(expunge)
-                .build();
+    public AbilityExtension getGameAbilities() {
+        return dungeonCrawl;
     }
 
     //функции для менеджера компаний
-    public Ability createCampaign() {
-        Consumer<MessageContext> campaign = story::createCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("createacampaign")
-                .info("creates a campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(GROUP_ADMIN)
-                .action(campaign)
-                .build();
-    }
-
-    public Ability endCampaign() {
-        Consumer<MessageContext> end = story::endCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("endacampaign")
-                .info("ends a campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(GROUP_ADMIN)
-                .action(end)
-                .build();
-    }
-
-    public Ability showCampaigns() {
-        Consumer<MessageContext> campaigns = story::showCampaigns;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showcampaigns")
-                .info("shows your campaigns")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaigns)
-                .build();
-    }
-
-    public Ability showCampaignsGroup() {
-        Consumer<MessageContext> campaign = story::showCampaignGroup;
-
-        return Ability
-                .builder()
-                .name("showcurcampaign")
-                .info("shows current campaign")
-                .input(0)
-                .locality(GROUP)
-                .privacy(PUBLIC)
-                .action(campaign)
-                .build();
+    public AbilityExtension getCampaignAbilities() {
+        //настройка кампании
+        return story;
     }
 
     public Ability createPlayerDnD() {
@@ -452,96 +131,6 @@ public class AbilBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(halt)
-                .build();
-    }
-
-    public Ability setCampaign() {
-        Consumer<MessageContext> campaign = story::setCurrentCampaign;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setcampaign")
-                .info("sets current campaign")
-                .input(0)
-                .locality(ALL)
-                .privacy(PUBLIC)
-                .action(campaign)
-                .build();
-    }
-
-    public Ability setCampaignName() {
-        Consumer<MessageContext> campaignName = story::setCampaignName;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setcampaignname")
-                .info("sets a campaign name")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(campaignName)
-                .build();
-    }
-
-    public Ability setPassword() {
-        Consumer<MessageContext> password = story::setPassword;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setpassword")
-                .info("sets a campaign password")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(password)
-                .build();
-    }
-
-    public Ability setMulticlassLimit() {
-        Consumer<MessageContext> multi = story::setMulticlassLimit;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("setmulticlasslimit")
-                .info("sets a campaign multiclass limit")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(multi)
-                .build();
-    }
-
-    public Ability showPlayers() {
-        Consumer<MessageContext> playersList = story::showPlayers;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showplayers")
-                .info("show a players list")
-                .input(0)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(playersList)
-                .build();
-    }
-
-    public Ability showPlayerProfile() {
-        Consumer<MessageContext> profile = story::showPlayerProfile;
-        //есть в coremessages
-
-        return Ability
-                .builder()
-                .name("showplayerprofile")
-                .info("show a players list")
-                .input(1)
-                .locality(USER)
-                .privacy(PUBLIC)
-                .action(profile)
                 .build();
     }
 
@@ -1016,10 +605,6 @@ public class AbilBot extends AbilityBot {
 
     @Override
     public void consume(Update update) {
-        /*if (!active) {
-            return;
-        }*/
-
         super.consume(update);
 
         ChatSession currentUser = knowledge.getSession(getChatId(update).toString());
@@ -1032,45 +617,11 @@ public class AbilBot extends AbilityBot {
             knowledge.renewListChat(currentUser);
         }
 
-        if (currentUser.role == RoleParameters.DUNGEON_MASTER
-                && update.hasCallbackQuery() && update.getCallbackQuery().getData().contains("@")) {
-            tableTop.askDmForARollResponse(currentUser, update.getCallbackQuery().getData());
+        if (!currentUser.isPM() && !Objects.equals(currentUser.username, "@" + getUser(update).getUserName())) {
+            currentUser.setUsername("@" + getUser(update).getUserName());
         }
 
-        if (currentUser.editingALook && update.hasMessage() && update.getMessage().hasText()) {
-            tableTop.changeLookSecondStage(currentUser, update.getMessage().getText());
-        }
-
-        if (currentUser.editingANote && currentUser.editNote != EditingParameters.NONE
-                && update.hasMessage() && update.getMessage().hasText()) {
-            tableTop.editNoteSecondStage(currentUser, update.getMessage().getText());
-        }
-
-        if (currentUser.addingAnAspect && update.hasMessage() && update.getMessage().hasText()) {
-            bagOfHolding.addAspectSecondStage(currentUser, update.getMessage().getText());
-        }
-        if (currentUser.editingAnAspect && update.hasMessage() && update.getMessage().hasText()) {
-            bagOfHolding.editAspectSecondStage(currentUser, update.getMessage().getText());
-        }
-
-        if (currentUser.editingAQuest && update.hasMessage() && update.getMessage().hasText()) {
-            tableTop.editQuestSecondStage(currentUser, update.getMessage().getText());
-        }
-
-        if (currentUser.editingAPrestigeJob && update.hasMessage() && update.getMessage().hasText()) {
-            tableTop.setPrestigeJobSecondStage(currentUser, update.getMessage().getText());
-        }
-
-        if (currentUser.creationOfPlayerCharacter && update.hasCallbackQuery()
-                && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-            dungeonCrawl.characterCreationMainLoop(currentUser, update);
-        }
-
-        else if (currentUser.gameInSession && !currentUser.pauseGame && update.hasCallbackQuery()) {
-            dungeonCrawl.gameMainLoop(currentUser, update);
-        }
-
-        else if (currentUser.creationOfPlayerDnD) {
+        if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER_DND) {
             String response;
             try {
                 if (update.hasMessage() && update.getMessage().hasText()) {
@@ -1085,7 +636,7 @@ public class AbilBot extends AbilityBot {
                     walkieTalkie.patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                BotLogger.severe(e.getMessage());
                 walkieTalkie.patternExecute(currentUser, "А? Если хотите сделать что-то другое, используйте /haltcreation", null, false);
             }
             knowledge.renewListChat(currentUser);
@@ -1095,13 +646,20 @@ public class AbilBot extends AbilityBot {
             CallbackQuery query = update.getCallbackQuery();
             String responseQuery = query.getData();
 
-            if (!Objects.equals(currentUser.whoIsRolling, "")
-                    && Objects.equals(currentUser.whoIsRolling, "@" + query.getFrom().getUserName())) {
-                ChatSession currentCampaign = knowledge.getSession(currentUser.currentCampaign.toString());
-                diceHoarder.rollWithParameters(currentCampaign.activeDm.campaignParty.get(currentUser.username),
-                    update.getCallbackQuery().getData());
+            if (currentUser.role == RoleParameters.DUNGEON_MASTER && responseQuery.contains("@")) {
+                tableTop.askDmForARollResponse(currentUser, responseQuery);
             }
-
+            else if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER) {
+                dungeonCrawl.characterCreationMainLoop(currentUser, update);
+            }
+            else if (currentUser.currentContext == CurrentProcess.IN_GAME && !currentUser.pauseGame) {
+                dungeonCrawl.gameMainLoop(currentUser, update);
+            }
+            else if (Objects.equals(currentUser.whoIsRolling, "@" + query.getFrom().getUserName())) {
+                ChatSession currentCampaign = knowledge.getSession(currentUser.currentCampaign.toString());
+                diceHoarder.rollWithParameters(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username), responseQuery);
+            }
             else if (currentUser.rollCustom) {
                 jackOfAllTrades.onRollCustomPreset(currentUser, responseQuery);
             }
@@ -1110,49 +668,39 @@ public class AbilBot extends AbilityBot {
                     silent.send(Constants.CAMPAIGN_END_RESTRICTION, currentUser.getChatId());
                 }
                 else {
-                    switch (responseQuery) {
-                        case "Да":
-                            currentUser.activeDm = null;
-                            currentUser.role = RoleParameters.NONE;
-                            silent.send(Constants.CAMPAIGN_END, currentUser.getChatId());
-                            break;
-                        case "Нет":
-                            currentUser.role = RoleParameters.CAMPAIGN;
-                            silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
-                            break;
-                        default:
-                            currentUser.role = RoleParameters.CAMPAIGN;
-                            silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
-                            break;
+                    if (responseQuery.equals("Да")) {
+                        currentUser.activeDm = null;
+                        currentUser.role = RoleParameters.NONE;
+                        silent.send(Constants.CAMPAIGN_END, currentUser.getChatId());
+                    } else {
+                        currentUser.role = RoleParameters.CAMPAIGN;
+                        silent.send(Constants.CAMPAIGN_END_FALSE_ALARM, currentUser.getChatId());
                     }
                 }
             }
             else {
                 jackOfAllTrades.methodsAllocator.get(responseQuery).accept(currentUser);
             }
-            knowledge.renewListChat(currentUser);
-        }
-
-        else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()
+        } else if (update.hasMessage() && update.getMessage().hasText() && !update.getMessage().isCommand()
                 && Objects.equals(currentUser.getChatId(), getChatId(update))) {
-            if (currentUser.creationOfPlayerCharacter && !currentUser.nameIsChosen) {
-                dungeonCrawl.characterCreationStart(currentUser, update);
-            }
-
-            else if (currentUser.rollCustom) {
-                jackOfAllTrades.onRollCustom(currentUser, update);
-            }
-
-            else if (currentUser.searchSuccess) {
-                jackOfAllTrades.onSearchSuccess(currentUser, update);
-            }
-
-            else if (!currentUser.sectionId.isEmpty()) {
-                currentUser.searchSuccess = jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
-                knowledge.renewListChat(currentUser);
+            switch (currentUser.currentContext) {
+                case EDITING_A_LOOK_DND -> tableTop.changeLookSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_NOTE_DND -> tableTop.editNoteSecondStage(currentUser, update.getMessage().getText());
+                case ADDING_AN_ASPECT_DND -> bagOfHolding.addAspectSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_AN_ASPECT_DND -> bagOfHolding.editAspectSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_QUEST_DND -> tableTop.editQuestSecondStage(currentUser, update.getMessage().getText());
+                case EDITING_A_PRESTIGE_JOB_DND -> tableTop.setPrestigeJobSecondStage(currentUser, update.getMessage().getText());
+                case CREATING_A_CHARACTER -> dungeonCrawl.characterCreationStart(currentUser, update);
+                case SEARCHING_AN_ARTICLE -> jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
+                case SEARCHING_AN_ARTICLE_SUCCESS -> jackOfAllTrades.onSearchSuccess(currentUser, update);
+                default -> {
+                    if (currentUser.rollCustom) {
+                        jackOfAllTrades.onRollCustom(currentUser, update);
+                    }
+                }
             }
         }
-    knowledge.renewListChat(currentUser);
+        knowledge.renewListChat(currentUser);
     }
 
     public boolean isActive() {

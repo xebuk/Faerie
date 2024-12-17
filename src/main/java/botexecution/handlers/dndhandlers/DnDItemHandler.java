@@ -4,6 +4,7 @@ import botexecution.handlers.SiteParseHandler;
 import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
+import botexecution.commands.CurrentProcess;
 import common.Constants;
 import dnd.characteristics.AbilityDnD;
 import dnd.characteristics.FeatDnD;
@@ -46,7 +47,11 @@ public class DnDItemHandler {
     public void addAspect(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "par_item1-dm")) {
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+        else if (currentCampaign == null || secretMessages.isNotLegal(ctx, "par_item1-dm")) {
             return;
         }
 
@@ -55,10 +60,11 @@ public class DnDItemHandler {
 
         ArrayList<String> foundAspects = searchAspects(searchLine, currentUser.lastParameter);
 
+        currentUser.currentContext = CurrentProcess.ADDING_AN_ASPECT_DND;
         if (foundAspects.size() > 1) {
-            currentUser.addingAnAspect = true;
             walkieTalkie.articleMessaging(aspectSearchWriter(foundAspects), currentUser, null);
         } else if (foundAspects.isEmpty()) {
+            currentUser.currentContext = CurrentProcess.FREE;
             walkieTalkie.patternExecute(currentUser, "Ваш предмет не был найден.\n" +
                     "Вы можете создать свой предмет, введя 'Новый предмет' (это пример, для значений смотрите /help).",
                     null, false);
@@ -138,7 +144,7 @@ public class DnDItemHandler {
         additionMessage.append("\n").append("Вы можете изменить описание предмета, выбрав его командой /editanitem.")
                 .append("\n").append("Перед этом его нужно установить через /setanitem.");
         walkieTalkie.patternExecute(cs, additionMessage.toString());
-        cs.addingAnAspect = false;
+        cs.currentContext = CurrentProcess.FREE;
         cs.lastParameter = "";
         knowledge.renewListChat(currentCampaign);
         knowledge.renewListChat(cs);
@@ -334,11 +340,15 @@ public class DnDItemHandler {
     public void editAspect(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "dm")) {
+        if (currentUser.currentContext != CurrentProcess.FREE) {
+            walkieTalkie.patternExecute(currentUser, Constants.CURRENT_COMMAND_RESTRICT);
+            return;
+        }
+        else if (currentCampaign == null || secretMessages.isNotLegal(ctx, "dm")) {
             return;
         }
 
-        currentUser.editingAnAspect = true;
+        currentUser.currentContext = CurrentProcess.EDITING_AN_ASPECT_DND;
         currentCampaign.activeDm.editParameter = ctx.firstArg();
         walkieTalkie.patternExecute(currentUser, "Введите изменения.");
         knowledge.renewListChat(currentCampaign);
@@ -469,7 +479,7 @@ public class DnDItemHandler {
                     case "-e" -> currentCampaign.activeDm.editItem.setEffects(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -500,7 +510,7 @@ public class DnDItemHandler {
                     case "-hb" -> currentCampaign.activeDm.editWeapon.setHitBonus(Integer.parseInt(response));
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -527,7 +537,7 @@ public class DnDItemHandler {
                     case "-e" -> currentCampaign.activeDm.editArmor.setEffects(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -550,7 +560,7 @@ public class DnDItemHandler {
                     //case "-dadv" -> currentCampaign.activeDm.editInstruments.delAdvantage(MasteryTypeDnD.getAdvantage(response));
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -571,7 +581,7 @@ public class DnDItemHandler {
                     case "-w" ->  currentCampaign.activeDm.editKit.setWeight(Integer.parseInt(response));
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -588,7 +598,7 @@ public class DnDItemHandler {
                     case "-s" -> currentCampaign.activeDm.editFeat.setSummary(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -610,7 +620,7 @@ public class DnDItemHandler {
                     case "-dpj" -> currentCampaign.activeDm.editAbility.delPrestigeJob(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -638,7 +648,7 @@ public class DnDItemHandler {
                     case "-dur" -> currentCampaign.activeDm.editSpell.setDuration(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
-                        cs.editingAnAspect = false;
+                        cs.currentContext = CurrentProcess.FREE;
                         currentCampaign.activeDm.editParameter = "";
                         knowledge.renewListChat(cs);
                         knowledge.renewListChat(currentCampaign);
@@ -651,7 +661,7 @@ public class DnDItemHandler {
             }
             default -> {
                 walkieTalkie.patternExecute(cs, "Выберите предмет.");
-                cs.editingAnAspect = false;
+                cs.currentContext = CurrentProcess.FREE;
                 currentCampaign.activeDm.editParameter = "";
                 knowledge.renewListChat(currentCampaign);
                 knowledge.renewListChat(cs);
@@ -660,7 +670,7 @@ public class DnDItemHandler {
         }
 
         walkieTalkie.patternExecute(cs, "Изменение произведено успешно.");
-        cs.editingAnAspect = false;
+        cs.currentContext = CurrentProcess.FREE;
         currentCampaign.activeDm.editParameter = "";
         knowledge.renewListChat(cs);
         knowledge.renewListChat(currentCampaign);

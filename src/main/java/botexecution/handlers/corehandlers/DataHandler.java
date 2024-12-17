@@ -1,18 +1,31 @@
 package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
+import common.SearchCategories;
+import logger.BotLogger;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
+
+import static common.Constants.URL;
 
 public class DataHandler {
     private final HashMap<String, ChatSession> listOfSessions;
     private final HashMap<String, String> listOfUsernames;
     private final HashMap<String, Integer> listOfArticleIds;
-    private final Timer saver;
+
+    private int[] articleUpdateContext;
+    private final File articleContext;
+    private final Timer dataRefreshTimer;
+
     private final LevenshteinDistance env;
 
     public DataHandler(boolean noTimer) {
@@ -20,25 +33,43 @@ public class DataHandler {
         this.listOfUsernames = readUsernames();
         this.listOfArticleIds = readArticleIds();
 
+        this.articleContext  = new File("../token_dir/articleContext.txt");
+
         readSessions();
+        try (FileInputStream articleIn = new FileInputStream(articleContext);
+             ObjectInputStream articleInput = new ObjectInputStream(articleIn)) {
+            this.articleUpdateContext = (int[]) articleInput.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            this.articleUpdateContext = new int[]{0, -200, 1};
+        }
 
         if (!noTimer) {
-            this.saver = new Timer("Храни_Меня_Господь", true);
-            saver.schedule(new TimerTask() {
+            this.dataRefreshTimer = new Timer("DataHandler(SaveDataTimer)", true);
+            dataRefreshTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Сохраняю ники");
+                    BotLogger.info("Users' tags being saved");
                     saveUsernames();
-                    System.out.println("Сохраняю сессии");
+                    BotLogger.info("Users' sessions being saved");
                     if (listOfSessions.isEmpty()) {
-                        System.out.println("Сессий для сохранения нет");
+                        BotLogger.info("There's no users' sessions");
                         return;
                     }
                     saveSessions();
                 }
             }, 60000, 60000);
+            dataRefreshTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    BotLogger.info("Updating list of article IDs");
+                    updateArticleIds();
+                    BotLogger.info("Saving list of article IDs");
+                    saveArticleIds();
+                    BotLogger.info("List of article IDs saved successfully");
+                }
+            }, 0, 1800000);
         } else {
-            this.saver = null;
+            this.dataRefreshTimer = null;
         }
 
         this.env = new LevenshteinDistance();
@@ -106,7 +137,11 @@ public class DataHandler {
                 try {
                     distance = env.apply(articleName.substring(categoryEnd + 1, englishNameStart - 1), name);
                 } catch (StringIndexOutOfBoundsException e) {
-                    distance = env.apply(articleName.substring(categoryEnd + 1, categoryEnd + 1 + name.length()), name);
+                    try {
+                        distance = env.apply(articleName.substring(categoryEnd + 1, categoryEnd + 1 + name.length()), name);
+                    } catch (StringIndexOutOfBoundsException ex) {
+                        continue;
+                    }
                 }
             }
 
@@ -143,8 +178,83 @@ public class DataHandler {
         return results;
     }
 
+    private void updateArticleIds() {
+        Connection.Response response;
+        Document page;
+
+        String result;
+        int retries;
+        Elements name = null;
+        boolean pageNotFound;
+
+        SearchCategories currentUpdatedSection = SearchCategories.getSearchCategory(articleUpdateContext[0]);
+        if (articleUpdateContext[2] == 8000) {
+            articleUpdateContext[0] = (articleUpdateContext[0] + 1) % 6;
+            articleUpdateContext[1] = 1;
+            articleUpdateContext[2] = 200;
+        }
+        else {
+            articleUpdateContext[1] = articleUpdateContext[2];
+            articleUpdateContext[2] += 200;
+        }
+
+        try (FileOutputStream articleContextOut = new FileOutputStream(articleContext);
+             ObjectOutputStream articleContextOutput = new ObjectOutputStream(articleContextOut)) {
+            articleContextOutput.writeObject(articleUpdateContext);
+        } catch (IOException ignored) {}
+
+        for (int i = articleUpdateContext[1]; i <= articleUpdateContext[2]; i++) {
+            pageNotFound = false;
+            retries = 0;
+
+            do {
+                try {
+                    response = Jsoup.connect(URL + currentUpdatedSection + "/" + i).execute();
+                    if (response.url().toString().contains("homebrew")
+                            || Objects.equals(response.url().toString(), URL)
+                            || response.url().toString().contains("404")) {
+                        BotLogger.info("Page made a redirection to either homebrew, home or 404 page - "
+                                + URL + currentUpdatedSection + "/" + i);
+                        pageNotFound = true;
+                        break;
+                    }
+                    page = response.parse();
+
+                } catch (IOException e) {
+                    BotLogger.info("Page is not found (Error 404) - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+
+                name = page.select("h2.card-title[itemprop=name]");
+
+                if (name.text().length() > 150) {
+                    BotLogger.info("Name of a page is bigger than 150 characters - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+
+                retries++;
+                if (retries > 10) {
+                    BotLogger.info("Retry counter is more than 10 - " + URL + currentUpdatedSection + "/" + i);
+                    pageNotFound = true;
+                    break;
+                }
+            } while (name.text().isEmpty());
+
+            if (pageNotFound) {
+                continue;
+            }
+
+            result = String.format("[%s]%s", currentUpdatedSection.toString(), name.text());
+            this.listOfArticleIds.put(result, i);
+            BotLogger.info("Current updated entry: " + result + " - " + i);
+            BotLogger.log(Level.FINE, "Current updated entry as URL: " + URL + currentUpdatedSection + "/" + i);
+        }
+    }
+
     //сохранение и чтение всего
-    public void saveSessions() {
+    private void saveSessions() {
         StringBuilder chatPath = new StringBuilder();
         File chatFile;
 
@@ -152,20 +262,23 @@ public class DataHandler {
             chatPath.append("../token_dir/userData/").append(chatId).append("/session.txt");
             chatFile = new File(chatPath.toString());
 
-            System.out.println(chatId);
-
             try (FileOutputStream chatOut = new FileOutputStream(chatFile);
                  ObjectOutputStream chatOutput = new ObjectOutputStream(chatOut)) {
                 chatOutput.writeObject(listOfSessions.get(chatId));
-            } catch (IOException ignored) {}
 
-            chatPath.setLength(0);
+                BotLogger.info("Saved session ID: " + chatId);
+            } catch (IOException e) {
+                BotLogger.severe(e.getMessage());
+            }
+            finally {
+                chatPath.setLength(0);
+            }
         }
 
         listOfSessions.clear();
     }
 
-    public void saveUsernames() {
+    private void saveUsernames() {
         File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
 
         HashMap<String, String> listOfUsernamesInFile = readUsernames();
@@ -174,10 +287,12 @@ public class DataHandler {
         try (FileOutputStream usernamesOut = new FileOutputStream(usernamesFile);
              ObjectOutputStream usernamesOutput = new ObjectOutputStream(usernamesOut)) {
             usernamesOutput.writeObject(listOfUsernamesInFile);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            BotLogger.severe(e.getMessage());
+        }
     }
 
-    public void saveArticleIds() {
+    private void saveArticleIds() {
         File articleIdsFile = new File("../token_dir/articleIDs.txt");
 
         HashMap<String, Integer> listOfArticleIdsInFile = readArticleIds();
@@ -186,10 +301,12 @@ public class DataHandler {
         try (FileOutputStream articleIdsOut = new FileOutputStream(articleIdsFile);
              ObjectOutputStream articleIdsOutput = new ObjectOutputStream(articleIdsOut)) {
             articleIdsOutput.writeObject(listOfArticleIdsInFile);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            BotLogger.severe(e.getMessage());
+        }
     }
 
-    public void readSessions() {
+    private void readSessions() {
         String mainRoute = "../token_dir/userData/";
 
         File chatIds = new File(mainRoute);
@@ -212,11 +329,13 @@ public class DataHandler {
                  ObjectInputStream chatInput = new ObjectInputStream(chatIn)) {
                 listOfSessions.put(i, (ChatSession) chatInput.readObject());
 
-            } catch (IOException | ClassNotFoundException ignored) {}
+            } catch (IOException | ClassNotFoundException e) {
+                BotLogger.severe(e.getMessage());
+            }
         }
     }
 
-    public HashMap<String, String> readUsernames() {
+    private HashMap<String, String> readUsernames() {
         File usernamesFile = new File("../token_dir/userData/usernameToChatID.txt");
 
         HashMap<String, String> listOfUsernamesFile = new HashMap<>();
@@ -224,12 +343,14 @@ public class DataHandler {
         try (FileInputStream usernamesIn = new FileInputStream(usernamesFile);
              ObjectInputStream usernamesInput = new ObjectInputStream(usernamesIn)) {
             listOfUsernamesFile = (HashMap<String, String>) usernamesInput.readObject();
-        } catch (IOException | ClassNotFoundException ignored) {}
+        } catch (IOException | ClassNotFoundException e) {
+            BotLogger.severe(e.getMessage());
+        }
 
         return listOfUsernamesFile;
     }
 
-    public HashMap<String, Integer> readArticleIds() {
+    private HashMap<String, Integer> readArticleIds() {
         File articleIdsFile = new File("../token_dir/articleIDs.txt");
 
         HashMap<String, Integer> articleIds = new HashMap<>();
@@ -237,7 +358,9 @@ public class DataHandler {
         try (FileInputStream articleIdsIn = new FileInputStream(articleIdsFile);
              ObjectInputStream articleIdsInput = new ObjectInputStream(articleIdsIn)) {
             articleIds = (HashMap<String, Integer>) articleIdsInput.readObject();
-        } catch (IOException | ClassNotFoundException ignored) {}
+        } catch (IOException | ClassNotFoundException e) {
+            BotLogger.severe(e.getMessage());
+        }
 
         return articleIds;
     }
@@ -253,12 +376,12 @@ public class DataHandler {
             try {
                 newUserSessionFile.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BotLogger.severe(e.getMessage());
             }
         }
     }
 
-    public void readArticleIdsBackUp() {
+    private void readArticleIdsBackUp() {
         String searchIDRoute = "../token_dir/searchID/";
 
         File articleIdsFile = new File(searchIDRoute);
@@ -273,19 +396,20 @@ public class DataHandler {
             List<String> ids;
             try {
                 ids = Files.readAllLines(searchFile);
+
+                for (String id : ids) {
+                    String[] info = id.split("~ ");
+
+                    String modifiedId = "[" + i.substring(0, i.length() - 4) + "]" + info[1];
+                    System.out.println(modifiedId);
+                    this.listOfArticleIds.put(modifiedId, Integer.parseInt(info[0]));
+                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                BotLogger.severe(e.getMessage());
             }
-
-            for (String id : ids) {
-                String[] info = id.split("~ ");
-
-                String modifiedId = "[" + i.substring(0, i.length() - 4) + "]" + info[1];
-                System.out.println(modifiedId);
-                this.listOfArticleIds.put(modifiedId, Integer.parseInt(info[0]));
+            finally {
+                searchFileName.setLength(0);
             }
-
-            searchFileName.setLength(0);
         }
     }
 }

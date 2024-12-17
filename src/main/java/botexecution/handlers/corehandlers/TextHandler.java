@@ -1,15 +1,25 @@
 package botexecution.handlers.corehandlers;
 
 import botexecution.mainobjects.ChatSession;
+import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
+import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 import org.telegram.telegrambots.abilitybots.api.sender.SilentSender;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
-public class TextHandler  {
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.ALL;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.PUBLIC;
+
+public class TextHandler implements AbilityExtension {
     private final SilentSender silent;
 
     private final int MAX_MESSAGE_SIZE = 4096;
@@ -75,27 +85,28 @@ public class TextHandler  {
         patternExecute(cs, partOfArticle.toString(), function, false);
     }
 
-    public void patternExecute(ChatSession cs, String message) {
+    public Optional<Message> patternExecute(ChatSession cs, String message) {
         StringBuilder sign = new StringBuilder();
         if (!cs.isPM()) {
             sign.append(cs.username).append("\n").append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(cs.getChatId().toString(), sign.toString());
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(MessageContext ctx, String message) {
+    public Optional<Message> patternExecute(MessageContext ctx, String message) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
-            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+            sign.append("@").append(ctx.user().getUserName()).append("\n")
+                    .append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(ChatSession cs, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (!cs.isPM()) {
             sign.append(cs.username).append("\n").append("----------------------------------").append("\n");
@@ -109,10 +120,10 @@ public class TextHandler  {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(ChatSession cs, String username, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         sign.append(username).append("\n").append("----------------------------------").append("\n");
         sign.append(message);
@@ -124,13 +135,14 @@ public class TextHandler  {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
-    public void patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
+    public Optional<Message> patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
-            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+            sign.append("@").append(ctx.user().getUserName()).append("\n")
+                    .append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
@@ -141,7 +153,7 @@ public class TextHandler  {
             text.setParseMode("HTML");
             text.disableWebPagePreview();
         }
-        silent.execute(text);
+        return silent.execute(text);
     }
 
     public String variantsMessageConfigurator(List<String> variants) {
@@ -152,5 +164,64 @@ public class TextHandler  {
         }
 
         return text.toString();
+    }
+
+    public void deleteMessages(ChatSession cs) {
+        if (cs.messagesOnDeletion.isEmpty()) {
+            return;
+        }
+        DeleteMessage onDeletion;
+        while (!cs.messagesOnDeletion.isEmpty()) {
+            onDeletion = new DeleteMessage(cs.getChatId().toString(),
+                    cs.messagesOnDeletion.removeFirst().getMessageId());
+            silent.execute(onDeletion);
+        }
+    }
+
+    public Ability sayMofu() {
+        Consumer<MessageContext> mofu = ctx -> silent.send("Mofu Mofu!", ctx.chatId());
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("mofu")
+                .info("mofu")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(mofu)
+                .build();
+    }
+
+    public Ability requestArticle() {
+        Consumer<MessageContext> search = ctx -> patternExecute(ctx,
+                Constants.SEARCH_MESSAGE, KeyboardFactory.searchBoard(), false);
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("search")
+                .info("searches article on DnD.su")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(search)
+                .build();
+    }
+
+    public Ability diceRoll() {
+        Consumer<MessageContext> roll = ctx -> patternExecute(ctx,
+                Constants.ROLL_MESSAGE, KeyboardFactory.rollVariantsBoard(), false);
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("roll")
+                .info("rolls a dice")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(roll)
+                .build();
     }
 }

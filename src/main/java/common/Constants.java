@@ -14,6 +14,8 @@ public interface Constants {
     String CHANGE_TO_STATS_KEYBOARD = "Вы перешли на клавиатуру изменения статов!";
     String CHANGE_TO_QUEST_KEYBOARD = "Вы перешли на клавиатуру заданий!";
 
+    String CURRENT_COMMAND_RESTRICT = "Завершите предыдущее действие перед тем, как начинать новое.";
+
     String SEARCH_MESSAGE = "Что бы вы хотели найти?";
     String SEARCH_MESSAGE_SPELLS = "Введите название заклинания.";
     String SEARCH_MESSAGE_ITEMS = "Введите название предмета.";
@@ -23,9 +25,10 @@ public interface Constants {
     String SEARCH_MESSAGE_FEATS = "Введите название черты.";
     String SEARCH_MESSAGE_BACKGROUNDS = "Введите название предыстории.";
 
+    String SEARCH_MESSAGE_RESTRICT = "Завершите предыдущий поиск.";
     String SEARCH_MESSAGE_FAIL = """
             Такой статьи не было найдено. Вероятно, в запросе есть ошибка.
-            Поиск был отменен, попробуйте ещё раз.
+            Процесс поиска продолжается, попробуйте ещё раз или введите что-то другое.
             """;
     String SEARCH_MESSAGE_IMPOSSIBLE = "Там, где ошибка невозможна, случилась ошибка. Сообщите об этом авторам бота.";
 
@@ -118,9 +121,7 @@ public interface Constants {
     String CREATION_MENU_WISDOM = "Perception!";
     String CREATION_MENU_CHARISMA = "Intimidation!";
 
-    String CREATION_MENU_HEALTH = "Ваше здоровье равно: ";
-    String CREATION_MENU_ARMOR = "Ваш класс брони равен: ";
-    String CREATION_MENU_ATTACK = "Ваш кубик атаки: ";
+    String CREATION_MENU_RESTRICTION = "Завершите создание текущего персонажа.";
 
     int gameMazeWidth = 50;
     int gameMazeHeight = 50;
@@ -138,8 +139,14 @@ public interface Constants {
     String GAME_PAUSE = """
             Сеанс приостановлен.
             """;
+    String GAME_PAUSE_RESTRICTED = """
+            Нет сеанса, который можно приостановить.
+            """;
     String GAME_CONTINUE = """
             Сеанс возобновлен.
+            """;
+    String GAME_EXPUNGE_RESTRICTED = """
+            Выйдите из игры перед тем, как её сбрасывать.
             """;
     String GAME_EXPUNGE = """
             Сеанс удален.
@@ -153,6 +160,7 @@ public interface Constants {
     String CAMPAIGN_CREATION_NOTIFICATION = """
             Вы создали компанию. Вы можете просмотреть свои компании через /showcampaigns
             """;
+    String CAMPAIGN_CREATION_RESTRICTION = "Для создания компании ДМ должен начать беседу с ботом.";
     String CAMPAIGN_CREATION_CONGRATULATION = """
             Поздравляю с началом кампании! Теперь игроки могут добавляться к вам в компанию.
             """;
@@ -169,6 +177,7 @@ public interface Constants {
             Их количество высветится в конце создания персонажа.
             Попросите ДМ-а самостоятельно выдать вам снаряжение.
             """;
+    String PLAYER_CREATION_RESTRICTED = "У вас нет активного процесса создания персонажа DnD для его прерывания.";
     String PLAYER_CREATION_PAUSE = "Процесс создания персонажа ДнД был поставлен на паузу.";
     String PLAYER_CREATION_CONTINUE = "Процесс создания персонажа ДнД был возобновлен.";
     String PLAYER_CREATION_WARNING = """

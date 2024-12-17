@@ -3,6 +3,7 @@ package botexecution.handlers.corehandlers;
 import botexecution.mainobjects.ChatSession;
 import botexecution.mainobjects.KeyboardFactory;
 import common.Constants;
+import logger.BotLogger;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -25,7 +26,7 @@ public class MediaHandler {
         return frame;
     }
 
-    public int sendPic(ChatSession cs) {
+    public Message sendPic(ChatSession cs) {
         InputFile photo = new InputFile(getFrame(cs.getChatId().toString()));
         SendPhoto pic = new SendPhoto(cs.getChatId().toString(), photo);
         pic.setReplyMarkup(KeyboardFactory.movementBoardGame());
@@ -33,10 +34,9 @@ public class MediaHandler {
         try {
             sent = telegramClient.execute(pic);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
-        assert sent != null;
-        return sent.getMessageId();
+        return sent;
     }
 
     public void gamePovUpdater(ChatSession cs, int messageId) {
@@ -48,7 +48,7 @@ public class MediaHandler {
         try {
             telegramClient.execute(photoEdit);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            BotLogger.severe(e.getMessage());
         }
     }
 }

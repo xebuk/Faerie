@@ -33,7 +33,13 @@ public class PlayerCharacter implements Serializable {
     public Stack<Artefact> inventory = new Stack<>();
 
     public PlayerCharacter() {
+        this.name = "Терен";
+        this.job = null;
         this.race = new Human();
+
+        this.health = 1;
+        this.armorClass = 1;
+        this.attackDice = "1d4";
     }
 
     public static int modifierSet(int stat) {

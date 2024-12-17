@@ -8,12 +8,19 @@ import common.Constants;
 import dnd.mainobjects.DungeonMasterDnD;
 import dnd.mainobjects.PlayerDnD;
 import dnd.values.RoleParameters;
+import org.telegram.telegrambots.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
-public class DnDCampaignHandler {
+import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.GROUP_ADMIN;
+import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.PUBLIC;
+
+public class DnDCampaignHandler implements AbilityExtension {
     private final DataHandler knowledge;
     private final TextHandler walkieTalkie;
     private final DnDNotificationHandler secretMessages;
@@ -42,6 +49,11 @@ public class DnDCampaignHandler {
         String userChatId = knowledge.findChatId("@" + ctx.user().getUserName());
         ChatSession currentUser = knowledge.getSession(userChatId);
         ChatSession currentGroup = knowledge.getSession(ctx.chatId().toString());
+
+        if (currentUser == null) {
+            walkieTalkie.patternExecute(currentGroup, Constants.CAMPAIGN_CREATION_RESTRICTION);
+            return;
+        }
 
         if (currentGroup.role == RoleParameters.CAMPAIGN) {
             walkieTalkie.patternExecute(currentGroup, Constants.CAMPAIGN_CREATION_EXISTS);
@@ -163,6 +175,10 @@ public class DnDCampaignHandler {
             walkieTalkie.patternExecute(currentUser,
                     "Произошла ошибка - данный момент вы находитесь внутри беседы компании.\n" +
                             "Для установки компании пройдите в личные сообщения бота и введите команду там.");
+            return;
+        }
+
+        if (secretMessages.isNotLegal(ctx, "2")) {
             return;
         }
 
@@ -309,5 +325,154 @@ public class DnDCampaignHandler {
         walkieTalkie.articleMessaging(profile, currentUser, null);
         knowledge.renewListChat(currentCampaign);
         knowledge.renewListChat(currentUser);
+    }
+
+    public Ability createCampaign() {
+        Consumer<MessageContext> campaign = this::createCampaign;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("createacampaign")
+                .info("creates a campaign")
+                .input(0)
+                .locality(GROUP)
+                .privacy(GROUP_ADMIN)
+                .action(campaign)
+                .build();
+    }
+
+    public Ability endCampaign() {
+        Consumer<MessageContext> end = this::endCampaign;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("endacampaign")
+                .info("ends a campaign")
+                .input(0)
+                .locality(GROUP)
+                .privacy(GROUP_ADMIN)
+                .action(end)
+                .build();
+    }
+
+    public Ability showCampaigns() {
+        Consumer<MessageContext> campaigns = this::showCampaigns;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("showcampaigns")
+                .info("shows your campaigns")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaigns)
+                .build();
+    }
+
+    public Ability showCampaignsGroup() {
+        Consumer<MessageContext> campaign = this::showCampaignGroup;
+
+        return Ability
+                .builder()
+                .name("showcurcampaign")
+                .info("shows current campaign")
+                .input(0)
+                .locality(GROUP)
+                .privacy(PUBLIC)
+                .action(campaign)
+                .build();
+    }
+
+    public Ability setCampaign() {
+        Consumer<MessageContext> campaign = this::setCurrentCampaign;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("setcampaign")
+                .info("sets current campaign")
+                .input(0)
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(campaign)
+                .build();
+    }
+
+    public Ability setCampaignName() {
+        Consumer<MessageContext> campaignName = this::setCampaignName;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("setcampaignname")
+                .info("sets a campaign name")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(campaignName)
+                .build();
+    }
+
+    public Ability setPassword() {
+        Consumer<MessageContext> password = this::setPassword;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("setpassword")
+                .info("sets a campaign password")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(password)
+                .build();
+    }
+
+    public Ability setMulticlassLimit() {
+        Consumer<MessageContext> multi = this::setMulticlassLimit;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("setmulticlasslimit")
+                .info("sets a campaign multiclass limit")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(multi)
+                .build();
+    }
+
+    public Ability showPlayers() {
+        Consumer<MessageContext> playersList = this::showPlayers;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("showplayers")
+                .info("show a players list")
+                .input(0)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(playersList)
+                .build();
+    }
+
+    public Ability showPlayerProfile() {
+        Consumer<MessageContext> profile = this::showPlayerProfile;
+        //есть в coremessages
+
+        return Ability
+                .builder()
+                .name("showplayerprofile")
+                .info("show a players list")
+                .input(1)
+                .locality(USER)
+                .privacy(PUBLIC)
+                .action(profile)
+                .build();
     }
 }

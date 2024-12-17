@@ -1,6 +1,7 @@
 package botexecution.handlers;
 
 import botexecution.handlers.corehandlers.DataHandler;
+import common.SearchCategories;
 import dnd.values.aspectvalues.ItemsIdsDnD;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static common.Constants.BESTIARY;
 import static common.Constants.URL;
 
 public class SiteParseHandler {
@@ -122,13 +124,12 @@ public class SiteParseHandler {
             return new ArrayList<>(List.of("Не удалось получить справку по существу. Попробуйте позже."));
         }
 
-        Elements check = page.select("div").select("span");
-        //System.out.println(check.text());
+        Elements check = page.select("div.cards-wrapper");
         Elements html = page.select("*");
 
         ArrayList<String> result = new ArrayList<>();
 
-        if (check.hasText()) {
+        if (check.textNodes().size() > 2) {
             html = page.select("div.card__group-classic");
             result.add("""
                     Классическая версия:
@@ -137,10 +138,10 @@ public class SiteParseHandler {
         }
 
         Elements name = html.select("h2.card-title[itemprop=name]");
-        Elements body = html.select("ul.params.card__article-body");
 
-        Elements li = body.select("li:not(.subsection.desc)");
-        Elements liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
+        Elements li = html.select("ul.params.card__article-body > li:not(.subsection.desc)");
+        Elements liDescBody = html.select("ul.params.card__article-body > li.subsection.desc")
+                .select("h3.subsection-title,p,li:not(.subsection.desc),table");
 
         for (Element i : name) {
             result.add(i.text() + "\n");
@@ -164,16 +165,16 @@ public class SiteParseHandler {
             result.add(i.text() + "\n\n");
         }
 
-        if (check.hasText()) {
+        if (check.textNodes().size() > 2) {
             result.add("\n");
 
             html = page.select("div.card__group-multiverse");
 
             name = html.select("h2.card-title[itemprop=name]");
-            body = html.select("ul.params.card__article-body");
 
-            li = body.select("li:not(.subsection.desc)");
-            liDescBody = body.select("li.subsection.desc").select("h3.subsection-title,p");
+            li = html.select("ul.params.card__article-body > li:not(.subsection.desc)");
+            liDescBody = html.select("ul.params.card__article-body > li.subsection.desc")
+                    .select("h3.subsection-title,p,li:not(.subsection.desc),table");
 
             result.add("""
                     Версия Мультивселенной:
@@ -454,7 +455,7 @@ public class SiteParseHandler {
         //System.out.println(data);
     }
 
-    public void addressWriter(String section) {
+    public void addressRefresher(String section) {
         Connection link;
         Document page = null;
 
@@ -507,9 +508,6 @@ public class SiteParseHandler {
         DataHandler knowledge = new DataHandler(true);
         SiteParseHandler parse = new SiteParseHandler(knowledge);
 
-        ArrayList<String> article = parse.mainFormulasGrabber();
-        for (String i: article) {
-            System.out.println(i);
-        }
+
     }
 }

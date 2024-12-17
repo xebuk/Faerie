@@ -1,11 +1,6 @@
 package controlpanel;
 
-import botexecution.mainobjects.AbilBot;
-import common.DataReader;
-import logger.BotLogger;
-import org.telegram.telegrambots.longpolling.BotSession;
-import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import multithreading.BotThread;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,50 +10,15 @@ import java.util.function.Consumer;
 public class ControlPanel {
     private static final Map<String, Command> commands = new HashMap<>();
 
-    private static TelegramBotsLongPollingApplication application;
-    private static BotSession botSession;
-    private static AbilBot bot;
-
-    private static void startBot() {
-        try {
-            bot = new AbilBot();
-            application = new TelegramBotsLongPollingApplication();
-            botSession = application.registerBot(DataReader.readToken(), bot);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final BotThread faerie = new BotThread();
 
     static {
-        ControlPanel.registerCommand(
-                "start",
-                List.of("st"),
-                Map.of(),
-                (Map<String, String> options) -> {
-                    startBot();
-                    BotLogger.info("Bot started");
-                }
-        );
-
         ControlPanel.registerCommand(
                 "toggle",
                 List.of("tg", "tgb", "toggle_bot"),
                 Map.of(),
                 (Map<String, String> options) -> {
-                    if (bot.isActive()) {
-                        bot.setActive(false);
-                        botSession.getRunningPolling().cancel(true);
-                        botSession.setRunningPolling(null);
-                        BotLogger.info("Bot stopped");
-                    } else {
-                        bot.setActive(true);
-                        try {
-                            botSession.start();
-                        } catch (TelegramApiException e) {
-                            BotLogger.severe(e.getMessage());
-                        }
-                        BotLogger.info("Bot started");
-                    }
+                    faerie.run();
                 }
         );
 
