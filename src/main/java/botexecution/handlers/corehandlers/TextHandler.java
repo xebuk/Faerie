@@ -98,7 +98,8 @@ public class TextHandler implements AbilityExtension {
     public Optional<Message> patternExecute(MessageContext ctx, String message) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
-            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+            sign.append("@").append(ctx.user().getUserName()).append("\n")
+                    .append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());
@@ -140,7 +141,8 @@ public class TextHandler implements AbilityExtension {
     public Optional<Message> patternExecute(MessageContext ctx, String message, ReplyKeyboard function, boolean parseMode) {
         StringBuilder sign = new StringBuilder();
         if (ctx.chatId() < 0) {
-            sign.append(ctx.user().getUserName()).append("\n").append("----------------------------------").append("\n");
+            sign.append("@").append(ctx.user().getUserName()).append("\n")
+                    .append("----------------------------------").append("\n");
         }
         sign.append(message);
         SendMessage text = new SendMessage(ctx.chatId().toString(), sign.toString());

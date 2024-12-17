@@ -91,10 +91,6 @@ public class DataHandler {
             readSessionToList(chatId);
             cs = listOfSessions.get(chatId);
         }
-        if (cs == null) {
-            cs = new ChatSession(chatId);
-            renewListChat(cs);
-        }
         return cs;
     }
 

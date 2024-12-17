@@ -216,10 +216,12 @@ public class GeneralHandler implements AbilityExtension {
 
     public void startNewUser(MessageContext ctx) {
         ChatSession newUser = new ChatSession(ctx);
-        walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE, KeyboardFactory.commonSetOfCommandsBoard(), false);
-
+        walkieTalkie.patternExecute(newUser, CoreMessages.START_MESSAGE,
+                KeyboardFactory.commonSetOfCommandsBoard(), false);
         DataHandler.createChatFile(ctx.chatId().toString());
+
         newUser.setUsername("@" + ctx.user().getUserName());
+
         knowledge.renewListChat(newUser);
         knowledge.renewListUsername(newUser);
     }
@@ -237,6 +239,7 @@ public class GeneralHandler implements AbilityExtension {
         else {
             walkieTalkie.patternExecute(currentUser, commandsSummariesAllocator.get(ctx.firstArg()));
         }
+
         knowledge.renewListChat(currentUser);
     }
 
@@ -244,6 +247,7 @@ public class GeneralHandler implements AbilityExtension {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         currentUser.currentKeyboard = keys;
         walkieTalkie.patternExecute(currentUser, changeMessage, function, false);
+
         knowledge.renewListChat(currentUser);
     }
 
@@ -288,13 +292,13 @@ public class GeneralHandler implements AbilityExtension {
         knowledge.renewListChat(cs);
     }
 
-    public boolean searchEngine(ChatSession cs, String entry) {
+    public void searchEngine(ChatSession cs, String entry) {
         ArrayList<String> matches;
         matches = knowledge.searchArticleIds(cs.sectionId.toString(), entry);
 
         if (matches.isEmpty()) {
             walkieTalkie.reportFail(cs);
-            return false;
+            return;
         }
 
         else if (matches.size() == 2) {
@@ -308,18 +312,19 @@ public class GeneralHandler implements AbilityExtension {
                 case BACKGROUNDS -> article = archive.backgroundsGrabber(matches.getFirst());
                 default -> {
                     walkieTalkie.reportImpossible(cs);
-                    return false;
+                    return;
                 }
             }
 
             walkieTalkie.articleMessaging(article, cs);
             cs.sectionId = SearchCategories.NONE;
+            cs.currentContext = CurrentProcess.FREE;
             cs.title = "";
-            return false;
+            return;
         }
 
         walkieTalkie.patternExecute(cs, archive.addressWriter(matches, cs.sectionId.toString()), null, true);
-        return true;
+        cs.currentContext = CurrentProcess.SEARCHING_AN_ARTICLE_SUCCESS;
     }
 
     public void onSearchSuccess(ChatSession cs, Update update) {
@@ -335,7 +340,6 @@ public class GeneralHandler implements AbilityExtension {
         }
         cs.sectionId = SearchCategories.NONE;
         cs.currentContext = CurrentProcess.FREE;
-        cs.searchSuccess = false;
         cs.title = "";
         knowledge.renewListChat(cs);
     }

@@ -26,7 +26,7 @@ public class ChatSession implements Serializable {
     public String chatTitle;
     private final long chatId;
     private final boolean isPM;
-    public String username = "";
+    public String username;
 
     //общие настройки
     public KeyboardValues currentKeyboard = KeyboardValues.COMMON;
@@ -35,7 +35,6 @@ public class ChatSession implements Serializable {
 
     //параметры для поисковика
     public SearchCategories sectionId = SearchCategories.NONE;
-    public boolean searchSuccess = false;
     public String title = "";
 
     //параметры для дайсроллера
@@ -107,7 +106,7 @@ public class ChatSession implements Serializable {
 
     public void setUsername(String username) {
         try {
-            this.username = "@" + username;
+            this.username = username.startsWith("@") ? username : "@" + username;
         } catch (Exception e) {
             this.username = "@[ДАННЫЕ УДАЛЕНЫ]";
         }

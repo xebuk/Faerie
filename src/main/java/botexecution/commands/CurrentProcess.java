@@ -4,6 +4,7 @@ public enum CurrentProcess {
     FREE,
 
     SEARCHING_AN_ARTICLE,
+    SEARCHING_AN_ARTICLE_SUCCESS,
 
     CREATING_A_CHARACTER,
     IN_GAME,

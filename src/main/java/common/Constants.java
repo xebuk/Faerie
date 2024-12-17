@@ -160,6 +160,7 @@ public interface Constants {
     String CAMPAIGN_CREATION_NOTIFICATION = """
             Вы создали компанию. Вы можете просмотреть свои компании через /showcampaigns
             """;
+    String CAMPAIGN_CREATION_RESTRICTION = "Для создания компании ДМ должен начать беседу с ботом.";
     String CAMPAIGN_CREATION_CONGRATULATION = """
             Поздравляю с началом кампании! Теперь игроки могут добавляться к вам в компанию.
             """;
@@ -176,7 +177,7 @@ public interface Constants {
             Их количество высветится в конце создания персонажа.
             Попросите ДМ-а самостоятельно выдать вам снаряжение.
             """;
-    String PLAYER_CREATION_RESTRICTED = "У вас нет активного процесса создания персонажа DND для его прерывания.";
+    String PLAYER_CREATION_RESTRICTED = "У вас нет активного процесса создания персонажа DnD для его прерывания.";
     String PLAYER_CREATION_PAUSE = "Процесс создания персонажа ДнД был поставлен на паузу.";
     String PLAYER_CREATION_CONTINUE = "Процесс создания персонажа ДнД был возобновлен.";
     String PLAYER_CREATION_WARNING = """

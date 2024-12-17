@@ -12,6 +12,7 @@ import dnd.values.RoleParameters;
 import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.*;
 import org.telegram.telegrambots.abilitybots.api.util.AbilityExtension;
+import org.telegram.telegrambots.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.abilitybots.api.bot.AbilityBot;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
 import static org.telegram.telegrambots.abilitybots.api.objects.Locality.*;
 import static org.telegram.telegrambots.abilitybots.api.objects.Privacy.*;
 import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getChatId;
+import static org.telegram.telegrambots.abilitybots.api.util.AbilityUtils.getUser;
 
 public class AbilBot extends AbilityBot {
     private boolean active;
@@ -603,10 +605,6 @@ public class AbilBot extends AbilityBot {
 
     @Override
     public void consume(Update update) {
-        /*if (!active) {
-            return;
-        }*/
-
         super.consume(update);
 
         ChatSession currentUser = knowledge.getSession(getChatId(update).toString());
@@ -617,6 +615,10 @@ public class AbilBot extends AbilityBot {
         if (currentUser == null) {
             currentUser = new ChatSession(update);
             knowledge.renewListChat(currentUser);
+        }
+
+        if (!currentUser.isPM() && !Objects.equals(currentUser.username, "@" + getUser(update).getUserName())) {
+            currentUser.setUsername("@" + getUser(update).getUserName());
         }
 
         if (currentUser.currentContext == CurrentProcess.CREATING_A_CHARACTER_DND) {
@@ -689,12 +691,11 @@ public class AbilBot extends AbilityBot {
                 case EDITING_A_QUEST_DND -> tableTop.editQuestSecondStage(currentUser, update.getMessage().getText());
                 case EDITING_A_PRESTIGE_JOB_DND -> tableTop.setPrestigeJobSecondStage(currentUser, update.getMessage().getText());
                 case CREATING_A_CHARACTER -> dungeonCrawl.characterCreationStart(currentUser, update);
-                case SEARCHING_AN_ARTICLE -> currentUser.searchSuccess = jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
+                case SEARCHING_AN_ARTICLE -> jackOfAllTrades.searchEngine(currentUser, update.getMessage().getText());
+                case SEARCHING_AN_ARTICLE_SUCCESS -> jackOfAllTrades.onSearchSuccess(currentUser, update);
                 default -> {
                     if (currentUser.rollCustom) {
                         jackOfAllTrades.onRollCustom(currentUser, update);
-                    } else if (currentUser.searchSuccess) {
-                        jackOfAllTrades.onSearchSuccess(currentUser, update);
                     }
                 }
             }

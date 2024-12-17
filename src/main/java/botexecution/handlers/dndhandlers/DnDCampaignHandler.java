@@ -50,6 +50,11 @@ public class DnDCampaignHandler implements AbilityExtension {
         ChatSession currentUser = knowledge.getSession(userChatId);
         ChatSession currentGroup = knowledge.getSession(ctx.chatId().toString());
 
+        if (currentUser == null) {
+            walkieTalkie.patternExecute(currentGroup, Constants.CAMPAIGN_CREATION_RESTRICTION);
+            return;
+        }
+
         if (currentGroup.role == RoleParameters.CAMPAIGN) {
             walkieTalkie.patternExecute(currentGroup, Constants.CAMPAIGN_CREATION_EXISTS);
             return;
