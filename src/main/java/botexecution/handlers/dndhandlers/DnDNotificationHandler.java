@@ -4,10 +4,12 @@ import botexecution.handlers.corehandlers.DataHandler;
 import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
 import dnd.values.RoleParameters;
+import dnd.values.masteryvalues.AdvantageTypeDnD;
 import dnd.values.masteryvalues.MasteryTypeDnD;
 import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class DnDNotificationHandler {
@@ -178,7 +180,9 @@ public class DnDNotificationHandler {
             try {
                 for (String token : data) {
                     if (!MasteryTypeDnD.getRollParameters().containsKey(token)
-                            && !MasteryTypeDnD.getSpecialCases().containsKey(token)) {
+                            && !MasteryTypeDnD.getSpecialCases().containsKey(token)
+                            && !AdvantageTypeDnD.getRollParameters().containsKey(token)
+                            && !Objects.equals(token, "prv")) {
                         walkieTalkie.patternExecute(ctx,
                                 "Произошла ошибка - введены некорректные параметры.\n" +
                                         "Попробуйте ещё раз.");

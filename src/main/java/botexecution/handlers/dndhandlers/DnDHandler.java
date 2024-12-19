@@ -70,11 +70,11 @@ public class DnDHandler {
         affectedPlayer.statCheck = MasteryTypeDnD.NONE;
         affectedPlayer.inPublic = true;
         affectedPlayer.advantage = AdvantageTypeDnD.CLEAR_THROW;
-        affectedPlayer.specialCase = MasteryTypeDnD.NONE;
+        affectedPlayer.specialCase = MasteryTypeDnD.LUCK;
 
         StringBuilder diceRollMessage = new StringBuilder();
         MasteryTypeDnD superposition;
-        String situation = "";
+        String situation = "Удача";
         StringBuilder bonus = new StringBuilder();
 
         String[] parameters = ctx.secondArg().split("-");
@@ -107,21 +107,11 @@ public class DnDHandler {
                         affectedPlayer.specialCase = MasteryTypeDnD.DAMAGE;
                         situation = "Нанесение урона";
                     }
-                    case "adv" -> {
-                        affectedPlayer.advantage = AdvantageTypeDnD.ADVANTAGE;
-                    }
-                    case "dis" -> {
-                        affectedPlayer.advantage = AdvantageTypeDnD.DISADVANTAGE;
-                    }
-                    case "clr" -> {
-                        affectedPlayer.advantage = AdvantageTypeDnD.CLEAR_THROW;
-                    }
-                    case "prv" -> {
-                        affectedPlayer.inPublic = false;
-                    }
-                }
-                if (parameter.contains("d")) {
-                    affectedPlayer.diceComb = parameter;
+                    case "adv" -> affectedPlayer.advantage = AdvantageTypeDnD.ADVANTAGE;
+                    case "dis" -> affectedPlayer.advantage = AdvantageTypeDnD.DISADVANTAGE;
+                    case "clr" -> affectedPlayer.advantage = AdvantageTypeDnD.CLEAR_THROW;
+                    case "prv" -> affectedPlayer.inPublic = false;
+                    default -> affectedPlayer.diceComb = parameter;
                 }
             }
         }
@@ -162,7 +152,11 @@ public class DnDHandler {
             bonus.setLength(0);
         }
 
-        if (affectedPlayer.diceComb.isEmpty()) {
+        try {
+            String[] check = affectedPlayer.diceComb.split("d");
+            int check1 = Integer.parseInt(check[0]);
+            int check2 = Integer.parseInt(check[1]);
+        } catch (NumberFormatException e) {
             if (affectedPlayer.advantage != AdvantageTypeDnD.CLEAR_THROW) {
                 affectedPlayer.diceComb = "2d20";
             }
