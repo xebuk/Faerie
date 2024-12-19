@@ -89,49 +89,41 @@ public class DnDItemHandler {
                 ItemDnD item = itemAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор предметов добавлено: ").append(item.name);
                 currentCampaign.activeDm.itemCollection.add(item);
-                currentCampaign.activeDm.itemCollectionNames.add(item.name);
             }
             case "-w" -> {
                 WeaponDnD weapon = weaponAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор оружия добавлено: ").append(weapon.name);
                 currentCampaign.activeDm.weaponCollection.add(weapon);
-                currentCampaign.activeDm.weaponCollectionNames.add(weapon.name);
             }
             case "-a" -> {
                 ArmorDnD armor = armorAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор брони добавлено: ").append(armor.name);
                 currentCampaign.activeDm.armorCollection.add(armor);
-                currentCampaign.activeDm.armorCollectionNames.add(armor.name);
             }
             case "-in" -> {
                 InstrumentDnD instruments = instrumentsAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор инструментов добавлено: ").append(instruments.name);
                 currentCampaign.activeDm.instrumentsCollection.add(instruments);
-                currentCampaign.activeDm.instrumentsCollectionNames.add(instruments.name);
             }
             case "-k" -> {
                 KitDnD kit = kitAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор комплектов добавлено: ").append(kit.name);
                 currentCampaign.activeDm.kitCollection.add(kit);
-                currentCampaign.activeDm.kitCollectionNames.add(kit.name);
             }
             case "-f" -> {
                 FeatDnD feat = featAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор черт добавлено: ").append(feat.title);
                 currentCampaign.activeDm.featCollection.add(feat);
-                currentCampaign.activeDm.featCollectionNames.add(feat.title);
             }
             case "-ab" -> {
                 AbilityDnD ability = abilityAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор способностей добавлено: ").append(ability.title);
                 currentCampaign.activeDm.abilityCollection.add(ability);
-                currentCampaign.activeDm.abilityCollectionNames.add(ability.title);
             }
             case "-sp" -> {
                 SpellDnD spell = spellAllocator.get(searchAspect(searchLine, cs.lastParameter));
                 additionMessage.append("В ваш набор заклинаний добавлено: ").append(spell.title);
                 currentCampaign.activeDm.spellCollection.add(spell);
-                currentCampaign.activeDm.spellCollectionNames.add(spell.title);
             }
             default -> {
                 walkieTalkie.patternExecute(cs, "Случилась непредвиденная ошибка. Повторите ещё раз.");
@@ -159,14 +151,14 @@ public class DnDItemHandler {
 
         String aspect;
         switch (ctx.firstArg()) {
-            case "-i" -> aspect = aspectStorageWriter(currentCampaign.activeDm.itemCollectionNames);
-            case "-w" -> aspect = aspectStorageWriter(currentCampaign.activeDm.weaponCollectionNames);
-            case "-a" -> aspect = aspectStorageWriter(currentCampaign.activeDm.armorCollectionNames);
-            case "-in" -> aspect = aspectStorageWriter(currentCampaign.activeDm.instrumentsCollectionNames);
-            case "-k" -> aspect = aspectStorageWriter(currentCampaign.activeDm.kitCollectionNames);
-            case "-f" -> aspect = aspectStorageWriter(currentCampaign.activeDm.featCollectionNames);
-            case "-ab" -> aspect = aspectStorageWriter(currentCampaign.activeDm.abilityCollectionNames);
-            case "-sp" -> aspect = aspectStorageWriter(currentCampaign.activeDm.spellCollectionNames);
+            case "-i" -> aspect = aspectStorageWriter(currentCampaign.activeDm.itemCollection);
+            case "-w" -> aspect = aspectStorageWriter(currentCampaign.activeDm.weaponCollection);
+            case "-a" -> aspect = aspectStorageWriter(currentCampaign.activeDm.armorCollection);
+            case "-in" -> aspect = aspectStorageWriter(currentCampaign.activeDm.instrumentsCollection);
+            case "-k" -> aspect = aspectStorageWriter(currentCampaign.activeDm.kitCollection);
+            case "-f" -> aspect = aspectStorageWriter(currentCampaign.activeDm.featCollection);
+            case "-ab" -> aspect = aspectStorageWriter(currentCampaign.activeDm.abilityCollection);
+            case "-sp" -> aspect = aspectStorageWriter(currentCampaign.activeDm.spellCollection);
             default -> {
                 walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
                 knowledge.renewListChat(currentCampaign);
@@ -197,10 +189,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editItem = currentCampaign.activeDm.itemCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.ITEM;
                 walkieTalkie.patternExecute(currentUser,
-                        "Предмет " + currentCampaign.activeDm.editItem.name + " был установлен.");
+                        "Предмет " + currentCampaign.activeDm.itemCollection.get(index).name + " был установлен.");
             }
             case "-w" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.weaponCollection.size()) {
@@ -209,10 +200,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editWeapon = currentCampaign.activeDm.weaponCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.WEAPON;
                 walkieTalkie.patternExecute(currentUser,
-                        "Оружие " + currentCampaign.activeDm.editWeapon.name + " было установлено.");
+                        "Оружие " + currentCampaign.activeDm.weaponCollection.get(index).name + " было установлено.");
             }
             case "-a" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.armorCollection.size()) {
@@ -221,10 +211,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editArmor = currentCampaign.activeDm.armorCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.ARMOR;
                 walkieTalkie.patternExecute(currentUser,
-                        "Броня " + currentCampaign.activeDm.editArmor.name + " была установлена.");
+                        "Броня " + currentCampaign.activeDm.armorCollection.get(index).name + " была установлена.");
             }
             case "-in" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.instrumentsCollection.size()) {
@@ -233,10 +222,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editInstruments = currentCampaign.activeDm.instrumentsCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.INSTRUMENTS;
                 walkieTalkie.patternExecute(currentUser,
-                        "Инструменты " + currentCampaign.activeDm.editInstruments.name + " были установлены.");
+                        "Инструменты " + currentCampaign.activeDm.instrumentsCollection.get(index).name + " были установлены.");
             }
             case "-k" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.kitCollection.size()) {
@@ -245,10 +233,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editKit = currentCampaign.activeDm.kitCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.KIT;
                 walkieTalkie.patternExecute(currentUser,
-                        "Комплект " + currentCampaign.activeDm.editKit.name + " был установлен.");
+                        "Комплект " + currentCampaign.activeDm.kitCollection.get(index).name + " был установлен.");
             }
             case "-f" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.featCollection.size()) {
@@ -257,10 +244,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editFeat = currentCampaign.activeDm.featCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.FEAT;
                 walkieTalkie.patternExecute(currentUser,
-                        "Черта " + currentCampaign.activeDm.editFeat.title + " была установлена.");
+                        "Черта " + currentCampaign.activeDm.featCollection.get(index).title + " была установлена.");
             }
             case "-ab" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.abilityCollection.size()) {
@@ -269,10 +255,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editAbility = currentCampaign.activeDm.abilityCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.ABILITY;
                 walkieTalkie.patternExecute(currentUser,
-                        "Способность " + currentCampaign.activeDm.editAbility.title + " была установлена.");
+                        "Способность " + currentCampaign.activeDm.abilityCollection.get(index).title + " была установлена.");
             }
             case "-sp" -> {
                 if (index < 0 || index >= currentCampaign.activeDm.spellCollection.size()) {
@@ -281,10 +266,9 @@ public class DnDItemHandler {
                                 "Проверьте правильность ввода по справке в /help [команда]");
                     return;
                 }
-                currentCampaign.activeDm.editSpell = currentCampaign.activeDm.spellCollection.get(index);
                 currentCampaign.activeDm.currentAspectType = AspectCategoriesDnD.SPELL;
                 walkieTalkie.patternExecute(currentUser,
-                        "Заклинание " + currentCampaign.activeDm.editSpell.title + " было установлено.");
+                        "Заклинание " + currentCampaign.activeDm.spellCollection.get(index).title + " было установлено.");
             }
             default -> {
                 walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
@@ -310,17 +294,26 @@ public class DnDItemHandler {
         StringBuilder aspectStatus = new StringBuilder();
         aspectStatus.append("На данный момент основным предметом у вас стоит: \n");
         switch (currentCampaign.activeDm.currentAspectType) {
-            case ITEM -> aspectStatus.append(currentCampaign.activeDm.editItem.toString());
-            case WEAPON -> aspectStatus.append(currentCampaign.activeDm.editWeapon.toString());
-            case ARMOR -> aspectStatus.append(currentCampaign.activeDm.editArmor.toString());
+            case ITEM -> aspectStatus.append(currentCampaign.activeDm
+                    .itemCollection.get(currentCampaign.activeDm.editIndex).toString());
+            case WEAPON -> aspectStatus.append(currentCampaign.activeDm
+                    .weaponCollection.get(currentCampaign.activeDm.editIndex).toString());
+            case ARMOR -> aspectStatus.append(currentCampaign.activeDm
+                    .armorCollection.get(currentCampaign.activeDm.editIndex).toString());
             case INSTRUMENTS -> {
-                aspectStatus.append(currentCampaign.activeDm.editInstruments.toString());
-                aspectStatus.append(archive.toolGrabber(currentCampaign.activeDm.editInstruments.id));
+                aspectStatus.append(currentCampaign.activeDm
+                        .instrumentsCollection.get(currentCampaign.activeDm.editIndex).toString());
+                aspectStatus.append(archive.toolGrabber(currentCampaign.activeDm
+                        .instrumentsCollection.get(currentCampaign.activeDm.editIndex).id));
             }
-            case KIT -> aspectStatus.append(currentCampaign.activeDm.editKit.toString());
-            case FEAT -> aspectStatus.append(currentCampaign.activeDm.editFeat.toString());
-            case ABILITY -> aspectStatus.append(currentCampaign.activeDm.editAbility.toString());
-            case SPELL -> aspectStatus.append(currentCampaign.activeDm.editSpell.toString());
+            case KIT -> aspectStatus.append(currentCampaign.activeDm
+                    .kitCollection.get(currentCampaign.activeDm.editIndex).toString());
+            case FEAT -> aspectStatus.append(currentCampaign.activeDm
+                    .featCollection.get(currentCampaign.activeDm.editIndex).toString());
+            case ABILITY -> aspectStatus.append(currentCampaign.activeDm
+                    .abilityCollection.get(currentCampaign.activeDm.editIndex).toString());
+            case SPELL -> aspectStatus.append(currentCampaign.activeDm
+                    .spellCollection.get(currentCampaign.activeDm.editIndex).toString());
             default -> {
                 aspectStatus.append("Ничего.");
                 walkieTalkie.patternExecute(currentUser, aspectStatus.toString());
@@ -470,13 +463,20 @@ public class DnDItemHandler {
         switch (currentCampaign.activeDm.currentAspectType) {
             case ITEM -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-n" -> currentCampaign.activeDm.editItem.setName(response);
-                    case "-s" -> currentCampaign.activeDm.editItem.setSummary(response);
-                    case "-a" -> currentCampaign.activeDm.editItem.setAmountInInstance(Integer.parseInt(response));
-                    case "-v" -> currentCampaign.activeDm.editItem.setValue(Integer.parseInt(response));
-                    case "-c" -> currentCampaign.activeDm.editItem.setCurrencyGrade(CurrencyDnD.getCurrency(response));
-                    case "-w" ->  currentCampaign.activeDm.editItem.setWeight(Integer.parseInt(response));
-                    case "-e" -> currentCampaign.activeDm.editItem.setEffects(response);
+                    case "-n" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setName(response);
+                    case "-s" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-a" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setAmountInInstance(Integer.parseInt(response));
+                    case "-v" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setValue(Integer.parseInt(response));
+                    case "-c" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setCurrencyGrade(CurrencyDnD.getCurrency(response));
+                    case "-w" ->  currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setWeight(Integer.parseInt(response));
+                    case "-e" -> currentCampaign.activeDm.itemCollection
+                            .get(currentCampaign.activeDm.editIndex).setEffects(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -486,28 +486,41 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.itemCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editItem);
             }
             case WEAPON -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-n" -> currentCampaign.activeDm.editWeapon.setName(response);
-                    case "-s" -> currentCampaign.activeDm.editWeapon.setSummary(response);
-                    case "-a" -> currentCampaign.activeDm.editWeapon.setAmountInInstance(Integer.parseInt(response));
-                    case "-v" -> currentCampaign.activeDm.editWeapon.setValue(Integer.parseInt(response));
-                    case "-c" -> currentCampaign.activeDm.editWeapon.setCurrencyGrade(CurrencyDnD.getCurrency(response));
-                    case "-w" ->  currentCampaign.activeDm.editWeapon.setWeight(Integer.parseInt(response));
-                    case "-t" -> currentCampaign.activeDm.editWeapon.setType(ItemsIdsDnD.getType(response));
-                    case "-r" -> currentCampaign.activeDm.editWeapon.setRange(ItemsIdsDnD.getRange(response));
-                    case "-ad" -> currentCampaign.activeDm.editWeapon.setAttackDice(response);
-                    case "-dt" -> currentCampaign.activeDm.editWeapon.setDamageType(response);
-                    case "-atr" -> currentCampaign.activeDm.editWeapon.addTraits(WeaponTraitsDnD.getTrait(response));
-                    case "-dtr" -> currentCampaign.activeDm.editWeapon.delTraits(WeaponTraitsDnD.getTrait(response));
-                    case "-mind" -> currentCampaign.activeDm.editWeapon.setMinDistance(Integer.parseInt(response));
-                    case "-maxd" -> currentCampaign.activeDm.editWeapon.setMaxDistance(Integer.parseInt(response));
-                    case "-e" -> currentCampaign.activeDm.editWeapon.setEffects(response);
-                    case "-hb" -> currentCampaign.activeDm.editWeapon.setHitBonus(Integer.parseInt(response));
+                    case "-n" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setName(response);
+                    case "-s" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-a" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setAmountInInstance(Integer.parseInt(response));
+                    case "-v" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setValue(Integer.parseInt(response));
+                    case "-c" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setCurrencyGrade(CurrencyDnD.getCurrency(response));
+                    case "-w" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setWeight(Integer.parseInt(response));
+                    case "-t" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setType(ItemsIdsDnD.getType(response));
+                    case "-r" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setRange(ItemsIdsDnD.getRange(response));
+                    case "-ad" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setAttackDice(response);
+                    case "-dt" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setDamageType(response);
+                    case "-atr" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).addTraits(WeaponTraitsDnD.getTrait(response));
+                    case "-dtr" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).delTraits(WeaponTraitsDnD.getTrait(response));
+                    case "-mind" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setMinDistance(Integer.parseInt(response));
+                    case "-maxd" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setMaxDistance(Integer.parseInt(response));
+                    case "-e" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setEffects(response);
+                    case "-hb" -> currentCampaign.activeDm.weaponCollection
+                            .get(currentCampaign.activeDm.editIndex).setHitBonus(Integer.parseInt(response));
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -517,24 +530,33 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.weaponCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editWeapon);
             }
             case ARMOR -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-n" -> currentCampaign.activeDm.editArmor.setName(response);
-                    case "-s" -> currentCampaign.activeDm.editArmor.setSummary(response);
-                    case "-a" -> currentCampaign.activeDm.editArmor.setAmountInInstance(Integer.parseInt(response));
-                    case "-v" -> currentCampaign.activeDm.editArmor.setValue(Integer.parseInt(response));
-                    case "-c" -> currentCampaign.activeDm.editArmor.setCurrencyGrade(CurrencyDnD.getCurrency(response));
-                    case "-w" ->  currentCampaign.activeDm.editArmor.setWeight(Integer.parseInt(response));
-                    case "-at" -> currentCampaign.activeDm.editArmor.setType(ItemsIdsDnD.getArmorType(response));
-                    case "-ac" -> currentCampaign.activeDm.editArmor.setArmorClass(Integer.parseInt(response));
-                    case "-dmm" -> currentCampaign.activeDm.editArmor.setDexterityModMax(Integer.parseInt(response));
-                    case "-sr" -> currentCampaign.activeDm.editArmor.setStrengthRequirement(Integer.parseInt(response));
-                    case "-hsd" -> currentCampaign.activeDm.editArmor.changeHasStealthDisadvantage();
-                    case "-e" -> currentCampaign.activeDm.editArmor.setEffects(response);
+                    case "-n" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setName(response);
+                    case "-s" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-a" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setAmountInInstance(Integer.parseInt(response));
+                    case "-v" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setValue(Integer.parseInt(response));
+                    case "-c" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setCurrencyGrade(CurrencyDnD.getCurrency(response));
+                    case "-w" ->  currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setWeight(Integer.parseInt(response));
+                    case "-at" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setType(ItemsIdsDnD.getArmorType(response));
+                    case "-ac" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setArmorClass(Integer.parseInt(response));
+                    case "-dmm" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setDexterityModMax(Integer.parseInt(response));
+                    case "-sr" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setStrengthRequirement(Integer.parseInt(response));
+                    case "-hsd" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).changeHasStealthDisadvantage();
+                    case "-e" -> currentCampaign.activeDm.armorCollection
+                            .get(currentCampaign.activeDm.editIndex).setEffects(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -544,18 +566,21 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.armorCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editArmor);
             }
             case INSTRUMENTS -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-n" -> currentCampaign.activeDm.editInstruments.setName(response);
-                    case "-s" -> currentCampaign.activeDm.editInstruments.setSummary(response);
-                    case "-a" -> currentCampaign.activeDm.editInstruments.setAmountInInstance(Integer.parseInt(response));
-                    case "-v" -> currentCampaign.activeDm.editInstruments.setValue(Integer.parseInt(response));
-                    case "-c" -> currentCampaign.activeDm.editInstruments.setCurrencyGrade(CurrencyDnD.getCurrency(response));
-                    case "-w" ->  currentCampaign.activeDm.editInstruments.setWeight(Integer.parseInt(response));
+                    case "-n" -> currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setName(response);
+                    case "-s" -> currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-a" -> currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setAmountInInstance(Integer.parseInt(response));
+                    case "-v" -> currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setValue(Integer.parseInt(response));
+                    case "-c" -> currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setCurrencyGrade(CurrencyDnD.getCurrency(response));
+                    case "-w" ->  currentCampaign.activeDm.instrumentsCollection
+                            .get(currentCampaign.activeDm.editIndex).setWeight(Integer.parseInt(response));
                     //case "-aadv" -> currentCampaign.activeDm.editInstruments.addAdvantage(MasteryTypeDnD.getAdvantage(response));
                     //case "-dadv" -> currentCampaign.activeDm.editInstruments.delAdvantage(MasteryTypeDnD.getAdvantage(response));
                     default -> {
@@ -567,18 +592,21 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.instrumentsCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editInstruments);
             }
             case KIT -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-n" -> currentCampaign.activeDm.editKit.setName(response);
-                    case "-s" -> currentCampaign.activeDm.editKit.setSummary(response);
-                    case "-a" -> currentCampaign.activeDm.editKit.setAmountInInstance(Integer.parseInt(response));
-                    case "-v" -> currentCampaign.activeDm.editKit.setValue(Integer.parseInt(response));
-                    case "-c" -> currentCampaign.activeDm.editKit.setCurrencyGrade(CurrencyDnD.getCurrency(response));
-                    case "-w" ->  currentCampaign.activeDm.editKit.setWeight(Integer.parseInt(response));
+                    case "-n" -> currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setName(response);
+                    case "-s" -> currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-a" -> currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setAmountInInstance(Integer.parseInt(response));
+                    case "-v" -> currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setValue(Integer.parseInt(response));
+                    case "-c" -> currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setCurrencyGrade(CurrencyDnD.getCurrency(response));
+                    case "-w" ->  currentCampaign.activeDm.kitCollection
+                            .get(currentCampaign.activeDm.editIndex).setWeight(Integer.parseInt(response));
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -588,14 +616,11 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.kitCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editKit);
             }
             case FEAT -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-tl" -> currentCampaign.activeDm.editFeat.setTitle(response);
-                    case "-s" -> currentCampaign.activeDm.editFeat.setSummary(response);
+                    case "-tl" -> currentCampaign.activeDm.featCollection.get(currentCampaign.activeDm.editIndex).setTitle(response);
+                    case "-s" -> currentCampaign.activeDm.featCollection.get(currentCampaign.activeDm.editIndex).setSummary(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -605,19 +630,23 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.featCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editFeat);
             }
             case ABILITY -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-tl" -> currentCampaign.activeDm.editAbility.setTitle(response);
-                    case "-s" -> currentCampaign.activeDm.editAbility.setSummary(response);
-                    case "-l" -> currentCampaign.activeDm.editAbility.setLevel(Integer.parseInt(response));
-                    case "-aj" -> currentCampaign.activeDm.editAbility.addJobs(JobsDnD.getJob(response));
-                    case "-dj" -> currentCampaign.activeDm.editAbility.delJobs(JobsDnD.getJob(response));
-                    case "-apj" -> currentCampaign.activeDm.editAbility.addPrestigeJob(response);
-                    case "-dpj" -> currentCampaign.activeDm.editAbility.delPrestigeJob(response);
+                    case "-tl" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).setTitle(response);
+                    case "-s" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-l" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).setLevel(Integer.parseInt(response));
+                    case "-aj" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).addJobs(JobsDnD.getJob(response));
+                    case "-dj" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).delJobs(JobsDnD.getJob(response));
+                    case "-apj" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).addPrestigeJob(response);
+                    case "-dpj" -> currentCampaign.activeDm.abilityCollection
+                            .get(currentCampaign.activeDm.editIndex).delPrestigeJob(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -627,25 +656,35 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.abilityCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editAbility);
             }
             case SPELL -> {
                 switch (currentCampaign.activeDm.editParameter) {
-                    case "-tl" -> currentCampaign.activeDm.editSpell.setTitle(response);
-                    case "-s" -> currentCampaign.activeDm.editSpell.setSummary(response);
-                    case "-l" -> currentCampaign.activeDm.editSpell.setLevel(Integer.parseInt(response));
-                    case "-aj" -> currentCampaign.activeDm.editSpell.addJobs(JobsDnD.getJob(response));
-                    case "-dj" -> currentCampaign.activeDm.editSpell.delJobs(JobsDnD.getJob(response));
-                    case "-apj" -> currentCampaign.activeDm.editSpell.addPrestigeJob(response);
-                    case "-dpj" -> currentCampaign.activeDm.editSpell.delPrestigeJob(response);
-                    case "-sc" -> currentCampaign.activeDm.editSpell.setSchool(response);
-                    case "-st" -> currentCampaign.activeDm.editSpell.setSetupTime(response);
-                    case "-d" -> currentCampaign.activeDm.editSpell.setDistance(Double.parseDouble(response));
-                    case "-acm" -> currentCampaign.activeDm.editSpell.addComponent(SpellComponentsDnD.getComp(response));
-                    case "-dcm" -> currentCampaign.activeDm.editSpell.delComponent(SpellComponentsDnD.getComp(response));
-                    case "-dur" -> currentCampaign.activeDm.editSpell.setDuration(response);
+                    case "-tl" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setTitle(response);
+                    case "-s" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setSummary(response);
+                    case "-l" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setLevel(Integer.parseInt(response));
+                    case "-aj" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).addJobs(JobsDnD.getJob(response));
+                    case "-dj" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).delJobs(JobsDnD.getJob(response));
+                    case "-apj" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).addPrestigeJob(response);
+                    case "-dpj" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).delPrestigeJob(response);
+                    case "-sc" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setSchool(response);
+                    case "-st" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setSetupTime(response);
+                    case "-d" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setDistance(Double.parseDouble(response));
+                    case "-acm" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).addComponent(SpellComponentsDnD.getComp(response));
+                    case "-dcm" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).delComponent(SpellComponentsDnD.getComp(response));
+                    case "-dur" -> currentCampaign.activeDm.spellCollection
+                            .get(currentCampaign.activeDm.editIndex).setDuration(response);
                     default -> {
                         walkieTalkie.patternExecute(cs, "Введите корректный параметр.");
                         cs.currentContext = CurrentProcess.FREE;
@@ -655,9 +694,6 @@ public class DnDItemHandler {
                         return;
                     }
                 }
-
-                currentCampaign.activeDm.spellCollection.set(currentCampaign.activeDm.editIndex,
-                        currentCampaign.activeDm.editSpell);
             }
             default -> {
                 walkieTalkie.patternExecute(cs, "Выберите предмет.");
@@ -700,7 +736,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.itemCollection.remove(index);
-                currentCampaign.activeDm.itemCollectionNames.remove(index);
             }
             case "-w" -> {
                 if (index >= currentCampaign.activeDm.weaponCollection.size()) {
@@ -710,7 +745,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.weaponCollection.remove(index);
-                currentCampaign.activeDm.weaponCollectionNames.remove(index);
             }
             case "-a" -> {
                 if (index >= currentCampaign.activeDm.armorCollection.size()) {
@@ -720,7 +754,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.armorCollection.remove(index);
-                currentCampaign.activeDm.armorCollectionNames.remove(index);
             }
             case "-in" -> {
                 if (index >= currentCampaign.activeDm.instrumentsCollection.size()) {
@@ -730,7 +763,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.instrumentsCollection.remove(index);
-                currentCampaign.activeDm.instrumentsCollectionNames.remove(index);
             }
             case "-k" -> {
                 if (index >= currentCampaign.activeDm.kitCollection.size()) {
@@ -740,7 +772,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.kitCollection.remove(index);
-                currentCampaign.activeDm.kitCollectionNames.remove(index);
             }
             case "-f" -> {
                 if (index >= currentCampaign.activeDm.featCollection.size()) {
@@ -750,7 +781,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.featCollection.remove(index);
-                currentCampaign.activeDm.featCollectionNames.remove(index);
             }
             case "-ab" -> {
                 if (index >= currentCampaign.activeDm.abilityCollection.size()) {
@@ -760,7 +790,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.abilityCollection.remove(index);
-                currentCampaign.activeDm.abilityCollectionNames.remove(index);
             }
             case "-sp" -> {
                 if (index >= currentCampaign.activeDm.spellCollection.size()) {
@@ -770,7 +799,6 @@ public class DnDItemHandler {
                     return;
                 }
                 currentCampaign.activeDm.spellCollection.remove(index);
-                currentCampaign.activeDm.spellCollectionNames.remove(index);
             }
             default -> {
                 walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
@@ -1416,12 +1444,20 @@ public class DnDItemHandler {
         return result.toString();
     }
 
-    public String aspectStorageWriter(ArrayList<String> aspects) {
+    public <T> String aspectStorageWriter(ArrayList<T> aspects) {
         StringBuilder result = new StringBuilder();
         result.append("На данный момент у вас есть:").append("\n");
 
         for (int i = 1; i < aspects.size() + 1; i++) {
-            result.append(i).append(". ").append(aspects.get(i - 1)).append("\n");
+            if (aspects.get(i - 1) instanceof ItemDnD) {
+                result.append(i).append(". ").append(((ItemDnD) aspects.get(i - 1)).name).append("\n");
+            }
+            else if (aspects.get(i - 1) instanceof AbilityDnD) {
+                result.append(i).append(". ").append(((AbilityDnD) aspects.get(i - 1)).title).append("\n");
+            }
+            else if (aspects.get(i - 1) instanceof FeatDnD) {
+                result.append(i).append(". ").append(((FeatDnD) aspects.get(i - 1)).title).append("\n");
+            }
         }
 
         return result.toString();

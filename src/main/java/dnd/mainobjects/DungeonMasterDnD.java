@@ -24,15 +24,6 @@ public class DungeonMasterDnD implements Serializable {
     public HashMap<String, PlayerDnD> campaignParty = new HashMap<>();
     public int multiclassLimit = 0;
 
-    public ArrayList<String> itemCollectionNames = new ArrayList<>();
-    public ArrayList<String> weaponCollectionNames = new ArrayList<>();
-    public ArrayList<String> armorCollectionNames = new ArrayList<>();
-    public ArrayList<String> instrumentsCollectionNames = new ArrayList<>();
-    public ArrayList<String> kitCollectionNames = new ArrayList<>();
-    public ArrayList<String> featCollectionNames = new ArrayList<>();
-    public ArrayList<String> abilityCollectionNames = new ArrayList<>();
-    public ArrayList<String> spellCollectionNames = new ArrayList<>();
-
     public ArrayList<ItemDnD> itemCollection = new ArrayList<>();
     public ArrayList<WeaponDnD> weaponCollection = new ArrayList<>();
     public ArrayList<ArmorDnD> armorCollection = new ArrayList<>();
@@ -47,15 +38,6 @@ public class DungeonMasterDnD implements Serializable {
     public AspectCategoriesDnD currentAspectType = AspectCategoriesDnD.NONE;
     public int editIndex = 0;
     public String editParameter;
-
-    public ItemDnD editItem;
-    public WeaponDnD editWeapon;
-    public ArmorDnD editArmor;
-    public InstrumentDnD editInstruments;
-    public KitDnD editKit;
-    public FeatDnD editFeat;
-    public AbilityDnD editAbility;
-    public SpellDnD editSpell;
 
     public int editQuestIndex = 0;
     public ArrayList<QuestDnDForDm> questRoster = new ArrayList<>();
