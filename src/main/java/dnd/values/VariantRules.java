@@ -1,5 +1,7 @@
 package dnd.values;
 
-public enum VariantRules {
+import java.io.Serializable;
+
+public enum VariantRules implements Serializable {
     ENCUMBRANCE,
 }

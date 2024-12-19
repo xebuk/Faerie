@@ -38,7 +38,7 @@ public class BackgroundDnD implements Serializable {
         public AcolyteDnD() {
             this.name = "Прислужник";
 
-            this.backgroundId = BackgroundsDnD.Acolyte;
+            this.backgroundId = BackgroundsDnD.ACOLYTE;
 
             this.specialAbility = "Приют для верующих";
             this.specialAbilitySummary = """
@@ -92,7 +92,7 @@ public class BackgroundDnD implements Serializable {
         public CharlatanDnD() {
             this.name = "Шарлатан";
 
-            this.backgroundId = BackgroundsDnD.Charlatan;
+            this.backgroundId = BackgroundsDnD.CHARLATAN;
 
             this.specialAbility = "Поддельная личность";
             this.specialAbilitySummary = """
@@ -150,7 +150,7 @@ public class BackgroundDnD implements Serializable {
         public CriminalDnD() {
             this.name = "Преступник";
 
-            this.backgroundId = BackgroundsDnD.Criminal;
+            this.backgroundId = BackgroundsDnD.CRIMINAL;
 
             this.specialAbility = "Криминальные связи";
             this.specialAbilitySummary = """
@@ -210,7 +210,7 @@ public class BackgroundDnD implements Serializable {
         public EntertainerDnD() {
             this.name = "Артист";
 
-            this.backgroundId = BackgroundsDnD.Entertainer;
+            this.backgroundId = BackgroundsDnD.ENTERTAINER;
 
             this.specialAbility = "По многочисленным просьбам";
             this.specialAbilitySummary = """
@@ -275,7 +275,7 @@ public class BackgroundDnD implements Serializable {
         public FolkHeroDnD() {
             this.name = "Народный герой";
 
-            this.backgroundId = BackgroundsDnD.Folk_Hero;
+            this.backgroundId = BackgroundsDnD.FOLK_HERO;
 
             this.specialAbility = "Деревенское гостеприимство";
             this.specialAbilitySummary = """
@@ -338,7 +338,7 @@ public class BackgroundDnD implements Serializable {
         public GuildArtisanDnD() {
             this.name = "Гильдейский ремесленник";
 
-            this.backgroundId = BackgroundsDnD.Guild_Artisan;
+            this.backgroundId = BackgroundsDnD.GUILD_ARTISAN;
 
             this.specialAbility = "Членство в гильдии";
             this.specialAbilitySummary = """
@@ -417,7 +417,7 @@ public class BackgroundDnD implements Serializable {
         public HermitDnD() {
             this.name = "Отшельник";
 
-            this.backgroundId = BackgroundsDnD.Hermit;
+            this.backgroundId = BackgroundsDnD.HERMIT;
 
             this.specialAbility = "Откровение";
             this.specialAbilitySummary = """
@@ -482,7 +482,7 @@ public class BackgroundDnD implements Serializable {
             this.name = "Своя предыстория";
             this.summary = "Введите описание своей предыстории.";
 
-            this.backgroundId = BackgroundsDnD.Homebrew;
+            this.backgroundId = BackgroundsDnD.HOMEBREW;
 
             this.specialAbility = "Название способности";
             this.specialAbilitySummary = """
@@ -512,7 +512,7 @@ public class BackgroundDnD implements Serializable {
         public NobleDnD() {
             this.name = "Благородный";
 
-            this.backgroundId = BackgroundsDnD.Noble;
+            this.backgroundId = BackgroundsDnD.NOBLE;
 
             this.specialAbility = "Привилегированность";
             this.specialAbilitySummary = """
@@ -567,7 +567,7 @@ public class BackgroundDnD implements Serializable {
         public OutlanderDnD() {
             this.name = "Чужеземец";
 
-            this.backgroundId = BackgroundsDnD.Outlander;
+            this.backgroundId = BackgroundsDnD.OUTLANDER;
 
             this.specialAbility = "Странник";
             this.specialAbilitySummary = """
@@ -629,7 +629,7 @@ public class BackgroundDnD implements Serializable {
         public PirateDnD() {
             this.name = "Пират";
 
-            this.backgroundId = BackgroundsDnD.Pirate;
+            this.backgroundId = BackgroundsDnD.PIRATE;
 
             this.specialAbility = "Дурная репутация";
             this.specialAbilitySummary = """
@@ -682,7 +682,7 @@ public class BackgroundDnD implements Serializable {
         public SageDnD() {
             this.name = "Мудрец";
 
-            this.backgroundId = BackgroundsDnD.Sage;
+            this.backgroundId = BackgroundsDnD.SAGE;
 
             this.specialAbility = "Исследователь";
             this.specialAbilitySummary = """
@@ -744,7 +744,7 @@ public class BackgroundDnD implements Serializable {
         public SailorDnD() {
             this.name = "Моряк";
 
-            this.backgroundId = BackgroundsDnD.Sailor;
+            this.backgroundId = BackgroundsDnD.SAILOR;
 
             this.specialAbility = "Поездка на корабле";
             this.specialAbilitySummary = """
@@ -800,7 +800,7 @@ public class BackgroundDnD implements Serializable {
         public SoldierDnD() {
             this.name = "Солдат";
 
-            this.backgroundId = BackgroundsDnD.Soldier;
+            this.backgroundId = BackgroundsDnD.SOLDIER;
 
             this.specialAbility = "Воинское звание";
             this.specialAbilitySummary = """
@@ -862,7 +862,7 @@ public class BackgroundDnD implements Serializable {
         public UrchinDnD() {
             this.name = "Беспризорник";
 
-            this.backgroundId = BackgroundsDnD.Urchin;
+            this.backgroundId = BackgroundsDnD.URCHIN;
 
             this.specialAbility = "Городские тайны";
             this.specialAbilitySummary = """

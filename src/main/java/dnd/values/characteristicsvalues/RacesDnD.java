@@ -6,32 +6,32 @@ import java.io.Serializable;
 import java.util.Map;
 
 public enum RacesDnD implements Serializable {
-    Dragonborn,
-    Dwarf,
-    Elf,
-    Gnome,
-    Half_Elf,
-    Halfling,
-    Half_Orc,
-    Human,
-    Human_Variant,
-    Tiefling,
+    DRAGONBORN,
+    DWARF,
+    ELF,
+    GNOME,
+    HALF_ELF,
+    HALFLING,
+    HALF_ORC,
+    HUMAN,
+    HUMAN_VARIANT,
+    TIEFLING,
 
-    Homebrew;
+    HOMEBREW;
 
-    private static final Map<String, RacesDnD> races = Map.ofEntries(Map.entry("Драконорожденный", Dragonborn),
-            Map.entry("Дварф", Dwarf), Map.entry("Эльф", Elf),
-            Map.entry("Гном", Gnome), Map.entry("Полуэльф", Half_Elf),
-            Map.entry("Полурослик", Halfling), Map.entry("Полуорк", Half_Orc),
-            Map.entry("Человек", Human), Map.entry("Человек (Вариант)", Human_Variant),
-            Map.entry("Тифлинг", Tiefling), Map.entry("Своя раса", Homebrew));
+    private static final Map<String, RacesDnD> races = Map.ofEntries(Map.entry("Драконорожденный", DRAGONBORN),
+            Map.entry("Дварф", DWARF), Map.entry("Эльф", ELF),
+            Map.entry("Гном", GNOME), Map.entry("Полуэльф", HALF_ELF),
+            Map.entry("Полурослик", HALFLING), Map.entry("Полуорк", HALF_ORC),
+            Map.entry("Человек", HUMAN), Map.entry("Человек (Вариант)", HUMAN_VARIANT),
+            Map.entry("Тифлинг", TIEFLING), Map.entry("Своя раса", HOMEBREW));
 
-    private static final Map<RacesDnD, RaceDnD> racesAsClasses = Map.ofEntries(Map.entry(Dragonborn, new RaceDnD.DragonbornDnD()),
-            Map.entry(Dwarf, new RaceDnD.DwarfDnD()), Map.entry(Elf, new RaceDnD.ElfDnD()),
-            Map.entry(Gnome, new RaceDnD.GnomeDnD()), Map.entry(Half_Elf, new RaceDnD.HalfElfDnD()),
-            Map.entry(Halfling, new RaceDnD.HalflingDnD()), Map.entry(Half_Orc, new RaceDnD.HalfOrcDnD()),
-            Map.entry(Human, new RaceDnD.HumanDnD()), Map.entry(Human_Variant, new RaceDnD.HumanVariantDnD()),
-            Map.entry(Tiefling, new RaceDnD.TieflingDnD()));
+    private static final Map<RacesDnD, RaceDnD> racesAsClasses = Map.ofEntries(Map.entry(DRAGONBORN, new RaceDnD.DragonbornDnD()),
+            Map.entry(DWARF, new RaceDnD.DwarfDnD()), Map.entry(ELF, new RaceDnD.ElfDnD()),
+            Map.entry(GNOME, new RaceDnD.GnomeDnD()), Map.entry(HALF_ELF, new RaceDnD.HalfElfDnD()),
+            Map.entry(HALFLING, new RaceDnD.HalflingDnD()), Map.entry(HALF_ORC, new RaceDnD.HalfOrcDnD()),
+            Map.entry(HUMAN, new RaceDnD.HumanDnD()), Map.entry(HUMAN_VARIANT, new RaceDnD.HumanVariantDnD()),
+            Map.entry(TIEFLING, new RaceDnD.TieflingDnD()));
 
     public static RaceDnD getRaceAsClass(RacesDnD race) {
         return racesAsClasses.get(race);

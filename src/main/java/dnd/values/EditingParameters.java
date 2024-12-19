@@ -1,6 +1,8 @@
 package dnd.values;
 
-public enum EditingParameters {
+import java.io.Serializable;
+
+public enum EditingParameters implements Serializable {
     NONE,
 
     NOTE_TITLE,

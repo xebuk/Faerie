@@ -329,8 +329,8 @@ public class DnDItemHandler {
                 return;
             }
         }
-        aspectStatus.append(" (Индекс предмета: ").append(currentCampaign.activeDm.currentAspectType.toString())
-                    .append(" ").append(currentCampaign.activeDm.editIndex).append(")");
+        aspectStatus.append("(Индекс предмета: ").append(currentCampaign.activeDm.currentAspectType.toString())
+                    .append(" - ").append(currentCampaign.activeDm.editIndex + 1).append(")");
 
         walkieTalkie.patternExecute(currentUser, aspectStatus.toString());
         knowledge.renewListChat(currentCampaign);

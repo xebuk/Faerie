@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static common.Constants.BESTIARY;
 import static common.Constants.URL;
 
 public class SiteParseHandler {

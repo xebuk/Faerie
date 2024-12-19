@@ -1,8 +1,9 @@
 package botexecution.commands;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public enum KeyboardValues {
+public enum KeyboardValues implements Serializable {
     COMMON,
     GAME,
 

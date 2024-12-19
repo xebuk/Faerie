@@ -5,6 +5,7 @@ import botexecution.handlers.corehandlers.TextHandler;
 import botexecution.mainobjects.ChatSession;
 import dnd.values.RoleParameters;
 import dnd.values.masteryvalues.MasteryTypeDnD;
+import logger.BotLogger;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 
 import java.util.Set;
@@ -53,12 +54,15 @@ public class DnDNotificationHandler {
             int check = -2;
 
             try {
-                check = switch (parameters) {
-                    case "int<1" -> Integer.parseInt(ctx.firstArg()) - 1;
-                    case "int<2" -> Integer.parseInt(ctx.secondArg()) - 1;
-                    case "int<3" -> Integer.parseInt(ctx.thirdArg()) - 1;
-                    default -> check;
-                };
+                if (parameters.contains("int<1")) {
+                    check = Integer.parseInt(ctx.firstArg()) - 1;
+                }
+                else if (parameters.contains("int<2")) {
+                    check = Integer.parseInt(ctx.secondArg()) - 1;
+                }
+                else if (parameters.contains("int<3")) {
+                    check = Integer.parseInt(ctx.thirdArg()) - 1;
+                }
 
                 if (check < 0) {
                     walkieTalkie.patternExecute(ctx,
@@ -74,14 +78,18 @@ public class DnDNotificationHandler {
             }
         }
 
-        if (parameters.contains("int")) {
+        else if (parameters.contains("int")) {
             int check;
 
             try {
-                switch (parameters) {
-                    case "int1" -> check = Integer.parseInt(ctx.firstArg());
-                    case "int2" -> check = Integer.parseInt(ctx.secondArg());
-                    case "int3" -> check = Integer.parseInt(ctx.thirdArg());
+                if (parameters.contains("int1")) {
+                    check = Integer.parseInt(ctx.firstArg());
+                }
+                else if (parameters.contains("int2")) {
+                    check = Integer.parseInt(ctx.secondArg());
+                }
+                else if (parameters.contains("int3")) {
+                    check = Integer.parseInt(ctx.thirdArg());
                 }
             } catch (NumberFormatException e) {
                 walkieTalkie.patternExecute(ctx,
@@ -94,12 +102,17 @@ public class DnDNotificationHandler {
         if (parameters.contains("prof")) {
             ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
             ChatSession currentCampaign = knowledge.getSession(currentUser.currentCampaign.toString());
-            boolean check = switch (parameters) {
-                case "prof1" -> currentCampaign.activeDm.campaignParty.containsKey(ctx.firstArg());
-                case "prof2" -> currentCampaign.activeDm.campaignParty.containsKey(ctx.secondArg());
-                case "prof3" -> currentCampaign.activeDm.campaignParty.containsKey(ctx.thirdArg());
-                default -> false;
-            };
+
+            boolean check = false;
+            if (parameters.contains("prof1")) {
+                check = currentCampaign.activeDm.campaignParty.containsKey(ctx.firstArg());
+            }
+            else if (parameters.contains("prof2")) {
+                check = currentCampaign.activeDm.campaignParty.containsKey(ctx.secondArg());
+            }
+            else if (parameters.contains("prof3")) {
+                check = currentCampaign.activeDm.campaignParty.containsKey(ctx.thirdArg());
+            }
 
             if (!check) {
                 walkieTalkie.patternExecute(ctx,
@@ -110,12 +123,16 @@ public class DnDNotificationHandler {
         }
 
         if (parameters.contains("ct")) {
-            ChatSession requestedUser = switch (parameters) {
-                case "ct1" -> knowledge.getSession(knowledge.findChatId(ctx.firstArg()));
-                case "ct2" -> knowledge.getSession(knowledge.findChatId(ctx.secondArg()));
-                case "ct3" -> knowledge.getSession(knowledge.findChatId(ctx.thirdArg()));
-                default -> null;
-            };
+            ChatSession requestedUser = null;
+            if (parameters.contains("ct1")) {
+                requestedUser = knowledge.getSession(knowledge.findChatId(ctx.firstArg()));
+            }
+            else if (parameters.contains("ct2")) {
+                requestedUser = knowledge.getSession(knowledge.findChatId(ctx.secondArg()));
+            }
+            else if (parameters.contains("ct3")) {
+                requestedUser = knowledge.getSession(knowledge.findChatId(ctx.thirdArg()));
+            }
 
             if (requestedUser == null) {
                 walkieTalkie.patternExecute(ctx,
@@ -127,12 +144,16 @@ public class DnDNotificationHandler {
         }
 
         if (parameters.contains("par_item")) {
-            boolean param = switch (parameters) {
-                case "par_item1" -> itemParameterTokens.contains(ctx.firstArg().toLowerCase());
-                case "par_item2" -> itemParameterTokens.contains(ctx.secondArg().toLowerCase());
-                case "par_item3" -> itemParameterTokens.contains(ctx.thirdArg().toLowerCase());
-                default -> false;
-            };
+            boolean param = false;
+            if (parameters.contains("par_item1")) {
+                param = itemParameterTokens.contains(ctx.firstArg().toLowerCase());
+            }
+            else if (parameters.contains("par_item2")) {
+                param = itemParameterTokens.contains(ctx.secondArg().toLowerCase());
+            }
+            else if (parameters.contains("par_item3")) {
+                param = itemParameterTokens.contains(ctx.thirdArg().toLowerCase());
+            }
 
             if (!param) {
                 walkieTalkie.patternExecute(ctx,
@@ -143,30 +164,45 @@ public class DnDNotificationHandler {
         }
 
         if (parameters.contains("par_line")) {
-            String[] data = switch (parameters) {
-                case "par_line1" -> ctx.firstArg().split("-");
-                case "par_line2" -> ctx.secondArg().split("-");
-                case "par_line3" -> ctx.thirdArg().split("-");
-                default -> null;
-            };
+            String[] data = null;
+            if (parameters.contains("par_line1")) {
+                data = ctx.firstArg().split("-");
+            }
+            else if (parameters.contains("par_line2")) {
+                data = ctx.secondArg().split("-");
+            }
+            else if (parameters.contains("par_line3")) {
+                data = ctx.thirdArg().split("-");
+            }
 
-            for (String token : data) {
-                if (!MasteryTypeDnD.getRollParameters().containsKey(token)
-                        && !MasteryTypeDnD.getSpecialCases().containsKey(token)) {
-                    walkieTalkie.patternExecute(ctx,
-                            "Произошла ошибка - введены некорректные параметры.\n" +
-                                    "Попробуйте ещё раз.");
+            try {
+                for (String token : data) {
+                    if (!MasteryTypeDnD.getRollParameters().containsKey(token)
+                            && !MasteryTypeDnD.getSpecialCases().containsKey(token)) {
+                        walkieTalkie.patternExecute(ctx,
+                                "Произошла ошибка - введены некорректные параметры.\n" +
+                                        "Попробуйте ещё раз.");
+                    }
                 }
+            } catch (NullPointerException e) {
+                walkieTalkie.patternExecute(ctx,
+                                "Произошла критическая ошибка - утечка данных.\n" +
+                                        "Сообщите о этом авторам бота.");
+                BotLogger.severe(e.getMessage());
             }
         }
 
         if (parameters.contains("par_stat")) {
-            boolean isStat = switch (parameters) {
-                case "par_stat1" -> playerParameterTokens.contains(ctx.firstArg());
-                case "par_stat2" -> playerParameterTokens.contains(ctx.secondArg());
-                case "par_stat3" -> playerParameterTokens.contains(ctx.thirdArg());
-                default -> false;
-            };
+            boolean isStat = false;
+            if (parameters.contains("par_stat1")) {
+                isStat = playerParameterTokens.contains(ctx.firstArg());
+            }
+            else if (parameters.contains("par_stat2")) {
+                isStat = playerParameterTokens.contains(ctx.secondArg());
+            }
+            else if (parameters.contains("par_stat3")) {
+                isStat = playerParameterTokens.contains(ctx.thirdArg());
+            }
 
             if (!isStat) {
                 walkieTalkie.patternExecute(ctx,
@@ -177,12 +213,16 @@ public class DnDNotificationHandler {
         }
 
         if (parameters.contains("par_adv")) {
-            boolean isAdv = switch (parameters) {
-                case "par_adv1" -> MasteryTypeDnD.getEditAdv().containsKey(ctx.firstArg());
-                case "par_adv2" -> MasteryTypeDnD.getEditAdv().containsKey(ctx.secondArg());
-                case "par_adv3" -> MasteryTypeDnD.getEditAdv().containsKey(ctx.thirdArg());
-                default -> false;
-            };
+            boolean isAdv = false;
+            if (parameters.contains("par_adv1")) {
+                isAdv = MasteryTypeDnD.getEditAdv().containsKey(ctx.firstArg());
+            }
+            else if (parameters.contains("par_adv2")) {
+                isAdv = MasteryTypeDnD.getEditAdv().containsKey(ctx.secondArg());
+            }
+            else if (parameters.contains("par_adv3")) {
+                isAdv = MasteryTypeDnD.getEditAdv().containsKey(ctx.thirdArg());
+            }
 
             if (!isAdv) {
                 walkieTalkie.patternExecute(ctx,

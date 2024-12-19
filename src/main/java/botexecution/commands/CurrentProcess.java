@@ -1,6 +1,8 @@
 package botexecution.commands;
 
-public enum CurrentProcess {
+import java.io.Serializable;
+
+public enum CurrentProcess implements Serializable {
     FREE,
 
     SEARCHING_AN_ARTICLE,

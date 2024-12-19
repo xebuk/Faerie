@@ -493,7 +493,7 @@ public class DnDPlayerHandler {
             cs.creationStage = LANGUAGE;
             knowledge.renewListChat(cs);
         }
-        else if (cs.activePc.bonusLanguages == 0) {
+        else if (cs.activePc.freeSkillPoints == 0) {
             walkieTalkie.patternExecute(cs, "Введите возраст персонажа.");
             cs.creationStage = AGE;
             knowledge.renewListChat(cs);

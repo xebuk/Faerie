@@ -47,7 +47,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Dragonborn;
+            this.raceId = RacesDnD.DRAGONBORN;
 
             this.strengthBonus = 2;
             this.charismaBonus = 1;
@@ -71,7 +71,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Dwarf;
+            this.raceId = RacesDnD.DWARF;
 
             this.constitutionBonus = 2;
 
@@ -97,7 +97,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Elf;
+            this.raceId = RacesDnD.ELF;
 
             this.dexterityBonus = 2;
 
@@ -120,7 +120,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.SMALL;
 
-            this.raceId = RacesDnD.Gnome;
+            this.raceId = RacesDnD.GNOME;
 
             this.intelligenceBonus = 2;
 
@@ -161,7 +161,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Half_Elf;
+            this.raceId = RacesDnD.HALF_ELF;
 
             this.charismaBonus = 2;
 
@@ -190,7 +190,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.SMALL;
 
-            this.raceId = RacesDnD.Halfling;
+            this.raceId = RacesDnD.HALFLING;
 
             this.dexterityBonus = 2;
 
@@ -213,7 +213,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Half_Orc;
+            this.raceId = RacesDnD.HALF_ORC;
 
             this.strengthBonus = 2;
             this.constitutionBonus = 1;
@@ -237,7 +237,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Human;
+            this.raceId = RacesDnD.HUMAN;
 
             this.strengthBonus = 1;
             this.dexterityBonus = 1;
@@ -266,7 +266,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Human_Variant;
+            this.raceId = RacesDnD.HUMAN_VARIANT;
 
             this.statBonus1 = 1;
             this.statBonusTowards1 = "Не выбран";
@@ -293,7 +293,7 @@ public class RaceDnD implements Serializable {
             this.subspeciesName = "Не выбран";
             this.size = RacesSizeDnD.MEDIUM;
 
-            this.raceId = RacesDnD.Tiefling;
+            this.raceId = RacesDnD.TIEFLING;
 
             this.intelligenceBonus = 1;
             this.charismaBonus = 2;

@@ -6,40 +6,40 @@ import java.io.Serializable;
 import java.util.Map;
 
 public enum BackgroundsDnD implements Serializable {
-    Acolyte,
-    Charlatan,
-    Criminal,
-    Entertainer,
-    Folk_Hero,
-    Guild_Artisan,
-    Hermit,
-    Noble,
-    Outlander,
-    Pirate,
-    Sage,
-    Sailor,
-    Soldier,
-    Urchin,
+    ACOLYTE,
+    CHARLATAN,
+    CRIMINAL,
+    ENTERTAINER,
+    FOLK_HERO,
+    GUILD_ARTISAN,
+    HERMIT,
+    NOBLE,
+    OUTLANDER,
+    PIRATE,
+    SAGE,
+    SAILOR,
+    SOLDIER,
+    URCHIN,
 
-    Homebrew;
+    HOMEBREW;
 
-    private static final Map<String, BackgroundsDnD> backgrounds = Map.ofEntries(Map.entry("Прислужник", Acolyte),
-            Map.entry("Шарлатан", Charlatan), Map.entry("Преступник", Criminal),
-            Map.entry("Артист", Entertainer), Map.entry("Народный герой", Folk_Hero),
-            Map.entry("Гильдейский ремесленник", Guild_Artisan), Map.entry("Отшельник", Hermit),
-            Map.entry("Благородный", Noble), Map.entry("Чужеземец", Outlander),
-            Map.entry("Пират", Pirate), Map.entry("Мудрец", Sage),
-            Map.entry("Моряк", Sailor), Map.entry("Солдат", Soldier),
-            Map.entry("Беспризорник", Urchin), Map.entry("Своя предыстория", Homebrew));
+    private static final Map<String, BackgroundsDnD> backgrounds = Map.ofEntries(Map.entry("Прислужник", ACOLYTE),
+            Map.entry("Шарлатан", CHARLATAN), Map.entry("Преступник", CRIMINAL),
+            Map.entry("Артист", ENTERTAINER), Map.entry("Народный герой", FOLK_HERO),
+            Map.entry("Гильдейский ремесленник", GUILD_ARTISAN), Map.entry("Отшельник", HERMIT),
+            Map.entry("Благородный", NOBLE), Map.entry("Чужеземец", OUTLANDER),
+            Map.entry("Пират", PIRATE), Map.entry("Мудрец", SAGE),
+            Map.entry("Моряк", SAILOR), Map.entry("Солдат", SOLDIER),
+            Map.entry("Беспризорник", URCHIN), Map.entry("Своя предыстория", HOMEBREW));
 
-    private static final Map<BackgroundsDnD, BackgroundDnD> backgroundsAsClasses = Map.ofEntries(Map.entry(Acolyte, new BackgroundDnD.AcolyteDnD()),
-            Map.entry(Charlatan, new BackgroundDnD.CharlatanDnD()), Map.entry(Criminal, new BackgroundDnD.CriminalDnD()),
-            Map.entry(Entertainer, new BackgroundDnD.EntertainerDnD()), Map.entry(Folk_Hero, new BackgroundDnD.FolkHeroDnD()),
-            Map.entry(Guild_Artisan, new BackgroundDnD.GuildArtisanDnD()), Map.entry(Hermit, new BackgroundDnD.HermitDnD()),
-            Map.entry(Noble, new BackgroundDnD.NobleDnD()), Map.entry(Outlander, new BackgroundDnD.OutlanderDnD()),
-            Map.entry(Pirate, new BackgroundDnD.PirateDnD()), Map.entry(Sage, new BackgroundDnD.SageDnD()),
-            Map.entry(Sailor, new BackgroundDnD.SailorDnD()), Map.entry(Soldier, new BackgroundDnD.SoldierDnD()),
-            Map.entry(Urchin, new BackgroundDnD.UrchinDnD()), Map.entry(Homebrew, new BackgroundDnD.HomebrewBackgroundDnD()));
+    private static final Map<BackgroundsDnD, BackgroundDnD> backgroundsAsClasses = Map.ofEntries(Map.entry(ACOLYTE, new BackgroundDnD.AcolyteDnD()),
+            Map.entry(CHARLATAN, new BackgroundDnD.CharlatanDnD()), Map.entry(CRIMINAL, new BackgroundDnD.CriminalDnD()),
+            Map.entry(ENTERTAINER, new BackgroundDnD.EntertainerDnD()), Map.entry(FOLK_HERO, new BackgroundDnD.FolkHeroDnD()),
+            Map.entry(GUILD_ARTISAN, new BackgroundDnD.GuildArtisanDnD()), Map.entry(HERMIT, new BackgroundDnD.HermitDnD()),
+            Map.entry(NOBLE, new BackgroundDnD.NobleDnD()), Map.entry(OUTLANDER, new BackgroundDnD.OutlanderDnD()),
+            Map.entry(PIRATE, new BackgroundDnD.PirateDnD()), Map.entry(SAGE, new BackgroundDnD.SageDnD()),
+            Map.entry(SAILOR, new BackgroundDnD.SailorDnD()), Map.entry(SOLDIER, new BackgroundDnD.SoldierDnD()),
+            Map.entry(URCHIN, new BackgroundDnD.UrchinDnD()), Map.entry(HOMEBREW, new BackgroundDnD.HomebrewBackgroundDnD()));
 
     public static BackgroundDnD getBackgroundAsClass(BackgroundsDnD background) {
         return backgroundsAsClasses.get(background);
