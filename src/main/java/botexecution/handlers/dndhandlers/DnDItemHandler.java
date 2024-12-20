@@ -1268,6 +1268,13 @@ public class DnDItemHandler {
                     return;
                 }
 
+                else if (!affectedPlayer.weaponCollectionOnHandsIndexes.contains(index)) {
+                    walkieTalkie.patternExecute(currentUser,
+                            "Произошла ошибка - предмет не находится у вас на руках.\n"
+                                    + "Попробуйте заново.");
+                    return;
+                }
+
                 WeaponDnD requestedWeapon = affectedPlayer.weaponCollection.get(index);
                 if (!ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.id)
                         && !ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.type)
@@ -1294,6 +1301,13 @@ public class DnDItemHandler {
                 if (index >= affectedPlayer.armorCollection.size()) {
                     walkieTalkie.patternExecute(currentUser,
                             "Произошла ошибка - введено число вне возможного набора индексов.\n"
+                                    + "Попробуйте заново.");
+                    return;
+                }
+
+                else if (!affectedPlayer.armorCollectionOnHandsIndexes.contains(index)) {
+                    walkieTalkie.patternExecute(currentUser,
+                            "Произошла ошибка - предмет не находится у вас на руках.\n"
                                     + "Попробуйте заново.");
                     return;
                 }
@@ -1327,6 +1341,13 @@ public class DnDItemHandler {
                 if (index >= affectedPlayer.itemCollection.size()) {
                     walkieTalkie.patternExecute(currentUser,
                             "Произошла ошибка - введено число вне возможного набора индексов.\n"
+                                    + "Попробуйте заново.");
+                    return;
+                }
+
+                else if (!affectedPlayer.itemCollectionOnHandsIndexes.contains(index)) {
+                    walkieTalkie.patternExecute(currentUser,
+                            "Произошла ошибка - предмет не находится у вас на руках.\n"
                                     + "Попробуйте заново.");
                     return;
                 }
