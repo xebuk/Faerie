@@ -12,6 +12,7 @@ import dnd.characteristics.SpellDnD;
 import dnd.equipment.*;
 import dnd.equipment.InstrumentDnD;
 import dnd.mainobjects.PlayerDnD;
+import dnd.values.RoleParameters;
 import dnd.values.aspectvalues.ItemsIdsDnD;
 import dnd.values.characteristicsvalues.JobsDnD;
 import dnd.values.masteryvalues.DamageTypeDnD;
@@ -20,10 +21,7 @@ import dnd.values.aspectvalues.*;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.telegram.telegrambots.abilitybots.api.objects.MessageContext;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class DnDItemHandler {
     private final DataHandler knowledge;
@@ -145,26 +143,62 @@ public class DnDItemHandler {
     public void showAspect(MessageContext ctx) {
         ChatSession currentUser = knowledge.getSession(ctx.chatId().toString());
         ChatSession currentCampaign = getCampaignSession(currentUser);
-        if (currentCampaign == null || secretMessages.isNotLegal(ctx, "dm")) {
+        if (currentCampaign == null) {
             return;
         }
 
         String aspect;
-        switch (ctx.firstArg()) {
-            case "-i" -> aspect = aspectStorageWriter(currentCampaign.activeDm.itemCollection);
-            case "-w" -> aspect = aspectStorageWriter(currentCampaign.activeDm.weaponCollection);
-            case "-a" -> aspect = aspectStorageWriter(currentCampaign.activeDm.armorCollection);
-            case "-in" -> aspect = aspectStorageWriter(currentCampaign.activeDm.instrumentsCollection);
-            case "-k" -> aspect = aspectStorageWriter(currentCampaign.activeDm.kitCollection);
-            case "-f" -> aspect = aspectStorageWriter(currentCampaign.activeDm.featCollection);
-            case "-ab" -> aspect = aspectStorageWriter(currentCampaign.activeDm.abilityCollection);
-            case "-sp" -> aspect = aspectStorageWriter(currentCampaign.activeDm.spellCollection);
-            default -> {
-                walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
-                knowledge.renewListChat(currentCampaign);
-                knowledge.renewListChat(currentUser);
-                return;
+        if (currentUser.role == RoleParameters.DUNGEON_MASTER) {
+            switch (ctx.firstArg()) {
+                case "-i" -> aspect = aspectStorageWriter(currentCampaign.activeDm.itemCollection);
+                case "-w" -> aspect = aspectStorageWriter(currentCampaign.activeDm.weaponCollection);
+                case "-a" -> aspect = aspectStorageWriter(currentCampaign.activeDm.armorCollection);
+                case "-in" -> aspect = aspectStorageWriter(currentCampaign.activeDm.instrumentsCollection);
+                case "-k" -> aspect = aspectStorageWriter(currentCampaign.activeDm.kitCollection);
+                case "-f" -> aspect = aspectStorageWriter(currentCampaign.activeDm.featCollection);
+                case "-ab" -> aspect = aspectStorageWriter(currentCampaign.activeDm.abilityCollection);
+                case "-sp" -> aspect = aspectStorageWriter(currentCampaign.activeDm.spellCollection);
+                default -> {
+                    walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
+                    knowledge.renewListChat(currentCampaign);
+                    knowledge.renewListChat(currentUser);
+                    return;
+                }
             }
+        }
+        else if (currentUser.role == RoleParameters.PLAYER) {
+            switch (ctx.firstArg()) {
+                case "-i" -> aspect = aspectStorageWriter(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).itemCollection,
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).itemCollectionOnHandsIndexes);
+                case "-w" -> aspect = aspectStorageWriter(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).weaponCollection,
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).weaponCollectionOnHandsIndexes);
+                case "-a" -> aspect = aspectStorageWriter(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).armorCollection,
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).armorCollectionOnHandsIndexes);
+                case "-in" -> aspect = aspectStorageWriter(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).instrumentsCollection,
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).instrumentsCollectionOnHandsIndexes);
+                case "-k" -> aspect = aspectStorageWriter(
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).kitCollection,
+                        currentCampaign.activeDm.campaignParty.get(currentUser.username).kitCollectionOnHandsIndexes);
+                case "-f" -> aspect = aspectStorageWriter(currentCampaign.activeDm.campaignParty.get(currentUser.username).feats);
+                case "-ab" -> aspect = aspectStorageWriter(currentCampaign.activeDm.campaignParty.get(currentUser.username).abilities);
+                case "-sp" -> aspect = aspectStorageWriter(currentCampaign.activeDm.campaignParty.get(currentUser.username).spellBook.learnedSpells);
+                default -> {
+                    walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
+                    knowledge.renewListChat(currentCampaign);
+                    knowledge.renewListChat(currentUser);
+                    return;
+                }
+            }
+        }
+        else {
+            walkieTalkie.patternExecute(currentUser, "Укажите текущую кампанию.");
+            knowledge.renewListChat(currentCampaign);
+            knowledge.renewListChat(currentUser);
+            return;
         }
 
         walkieTalkie.articleMessaging(aspect, currentUser, null);
@@ -829,8 +863,10 @@ public class DnDItemHandler {
                     return;
                 }
                 if (currentCampaign.activeDm.lockVault) {
-                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollectionOnHands
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollection
                         .add(currentCampaign.activeDm.itemCollection.get(index));
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollectionOnHandsIndexes
+                        .add(currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollection.size() - 1);
                 }
                 else {
                     currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).itemCollection
@@ -845,8 +881,10 @@ public class DnDItemHandler {
                     return;
                 }
                 if (currentCampaign.activeDm.lockVault) {
-                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollectionOnHands
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollection
                         .add(currentCampaign.activeDm.weaponCollection.get(index));
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollectionOnHandsIndexes
+                        .add(currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollection.size() - 1);
                 }
                 else {
                     currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).weaponCollection
@@ -861,8 +899,10 @@ public class DnDItemHandler {
                     return;
                 }
                 if (currentCampaign.activeDm.lockVault) {
-                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollectionOnHands
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollection
                         .add(currentCampaign.activeDm.armorCollection.get(index));
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollectionOnHandsIndexes
+                        .add(currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollection.size() - 1);
                 }
                 else {
                     currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).armorCollection
@@ -877,8 +917,10 @@ public class DnDItemHandler {
                     return;
                 }
                 if (currentCampaign.activeDm.lockVault) {
-                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollectionOnHands
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollection
                         .add(currentCampaign.activeDm.instrumentsCollection.get(index));
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollectionOnHandsIndexes
+                        .add(currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollection.size() - 1);
                 }
                 else {
                     currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).instrumentsCollection
@@ -893,8 +935,10 @@ public class DnDItemHandler {
                     return;
                 }
                 if (currentCampaign.activeDm.lockVault) {
-                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollectionOnHands
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollection
                         .add(currentCampaign.activeDm.kitCollection.get(index));
+                    currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollectionOnHandsIndexes
+                        .add(currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollection.size() - 1);
                 }
                 else {
                     currentCampaign.activeDm.campaignParty.get(ctx.thirdArg()).kitCollection
@@ -1137,8 +1181,7 @@ public class DnDItemHandler {
 
                 itemName = affectedPlayer.itemCollection.get(index).name;
                 affectedPlayer.currentCarryingCapacity += affectedPlayer.itemCollection.get(index).weight;
-                affectedPlayer.itemCollectionOnHands.add(affectedPlayer.itemCollection.get(index));
-                affectedPlayer.itemCollection.remove(index);
+                affectedPlayer.itemCollectionOnHandsIndexes.add(index);
             }
             case "-w" -> {
                 if (index >= affectedPlayer.weaponCollection.size()) {
@@ -1151,8 +1194,7 @@ public class DnDItemHandler {
 
                 itemName = affectedPlayer.weaponCollection.get(index).name;
                 affectedPlayer.currentCarryingCapacity += affectedPlayer.weaponCollection.get(index).weight;
-                affectedPlayer.weaponCollectionOnHands.add(affectedPlayer.weaponCollection.get(index));
-                affectedPlayer.weaponCollection.remove(index);
+                affectedPlayer.weaponCollectionOnHandsIndexes.add(index);
             }
             case "-a" -> {
                 if (index >= affectedPlayer.armorCollection.size()) {
@@ -1165,8 +1207,7 @@ public class DnDItemHandler {
 
                 itemName = affectedPlayer.armorCollection.get(index).name;
                 affectedPlayer.currentCarryingCapacity += affectedPlayer.armorCollection.get(index).weight;
-                affectedPlayer.armorCollectionOnHands.add(affectedPlayer.armorCollection.get(index));
-                affectedPlayer.armorCollection.remove(index);
+                affectedPlayer.armorCollectionOnHandsIndexes.add(index);
             }
             case "-in" -> {
                 if (index >= affectedPlayer.instrumentsCollection.size()) {
@@ -1179,8 +1220,7 @@ public class DnDItemHandler {
 
                 itemName = affectedPlayer.instrumentsCollection.get(index).name;
                 affectedPlayer.currentCarryingCapacity += affectedPlayer.instrumentsCollection.get(index).weight;
-                affectedPlayer.instrumentsCollectionOnHands.add(affectedPlayer.instrumentsCollection.get(index));
-                affectedPlayer.instrumentsCollection.remove(index);
+                affectedPlayer.instrumentsCollectionOnHandsIndexes.add(index);
             }
             case "-k" -> {
                 if (index >= affectedPlayer.kitCollection.size()) {
@@ -1193,8 +1233,7 @@ public class DnDItemHandler {
 
                 itemName = affectedPlayer.kitCollection.get(index).name;
                 affectedPlayer.currentCarryingCapacity += affectedPlayer.kitCollection.get(index).weight;
-                affectedPlayer.kitCollectionOnHands.add(affectedPlayer.kitCollection.get(index));
-                affectedPlayer.kitCollection.remove(index);
+                affectedPlayer.kitCollectionOnHandsIndexes.add(index);
             }
             default -> {
                 walkieTalkie.patternExecute(currentUser, "Введите корректный параметр.");
@@ -1222,14 +1261,14 @@ public class DnDItemHandler {
         PlayerDnD affectedPlayer = currentCampaign.activeDm.campaignParty.get(currentUser.username);
         switch (ctx.firstArg()) {
             case "-w" -> {
-                if (index >= affectedPlayer.weaponCollectionOnHands.size()) {
+                if (index >= affectedPlayer.weaponCollection.size()) {
                     walkieTalkie.patternExecute(currentUser,
                             "Произошла ошибка - введено число вне возможного набора индексов.\n"
                                     + "Попробуйте заново.");
                     return;
                 }
 
-                WeaponDnD requestedWeapon = affectedPlayer.weaponCollectionOnHands.get(index);
+                WeaponDnD requestedWeapon = affectedPlayer.weaponCollection.get(index);
                 if (!ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.id)
                         && !ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.type)
                         && !ItemsIdsDnD.isMastered(affectedPlayer.weaponProficiency, requestedWeapon.range)) {
@@ -1238,7 +1277,7 @@ public class DnDItemHandler {
                     return;
                 }
 
-                affectedPlayer.equippedWeapon = affectedPlayer.weaponCollectionOnHands.get(index);
+                affectedPlayer.equippedWeapon = requestedWeapon;
                 affectedPlayer.equippedWeaponIndex = index;
 
                 affectedPlayer.hitBonus = affectedPlayer.equippedWeapon.hitBonus;
@@ -1252,14 +1291,14 @@ public class DnDItemHandler {
                         + " было установлено.");
             }
             case "-a" -> {
-                if (index >= affectedPlayer.armorCollectionOnHands.size()) {
+                if (index >= affectedPlayer.armorCollection.size()) {
                     walkieTalkie.patternExecute(currentUser,
                             "Произошла ошибка - введено число вне возможного набора индексов.\n"
                                     + "Попробуйте заново.");
                     return;
                 }
 
-                ArmorDnD requestedArmor = affectedPlayer.armorCollectionOnHands.get(index);
+                ArmorDnD requestedArmor = affectedPlayer.armorCollection.get(index);
                 if (!affectedPlayer.armorProficiency.contains(requestedArmor.type)) {
                     walkieTalkie.patternExecute(currentUser,
                             "Данная броня не подходит под вас (Ваш класс не позволяет надеть данный тип брони)",
@@ -1285,14 +1324,14 @@ public class DnDItemHandler {
                         + " была установлена.");
             }
             case "-i" -> {
-                if (index >= affectedPlayer.itemCollectionOnHands.size()) {
+                if (index >= affectedPlayer.itemCollection.size()) {
                     walkieTalkie.patternExecute(currentUser,
                             "Произошла ошибка - введено число вне возможного набора индексов.\n"
                                     + "Попробуйте заново.");
                     return;
                 }
 
-                ItemDnD requestedItem = affectedPlayer.itemCollectionOnHands.get(index);
+                ItemDnD requestedItem = affectedPlayer.itemCollection.get(index);
                 affectedPlayer.attunedAccessories.add(requestedItem);
 
                 walkieTalkie.patternExecute(currentUser, "Предмет "
@@ -1441,6 +1480,29 @@ public class DnDItemHandler {
         }
 
         result.append("Введите имя того, что вы хотите добавить в свой набор.");
+        return result.toString();
+    }
+
+    public <T> String aspectStorageWriter(ArrayList<T> aspects, HashSet<Integer> mask) {
+        StringBuilder result = new StringBuilder();
+        result.append("На данный момент у вас есть:").append("\n");
+
+        boolean onHands;
+        for (int i = 1; i < aspects.size() + 1; i++) {
+            onHands = mask.contains(i - 1);
+
+            if (aspects.get(i - 1) instanceof ItemDnD) {
+                result.append(i).append(". ").append(((ItemDnD) aspects.get(i - 1)).name)
+                        .append(onHands ? " (На руках)" : "").append("\n");
+            }
+            else if (aspects.get(i - 1) instanceof AbilityDnD) {
+                result.append(i).append(". ").append(((AbilityDnD) aspects.get(i - 1)).title).append("\n");
+            }
+            else if (aspects.get(i - 1) instanceof FeatDnD) {
+                result.append(i).append(". ").append(((FeatDnD) aspects.get(i - 1)).title).append("\n");
+            }
+        }
+
         return result.toString();
     }
 

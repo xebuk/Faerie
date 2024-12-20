@@ -163,15 +163,6 @@ public class PlayerDnD implements Serializable {
     public String skin;
     public String hair;
 
-    public double currentCarryingCapacity = 0;
-    public double maxCarryingCapacity;
-
-    public ArrayList<ItemDnD> itemCollectionOnHands = new ArrayList<>();
-    public ArrayList<WeaponDnD> weaponCollectionOnHands = new ArrayList<>();
-    public ArrayList<ArmorDnD> armorCollectionOnHands = new ArrayList<>();
-    public ArrayList<InstrumentDnD> instrumentsCollectionOnHands = new ArrayList<>();
-    public ArrayList<KitDnD> kitCollectionOnHands = new ArrayList<>();
-
     public int gold = 0;
     public int silver = 0;
     public int copper = 0;
@@ -181,6 +172,15 @@ public class PlayerDnD implements Serializable {
     public ArrayList<ArmorDnD> armorCollection = new ArrayList<>();
     public ArrayList<InstrumentDnD> instrumentsCollection = new ArrayList<>();
     public ArrayList<KitDnD> kitCollection = new ArrayList<>();
+
+    public double currentCarryingCapacity = 0;
+    public double maxCarryingCapacity;
+
+    public HashSet<Integer> itemCollectionOnHandsIndexes = new HashSet<>();
+    public HashSet<Integer> weaponCollectionOnHandsIndexes = new HashSet<>();
+    public HashSet<Integer> armorCollectionOnHandsIndexes = new HashSet<>();
+    public HashSet<Integer> instrumentsCollectionOnHandsIndexes = new HashSet<>();
+    public HashSet<Integer> kitCollectionOnHandsIndexes = new HashSet<>();
 
     public ArrayList<NoteDnD> notes = new ArrayList<>();
 

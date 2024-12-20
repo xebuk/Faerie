@@ -619,11 +619,11 @@ public class DnDPlayerHandler {
     //секция для выбора предметов
     public void inventoryRefusal(ChatSession cs) {
         String refusalDice = JobsDnD.getJobAsClass(cs.activePc.mainJob).inventoryRefusalMoney;
-        cs.activePc.itemCollectionOnHands.clear();
-        cs.activePc.weaponCollectionOnHands.clear();
-        cs.activePc.armorCollectionOnHands.clear();
-        cs.activePc.instrumentsCollectionOnHands.clear();
-        cs.activePc.kitCollectionOnHands.clear();
+        cs.activePc.itemCollectionOnHandsIndexes.clear();
+        cs.activePc.weaponCollectionOnHandsIndexes.clear();
+        cs.activePc.armorCollectionOnHandsIndexes.clear();
+        cs.activePc.instrumentsCollectionOnHandsIndexes.clear();
+        cs.activePc.kitCollectionOnHandsIndexes.clear();
 
         cs.activePc.gold = diceHoarder.customDiceResult(refusalDice);
         if (cs.activePc.mainJob != JobsDnD.MONK) {
